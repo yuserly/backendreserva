@@ -188,20 +188,6 @@ export default {
                             class="uil-angle-down  d-xl-inline-block font-size-15"
                         ></i>
                     </template>
-
-                    <!-- item-->
-                    <a class="dropdown-item" href="#">
-                        <i
-                            class="uil uil-user-circle font-size-18 align-middle text-muted me-1"
-                        ></i>
-                        <span class="align-middle">Perfil</span>
-                    </a>
-                    <a class="dropdown-item" href="#">
-                        <i
-                            class="uil uil-wallet font-size-18 align-middle me-1 text-muted"
-                        ></i>
-                        <span class="align-middle">Billetera</span>
-                    </a>
                     <a
                         class="dropdown-item"
                         href="javascript:void(0)"
@@ -213,16 +199,6 @@ export default {
                         <span class="align-middle">Cerrar Sesión</span>
                     </a>
                 </b-dropdown>
-
-                <div class="dropdown d-inline-block">
-                    <button
-                        type="button"
-                        class="btn header-item noti-icon right-bar-toggle toggle-right"
-                        @click="toggleRightSidebar"
-                    >
-                        <i class="uil-cog toggle-right"></i>
-                    </button>
-                </div>
             </div>
         </div>
     </header>

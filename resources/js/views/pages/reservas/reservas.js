@@ -10,6 +10,7 @@ import { required } from "vuelidate/lib/validators";
 import Swal from "sweetalert2";
 import Layout from "../../layouts/main";
 import { calendarEvents, categories } from "./data-calendar";
+import $ from 'jquery'
 
 export default {
     components: { FullCalendar, Layout, Multiselect },
@@ -159,9 +160,9 @@ export default {
             });
         },
         validarRut($event) {
-            if ($event.target.value.length > 4) {
+            if ($event.length > 4) {
                 this.axios
-                    .get(`/api/validarrutpaciente/${$event.target.value}`)
+                    .get(`/api/validarrutpaciente/${$event}`)
                     .then(response => {
                         if (response.data != 0) {
                             this.form.nombres = response.data.nombres;
@@ -178,6 +179,56 @@ export default {
                     });
             }
         },
+
+        checkRut() {
+
+            var valor = this.form.rut.replace('.','');  // Quita Punto
+            valor = valor.replace('-','');// Quita Guión
+            var cuerpo = valor.slice(0,-1);// Aislar Cuerpo y Dígito Verificador
+            var dv = valor.slice(-1).toUpperCase();
+            this.form.rut = cuerpo + '-'+ dv// Formatear RUN
+      
+            if(cuerpo.length < 7) {// Si no cumple con el mínimo de digitos ej. (n.nnn.nnn)
+                $('.inputRUT').attr('style', 'border-color: red !important');
+                $('.btnSubmit').prop('disabled',  true);
+                return false;
+            }
+      
+            var suma = 0; // Calcular Dígito Verificador
+            var multiplo = 2;
+      
+            for(var i=1;i<=cuerpo.length;i++) // Para cada dígito del Cuerpo
+            {
+                var index = multiplo * valor.charAt(cuerpo.length - i); // Obtener su Producto con el Múltiplo Correspondiente
+                suma = suma + index; // Sumar al Contador General
+                if(multiplo < 7) {
+                    multiplo = multiplo + 1;
+                }else{
+                    multiplo = 2;
+                } // Consolidar Múltiplo dentro del rango [2,7]
+            }
+      
+            var dvEsperado = 11 - (suma % 11); // Calcular Dígito Verificador en base al Módulo 11
+            dv = (dv == 'K')?10:dv; // Casos Especiales (0 y K)
+            dv = (dv == 0)?11:dv;
+      
+            if(dvEsperado != dv) {
+                $('.inputRUT').attr('style', 'border-color: red !important');
+                $('.btnSubmit').prop('disabled',  true);
+                this.form.nombres = ""
+                this.form.apellidos = ""
+                this.form.id_paciente = ""
+                this.form.email = "";
+                this.form.direccion = "";
+                this.form.celular = "";
+                this.form.prevension_id = "";
+                return false;
+            } // Validar que el Cuerpo coincide con su Dígito Verificador
+      
+            $('.inputRUT').attr('style', 'border-color: #40A944 !important');  // Si todo sale bien, eliminar errores (decretar que es válido)
+            $('.btnSubmit').prop('disabled',  false);
+            this.validarRut(this.form.rut);
+          },
 
         // crear reserva
         handleSubmit(e) {
@@ -239,13 +290,17 @@ export default {
                                 type = "success";
                             }
 
-                            this.currentEvents = calendarApi.addEvent({
-                                id: res.data.id_reserva,
-                                title: titlereserva,
-                                start: fecha_inicio,
-                                end: fecha_fin,
-                                classNames: "bg-info text-white"
-                            });
+                            this.calendarOptions.events = [{}];
+                            this.traerHoras();
+
+                            // this.currentEvents = calendarApi.addEvent({
+                            //     id: res.data.id_reserva,
+                            //     title: titlereserva,
+                            //     start: fecha_inicio,
+                            //     end: fecha_fin,
+                            //     classNames: "bg-info text-white"
+                            // });
+
                             this.showModal = false;
                             this.newEventData = {};
                             this.successmsg(title, message, type);
@@ -279,6 +334,7 @@ export default {
             this.submitted = false;
             this.event = {};
         },
+
         move(info) {
             let idreserva = info.event._def.extendedProps.idreserva;
 
@@ -557,7 +613,13 @@ export default {
         },
 
         traerHoras() {
+
             this.calendarOptions.events = [{}];
+
+            // this.calendarOptions.events.forEach((element, i) => {
+            //     this.calendarOptions.events.splice(element, 1); 
+            // });
+            
             var date = new Date();
 
             // obtemos el dia de la semana
@@ -632,11 +694,11 @@ export default {
                             let fecha_comple_fin = moment(
                                 dia + " " + fecha_fin
                             ).format("YYYY-MM-DD HH:mm:ss");
-
+                                console.log(res.data.reserva[i]["paciente"]['nombres']);
                             this.calendarOptions.events.push({
                                 idreserva: res.data.reserva[i]["id_reserva"],
                                 idpaciente: res.data.reserva[i]["paciente_id"],
-                                title: "RESERVADO",
+                                title: res.data.reserva[i]["paciente"]['rut']+' - '+res.data.reserva[i]["paciente"]['nombres']+' '+res.data.reserva[i]["paciente"]['apellidos'],
                                 start: fecha_comple_inicio,
                                 end: fecha_comple_fin,
                                 classNames: "bg-info text-white"

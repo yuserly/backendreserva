@@ -167,6 +167,15 @@
                   track-by="name"
                   label="name"
                 ></multiselect>
+
+                <div
+                  v-if="submitted && $v.form.intervalo.$error"
+                  class="invalid-feedback"
+                >
+                  <span v-if="!$v.form.intervalo.required"
+                    >El intervalo es requerido.</span
+                  >
+                </div>
               </div>
             </div>
           </div>

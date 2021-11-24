@@ -13,7 +13,7 @@ class CreatePacientesTable extends Migration
             $table->id('id_paciente');
             $table->string('nombres');
             $table->string('apellidos');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('rut');
             $table->string('celular');
             $table->string('direccion');

@@ -11,13 +11,16 @@
 }
 
 .authentication-bg{
-    background-color: $auth-bg;
+    background: url(https://wallpaperboat.com/wp-content/uploads/2020/09/21/55222/medical-15.jpg);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    background-attachment: fixed;
     .auth-logo{
         .logo{
             margin: 0px auto;
         }
     }
-
 }
 
 

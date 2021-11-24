@@ -86,6 +86,7 @@ export default {
     this.traerEspecialidad();
   },
   methods: {
+
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
@@ -171,22 +172,27 @@ export default {
             this.form
           )
           .then((res) => {
-            let title = "";
-            let message = "";
-            let type = "";
-
+          
             if (
               (res.status == 201 || res.status == 200) &&
               (res.statusText == "Created" || res.statusText == "OK")
             ) {
               if (this.form.id_especialidad == "") {
-                title = "Crear Especialidad";
-                message = "Especialidad creada con exito";
-                type = "success";
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Especialidad',
+                  text: "Especialidad creada exitosamente.",
+                  timer: 1500,
+                  showConfirmButton: false
+                });
               } else {
-                title = "Editar Especialidad";
-                message = "Especialidad editada con exito";
-                type = "success";
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Especialidad',
+                  text: "Especialidad actualizada exitosamente.",
+                  timer: 1500,
+                  showConfirmButton: false
+                });
               }
               this.modal = false;
               this.especialidadexist = false;
@@ -194,7 +200,6 @@ export default {
 
               this.$v.form.$reset();
               this.traerEspecialidad();
-              this.successmsg(title, message, type);
             }
           })
           .catch((error) => {

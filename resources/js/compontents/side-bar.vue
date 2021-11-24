@@ -206,16 +206,16 @@ export default {
   <div class="vertical-menu">
     <!-- LOGO -->
     <div class="navbar-brand-box" style="padding-left: 4px;padding-right:4px;">
-      <router-link to="/home" class="logo logo-dark">
+      <router-link to="/" class="logo logo-dark">
         <span class="logo-sm">
-          <img src="/images/landing/logo.png" alt height="57" />
+          <img src="images/isotipo.png" width="100%" />
         </span>
         <span class="logo-lg">
-          <img src="/images/landing/logo.png" alt height="57" />
+          <img src="images/reservas.png" width="100%" />
         </span>
       </router-link>
 
-      <router-link to="/home" class="logo logo-light">
+      <router-link to="/" class="logo logo-light">
         <span class="logo-sm">
           <img src="/images/landing/logo.png" alt height="57" />
         </span>

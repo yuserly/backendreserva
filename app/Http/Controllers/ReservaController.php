@@ -5,36 +5,25 @@ namespace App\Http\Controllers;
 use App\Models\Paciente;
 use App\Models\Profesional;
 use App\Models\Reserva;
+use App\Models\Sucursal;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use App\Mail\SendMailReserva;
+use Mail;
+
 class ReservaController extends Controller
 {
 
-    public function traerreserva($id){
-
+    public function traerreserva($id)
+    {
         return Reserva::where('id_reserva', $id)->with('paciente.prevision','servicio.especialidad')->first();
-
     }
-
-    public function index()
-    {
-        //
-    }
-
-
-    public function create()
-    {
-        //
-    }
-
 
     public function store(Request $request)
     {
         // creamos el paciente o lo actualizamos
-
-
         $paciente = Paciente::updateOrCreate(['id_paciente'=>$request->id_paciente],
         [
             'nombres' => $request->nombres,
@@ -47,7 +36,6 @@ class ReservaController extends Controller
         ]);
 
         // creamos la reserva
-
         if($request->codigo){
             $codigo = $request->codigo;
         }else{
@@ -56,11 +44,8 @@ class ReservaController extends Controller
         }
 
         if($request->editservicio){
-
             $servicio = $request->editservicio["id_servicio"];
-
         }else{
-
             $servicio = $request->servicio_id_servicio["id_servicio"];
         }
 
@@ -76,14 +61,25 @@ class ReservaController extends Controller
             'servicio_id' => $servicio
         ]);
 
+        $estado = 1;
+        
+        $sucursal = Sucursal::find($request->id_sucursal);
+
+        Mail::to($request->email)->send(new SendMailReserva($request->rut, $request->nombres, 
+                                                         $request->apellidos, $request->email, 
+                                                         $request->dia, $request->hora_inicio,
+                                                         $request->id_profesional["profesional"]["nombres"], 
+                                                         $request->id_profesional["profesional"]["apellidos"],
+                                                         $sucursal->nombre, $sucursal->direccion,
+                                                         $estado
+                                                        ));
+
         return $reserva;
     }
 
     public function storeprofesional(Request $request)
         {
             // creamos el paciente o lo actualizamos
-
-
             $user = Auth::user();
 
             $profesional = Profesional::where('user_id',$user->id)->first();
@@ -202,11 +198,9 @@ class ReservaController extends Controller
         $hora_fin_reserva = date_format(date_create($fin),"H:i:s");
         $horacheck = date_format(date_create($hora),"H:i:s");
 
-        if($hora_inicio_reserva > $horacheck ||  $hora_fin_reserva > $horacheck ){
-
+        if($hora_inicio_reserva == $horacheck){
             return 1;
         }else{
-
             return 0;
         }
 

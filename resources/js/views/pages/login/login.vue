@@ -96,20 +96,20 @@ export default {
         <div class="row">
           <div class="col-lg-12">
             <div class="text-center">
-              <router-link to="/login" class="mb-5 d-block auth-logo">
-                <!-- <img
-                  src="@/assets/images/logo.png"
+              <!-- <router-link to="/login" class="mb-5 d-block auth-logo">
+                <img
+                  src="images/reservas.png"
                   alt=""
                   height="150"
                   class="logo logo-dark"
                 />
                 <img
-                  src="@/assets/images/logo.png"
+                  src="images/reservas.png"
                   alt=""
                   height="100"
                   class="logo logo-light"
-                /> -->
-              </router-link>
+                />
+              </router-link> -->
             </div>
           </div>
         </div>
@@ -118,8 +118,14 @@ export default {
             <div class="card">
               <div class="card-body p-4">
                 <div class="text-center mt-2">
-                  <h5 class="text-primary">Bienvenido !</h5>
-                  <p class="text-muted">Software de Reservas.</p>
+                  <img
+                  src="images/reservas.png"
+                  alt=""
+                  height="100"
+                  class="logo logo-dark"
+                  style="margin: auto;"
+                />
+                <hr>
                 </div>
                 <div class="p-2 mt-4">
                   <form class="needs-validation" @submit.prevent="formSubmit">
@@ -129,7 +135,7 @@ export default {
                         type="text"
                         class="form-control"
                         id="username"
-                        placeholder="usuario@correo.com"
+                        placeholder="correo@correo.com"
                         v-model="form.email"
                         :class="{
                           'is-invalid': submitted && $v.form.email.$error,
@@ -150,9 +156,6 @@ export default {
 
                     <div class="mb-3">
                       <div class="float-end">
-                        <router-link to="/auth/recoverpwd" class="text-muted">
-                          Olvidó su contraseña</router-link
-                        >
                       </div>
                       <label for="userpassword">Contraseña</label>
                       <input

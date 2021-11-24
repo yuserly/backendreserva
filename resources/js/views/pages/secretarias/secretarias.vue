@@ -79,6 +79,20 @@
                     <li class="list-inline-item">
                       <a
                         href="javascript:void(0);"
+                        v-on:click="contraseña(data.item)"
+                        class="px-2 text-warning"
+                        v-b-modal.cambiarcontrasena
+                        data-toggle="modal"
+                        data-target=".bs-example-cambiarcontrasena"
+                        v-b-tooltip.hover
+                        title="Cambiar Contraseña"
+                      >
+                        <i class="uil uil-key-skeleton font-size-18"></i>
+                      </a>
+                    </li>
+                    <li class="list-inline-item">
+                      <a
+                        href="javascript:void(0);"
                         v-on:click="editar(data.item)"
                         class="px-2 text-primary"
                         v-b-modal.crearsecretaria
@@ -125,8 +139,7 @@
         </div>
       </div>
 
-      <!-- modal -->
-
+      <!-- modal CREAR SECRETARIA-->
       <b-modal
         id="crearsecretaria"
         size="lg"
@@ -180,7 +193,7 @@
                   <span v-if="!$v.form.apellidos.required"
                     >El apellidos es requeridos.</span
                   >
-                </div>
+                </div> 
               </div>
             </div>
           </div>
@@ -241,8 +254,76 @@
           </button>
         </form>
       </b-modal>
-
       <!-- modal -->
+
+      <!-- modal CAMBIAR CONTRASEÑA-->
+      <b-modal
+        id="cambiarcontrasena"
+        size="lg"
+        :title="titleContrasena"
+        title-class="font-18"
+        hide-footer
+        v-if="modalContrasena"
+      >
+        <form class="needs-validation" @submit.prevent="formSubmitPassword">
+          <div class="row">
+            <div class="col-12 col-lg-6">
+              <div class="mb-3">
+                <label for="nombres">Nueva Contraseña</label>
+                <input
+                  id="nombres"
+                  v-model="formPassword.contrasena"
+                  type="password"
+                  class="form-control"
+                  :class="{
+                    'is-invalid': submitted && $v.formPassword.contrasena.$error,
+                  }"
+                />
+
+                <div
+                  v-if="submitted && $v.formPassword.contrasena.$error"
+                  class="invalid-feedback"
+                >
+                  <span v-if="!$v.formPassword.contrasena.required"
+                    >Debes ingresar contraseña.</span
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-lg-6">
+              <div class="mb-3">
+                <label for="apellidos">Repetir Contraseña</label>
+                <input
+                  id="apellidos"
+                  v-model="formPassword.repetir"
+                  type="password"
+                  class="form-control"
+                  v-on:keyup="verificarContrasena()"
+                  :class="{
+                    'is-invalid': submitted && $v.formPassword.repetir.$error,
+                  }"
+                />
+                <div
+                  v-if="submitted && $v.formPassword.repetir.$error"
+                  class="invalid-feedback"
+                >
+                  <span v-if="!$v.formPassword.repetir.required"
+                    >Debes repetir contraseña.</span
+                  >
+                </div>
+                <span class="text-danger" v-if="repetirValidar"
+                  >Contraseña no coinciden.</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-success float-end" type="submit" v-if="btnContrasena"><i class="far fa-save"></i> Actualizar Contraseña</button>
+
+        </form>
+      </b-modal>
+      <!-- modal -->
+
     </div>
   </Layout>
 </template>

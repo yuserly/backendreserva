@@ -18,6 +18,8 @@ class CreateProfesionalsTable extends Migration
             $table->string('url_perfil');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
+            $table->unsignedBigInteger('especialidad_id');
+            $table->foreign('especialidad_id')->references('id_especialidad')->on('especialidads');
             $table->softDeletes();
             $table->timestamps();
         });

@@ -11,5 +11,10 @@ class HorarioProfesional extends Model
 
     protected $primarykey = "id_horarioprofesional";
 
-    protected $fillable = ['horario_inicio', 'horario_fin', 'dia_id'];
+    protected $fillable = ['profesional_id_profesional', 'sucursal_id','hora_inicio', 'hora_fin', 'dia_id'];
+
+    public function dia()
+    {
+        return $this->belongsTo(Dia::class, 'dia_id', 'id_dia');
+    }
 }

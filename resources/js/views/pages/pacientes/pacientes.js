@@ -2,6 +2,7 @@ import Layout from "../../layouts/main";
 import Swal from "sweetalert2";
 import { required } from "vuelidate/lib/validators";
 import Multiselect from "vue-multiselect";
+import $ from 'jquery'
 
 export default {
   components: { Layout,  Multiselect },
@@ -208,18 +209,24 @@ export default {
         this.axios
           .post(`/api/crearpaciente`, this.form)
           .then((res) => {
-            let title = "";
-            let message = "";
-            let type = "";
+
             if (res.data) {
               if (this.form.id_paciente == "") {
-                title = "Crear pacientes";
-                message = "pacientes creada con exito";
-                type = "success";
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Paciente',
+                  text: "Paciente creado con exito",
+                  timer: 1500,
+                  showConfirmButton: false
+                });
               } else {
-                title = "Editar pacientes";
-                message = "pacientes editada con exito";
-                type = "success";
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Paciente',
+                  text: "Paciente actualizado con exito",
+                  timer: 1500,
+                  showConfirmButton: false
+                });
               }
               this.modal = false;
               this.emailexist = false;
@@ -229,7 +236,6 @@ export default {
               this.$v.form.$reset();
               this.traerPrevision();
               this.traerPaciente();
-              this.successmsg(title, message, type);
             }
           })
           .catch((error) => {
@@ -276,10 +282,10 @@ export default {
     },
 
     validarRut($event) {
-      if ($event.target.value.length > 4) {
+      if ($event.length > 4) {
         this.axios
           .get(
-            `/api/validarrutpaciente/${$event.target.value}`
+            `/api/validarrutpaciente/${$event}`
           )
           .then((response) => {
             if (response.data != 0) {
@@ -287,25 +293,68 @@ export default {
             } else {
               this.rutexist = false;
             }
-          });
+          }); 
       }
     },
 
+    checkRut() {
+
+      var valor = this.form.rut.replace('.','');  // Quita Punto
+      valor = valor.replace('-','');// Quita Guión
+      var cuerpo = valor.slice(0,-1);// Aislar Cuerpo y Dígito Verificador
+      var dv = valor.slice(-1).toUpperCase();
+      this.form.rut = cuerpo + '-'+ dv// Formatear RUN
+
+      if(cuerpo.length < 7) {// Si no cumple con el mínimo de digitos ej. (n.nnn.nnn)
+          $('.inputRUT').attr('style', 'border-color: red !important');
+          $('.btnSubmit').prop('disabled',  true);
+          return false;
+      }
+
+      var suma = 0; // Calcular Dígito Verificador
+      var multiplo = 2;
+
+      for(var i=1;i<=cuerpo.length;i++) // Para cada dígito del Cuerpo
+      {
+          var index = multiplo * valor.charAt(cuerpo.length - i); // Obtener su Producto con el Múltiplo Correspondiente
+          suma = suma + index; // Sumar al Contador General
+          if(multiplo < 7) {
+              multiplo = multiplo + 1;
+          }else{
+              multiplo = 2;
+          } // Consolidar Múltiplo dentro del rango [2,7]
+      }
+
+      var dvEsperado = 11 - (suma % 11); // Calcular Dígito Verificador en base al Módulo 11
+      dv = (dv == 'K')?10:dv; // Casos Especiales (0 y K)
+      dv = (dv == 0)?11:dv;
+
+      if(dvEsperado != dv) {
+          $('.inputRUT').attr('style', 'border-color: red !important');
+          $('.btnSubmit').prop('disabled',  true);
+          return false;
+      } // Validar que el Cuerpo coincide con su Dígito Verificador
+
+      $('.inputRUT').attr('style', 'border-color: #40A944 !important');  // Si todo sale bien, eliminar errores (decretar que es válido)
+      $('.btnSubmit').prop('disabled',  false);
+      this.validarRut(this.form.rut);
+    },
+
     validarEmail($event) {
-        if ($event.target.value.length > 4) {
-          this.axios
-            .get(
-              `/api/validaremailpaciente/${$event.target.value}`
-            )
-            .then((response) => {
-              if (response.data == 1) {
-                this.emailexist = true;
-              } else {
-                this.emailexist = false;
-              }
-            });
-        }
-      },
+      if ($event.target.value.length > 4) {
+        this.axios
+          .get(
+            `/api/validaremailpaciente/${$event.target.value}`
+          )
+          .then((response) => {
+            if (response.data == 1) {
+              this.emailexist = true;
+            } else {
+              this.emailexist = false;
+            }
+          });
+      }
+    },
 
     successmsg(title, message, type) {
       Swal.fire(title, message, type);

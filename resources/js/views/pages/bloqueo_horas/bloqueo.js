@@ -190,18 +190,23 @@ export default {
         this.axios
           .post(`/api/crearbloqueohora`, this.form)
           .then((res) => {
-            let title = "";
-            let message = "";
-            let type = "";
             if (res.data) {
               if (this.form.id_bloqueohora == "") {
-                title = "Crear hora";
-                message = "hora creada con exito";
-                type = "success";
+                Swal.fire({
+                  icon: 'success',
+                  title: "Crear Hora",
+                  text: 'Horario bloqueo con exito.',
+                  timer: 1500,
+                  showConfirmButton: false
+                });
               } else {
-                title = "Editar hora";
-                message = "hora editada con exito";
-                type = "success";
+                Swal.fire({
+                  icon: 'success',
+                  title: "Atualizacion Hora",
+                  text: 'Horario bloqueo actualizada con exito.',
+                  timer: 1500,
+                  showConfirmButton: false
+                });
               }
               this.modal = false;
               this.horaexist = false;
@@ -209,7 +214,7 @@ export default {
 
               this.$v.form.$reset();
               this.traerBloqueo();
-              this.successmsg(title, message, type);
+
             }
           })
           .catch((error) => {
@@ -233,7 +238,6 @@ export default {
             this.btnCreate = false;
             this.$v.form.$reset();
 
-            this.successmsg(title, message, type);
           });
       }
     },

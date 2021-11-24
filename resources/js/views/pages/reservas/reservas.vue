@@ -73,21 +73,22 @@
       no-close-on-esc
       no-close-on-backdrop
       hide-header-close
+      size="lg"
     >
       <form @submit.prevent="handleSubmit">
         <div class="row">
             <div class="col-12 col-lg-6">
               <div class="mb-3">
-                <label for="rut">Rut</label>
+                <label for="rut">RUT</label>
                 <input
                   id="rut"
                   v-model="form.rut"
                   type="text"
-                  class="form-control"
+                  class="form-control inputRUT"
                   :class="{
                     'is-invalid': submitted && $v.form.rut.$error,
                   }"
-                  @input="validarRut($event)"
+                   v-on:input="checkRut(this)"
                 />
 
                 <div
@@ -243,17 +244,16 @@
           </div>
 
         <div class="text-end pt-5 mt-3">
-          <b-button variant="light" @click="closeModal()">Cerrar</b-button>
+          <b-button variant="light" @click="closeModal()"><i class="fa fa-times"></i> Cerrar</b-button>
            <b-button class="ms-1" v-if="form.id_reserva" variant="danger" @click="confirm"
-            >Eliminar</b-button
+            ><i class="fa fa-ban"></i> Eliminar</b-button
           >
           <b-button type="submit" variant="success" class="ms-1"
-            >Guardar</b-button
+            ><i class="fa fa-save"></i> Reservar Hora</b-button
           >
         </div>
       </form>
     </b-modal>
-
     <!-- modal crear evento -->
 
     <!-- Edit Modal -->
@@ -263,6 +263,7 @@
       title-class="text-black font-18"
       hide-footer
       body-class="p-3"
+      size="lg"
     >
       <div slot="modal-title">Edit Event</div>
       <form @submit.prevent="editSubmit">
@@ -309,7 +310,7 @@
         </div>
       </form>
     </b-modal>
-
     <!-- Edit Modal -->
+    
   </Layout>
 </template>

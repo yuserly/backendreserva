@@ -15,9 +15,17 @@ export default {
         id_sucursal: "",
         servicio_id: "",
       },
+
+      formPassword: {
+        secretaria: "",
+        contrasena: "",
+        repetir: "",
+      },
+
       submitted: false,
       typeform: "create",
       titlemodal: "Crear Sucursal",
+      titleContrasena: "Cambio Contraseña",
       modal: false,
       sucursalexist: false,
       btnCreate: true,
@@ -69,6 +77,7 @@ export default {
         required,
       },
     },
+
   },
   computed: {
     /**
@@ -84,6 +93,7 @@ export default {
     this.traerSurcusal();
   },
   methods: {
+
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
@@ -175,18 +185,24 @@ export default {
         this.axios
           .post(`/api/crearsucursal`, this.form)
           .then((res) => {
-            let title = "";
-            let message = "";
-            let type = "";
+
             if (res.data) {
               if (this.form.id_sucursal == "") {
-                title = "Crear sucursal";
-                message = "sucursal creada con exito";
-                type = "success";
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Sucursal',
+                  text: "Sucursal creada exitosamente.",
+                  timer: 1500,
+                  showConfirmButton: false
+                });
               } else {
-                title = "Editar sucursal";
-                message = "sucursal editada con exito";
-                type = "success";
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Sucursal',
+                  text: "Sucursal editada exitosamente.",
+                  timer: 1500,
+                  showConfirmButton: false
+                });
               }
               this.modal = false;
               this.sucursalexist = false;
@@ -195,7 +211,6 @@ export default {
               this.$v.form.$reset();
               this.traerServicio();
               this.traerSurcusal();
-              this.successmsg(title, message, type);
             }
           })
           .catch((error) => {
@@ -238,7 +253,7 @@ export default {
     },
 
     validarNombre($event) {
-      if ($event.target.value.length > 4) {
+      if ($event.target.value.length > 0) {
         this.axios
           .get(
             `/api/validarnombresucursal/${$event.target.value}`

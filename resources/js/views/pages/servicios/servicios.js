@@ -51,12 +51,17 @@ export default {
           key: "nombre",
           sortable: true,
         },
-        {
+        { 
+          label: "Precio",
           key: "precio_particular",
           sortable: true,
         },
         {
           key: "precio_fonasa",
+          sortable: true,
+        },
+        {
+          key: "precio_isapre",
           sortable: true,
         },
         {
@@ -105,7 +110,7 @@ export default {
       this.axios
         .get(`/api/obtenerespecialidad/`)
         .then((response) => {
-          this.options = response.data;
+            this.options = response.data; 
         });
     },
 
@@ -113,13 +118,11 @@ export default {
       this.axios
         .get(`/api/obtenerservicios/`)
         .then((response) => {
-          console.log(response);
           this.tableData = response.data;
         });
     },
 
     eliminar(data) {
-      console.log(data);
 
       if (data.deleted_at == null) {
         var estado = 2;
@@ -188,19 +191,26 @@ export default {
         this.axios
           .post(`/api/crearservicio`, this.form)
           .then((res) => {
-            let title = "";
-            let message = "";
-            let type = "";
+
             if (res.data) {
               if (this.form.id_servicio == "") {
-                title = "Crear servicio";
-                message = "servicio creada con exito";
-                type = "success";
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Servicio',
+                  text: "Servicio creado exitosamente",
+                  timer: 1500,
+                  showConfirmButton: false
+                });
               } else {
-                title = "Editar servicio";
-                message = "servicio editada con exito";
-                type = "success";
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Servicio',
+                  text: "Servicio actualizado exitosamente",
+                  timer: 1500,
+                  showConfirmButton: false
+                });
               }
+              
               this.modal = false;
               this.servicioexist = false;
               this.btnCreate = false;
@@ -208,7 +218,6 @@ export default {
               this.$v.form.$reset();
               this.traerEspecialidad();
               this.traerServicio();
-              this.successmsg(title, message, type);
             }
           })
           .catch((error) => {

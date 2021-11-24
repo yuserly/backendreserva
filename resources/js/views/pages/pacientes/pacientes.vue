@@ -139,16 +139,17 @@
             <div class="row">
             <div class="col-12 col-lg-6">
               <div class="mb-3">
-                <label for="rut">Rut</label>
+                <label for="rut">RUT</label>
                 <input
                   id="rut"
                   v-model="form.rut"
                   type="text"
-                  class="form-control"
+                  maxlength = "10"
+                  class="form-control inputRUT"
                   :class="{
                     'is-invalid': submitted && $v.form.rut.$error,
                   }"
-                  @input="validarRut($event)"
+                  v-on:input="checkRut(this)"
                 />
 
                 <div

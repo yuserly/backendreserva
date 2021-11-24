@@ -13,7 +13,7 @@ class Profesional extends Model
 
     protected $primaryKey = "id_profesional";
 
-    protected $fillable = ['rut','nombres', 'apellidos', 'profesion', 'url_perfil','user_id'];
+    protected $fillable = ['rut','nombres', 'apellidos', 'profesion', 'url_perfil','user_id', 'especialidad_id'];
 
     public function servicio()
     {
@@ -38,5 +38,10 @@ class Profesional extends Model
     public function user()
     {
         return $this->belongsTo(User::class,'user_id');
+    }
+
+    public function especialidad()
+    {
+        return $this->belongsTo(Especialidad::class, 'especialidad_id', 'id_especialidad');
     }
 }

@@ -44,7 +44,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
 
     Route::get('obtenerservicios',[ServicioController::class,'show']);
-    Route::get('obtenerservicios/sucursal/{id}',[SucursalController::class,'showServicios']);
+    Route::get('obtenerservicios/sucursal/{id}/{profesional}',[SucursalController::class,'showServicios']);
     Route::get('validarnombreservicio/{nombre}',[ServicioController::class,'validarnombre']);
     Route::post('crearservicio',[ServicioController::class,'store']);
     Route::delete('eliminarservicio/{servicio}',[ServicioController::class,'destroy']);
@@ -86,8 +86,11 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::delete('eliminarprofesional/{profesional}',[ProfesionalController::class,'destroy']);
     Route::post('configprofesional',[ProfesionalController::class,'configprofesional']);
     Route::post('traerhorario',[ProfesionalController::class,'traerhorario']);
+    Route::get('getHorarioProfesionalSucursal/{sucursal}/{profesional}', [ProfesionalController::class, 'getHorarioProfesionalSucursal']); //Obtener horario de profesionales para editarlos.
     Route::post('serviciosprofesional',[ProfesionalController::class,'servicioprofesional']);
     Route::get('obtenerprofesional/{id_servicio}/{id_sucursal}',[ProfesionalController::class,'showserviciosucursal']);
+    Route::delete('/eliminarservicioprofesional/{servicio}/{sucursal}/{profesional}', [ProfesionalController::class, 'eliminarServicioProfesional']);
+    Route::post('changePasswordProfesional', [ProfesionalController::class, 'changePasswordProfesional']);
 
     Route::post('traerhorariounico',[ProfesionalController::class,'traerhorariounico']);
 
@@ -95,12 +98,13 @@ Route::middleware('auth:sanctum')->group(function(){
 
     Route::get('obtenersecretaria',[SecretariaController::class,'show']);
     Route::post('crearsecretaria',[SecretariaController::class,'store']);
+    Route::post('changePasswordSecretaria', [SecretariaController::class, 'changePasswordSecretaria']);
     Route::delete('eliminarsecretaria/{secretaria}',[SecretariaController::class,'destroy']);
 
     // sucursal
 
     Route::get('obtenersucursal',[SucursalController::class,'show']);
-    Route::get('validarnombresucursal//{nombre}',[SucursalController::class,'validarnombre']);
+    Route::get('validarnombresucursal/{nombre}',[SucursalController::class,'validarnombre']);
     Route::post('crearsucursal',[SucursalController::class,'store']);
     Route::delete('eliminarsucursal/{sucursal}',[SucursalController::class,'destroy']);
 

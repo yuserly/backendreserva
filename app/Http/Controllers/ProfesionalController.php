@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BloqueoHora;
 use App\Models\Dia;
 use App\Models\HorarioProfesional;
+use App\Models\Especialidad;
 use App\Models\Profesional;
 use App\Models\profesional_servicio;
 use App\Models\Reserva;
@@ -15,6 +16,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+
+use App\Mail\SendMailUser;
+use Mail;
 
 
 class ProfesionalController extends Controller
@@ -30,6 +34,7 @@ class ProfesionalController extends Controller
             return 0;
         }
     }
+
     public function validarrut($rut)
     {
         $profesional =  Profesional::where('rut', $rut)->first();
@@ -41,20 +46,19 @@ class ProfesionalController extends Controller
             return 0;
         }
     }
-    public function store(Request $request)
-    {
-        // creamos el usuario
 
+    public function store(Request $request)
+    {   
         if($request->password){
 
             $password = $request->password;
 
             }else{
-
-            $password = Hash::make(Str::random(8));
+            
+            $code = Str::random(8);
+            $password = Hash::make($code);
 
             }
-
 
             $user = User::updateOrCreate(['id' => $request->user_id],[
                                         'name' => $request->nombres ." ".$request->apellidos ,
@@ -86,35 +90,35 @@ class ProfesionalController extends Controller
             }
 
             $profesional = Profesional::updateOrCreate(['id_profesional' => $request->id_profesional],[
-                                                    'rut' => $request->rut,
-                                                    'nombres' => $request->nombres,
-                                                    'apellidos' => $request->apellidos,
-                                                    'profesion' => $request->profesion,
-                                                    'url_perfil' => $img,
-                                                    'user_id'=>$id_user]);
-
-
+                                                    'rut'               => $request->rut,
+                                                    'nombres'           => $request->nombres,
+                                                    'apellidos'         => $request->apellidos,
+                                                    'profesion'         => $request->profesion,
+                                                    'url_perfil'        => $img,
+                                                    'user_id'           => $id_user,
+                                                    'especialidad_id'   => $request->especialidad 
+                                                    ]);
+            $estado = 1;
+            
+            Mail::to($request->email)->send(new SendMailUser($request->nombres, $request->apellidos, $request->email, $code, $estado));
 
             return $profesional;
     }
 
-    public function configprofesional(Request $request){
+    public function configprofesional(Request $request)
+    {
 
-        $profesional = Profesional::where('id_profesional', $request->id_profesional)->first();
-
-        // insertamos el horario
-
-        $arrayHorario = [];
-
+        HorarioProfesional::where('sucursal_id', $request->sucursal['id_sucursal'])->where('profesional_id_profesional', $request->id_profesional)->delete();
+        
         foreach($request->horario as $item){
-
-            $arrays  = ["hora_inicio" => $item["hora_inicio"], "hora_fin" => $item["hora_fin"], "dia_id" => $item["id_dia"]["id_dia"]];
-            array_push($arrayHorario, $arrays);
+            HorarioProfesional::create(['hora_inicio' => $item["hora_inicio"], 
+                                        'hora_fin' => $item["hora_fin"], 
+                                        'dia_id' => $item["id_dia"]["id_dia"], 
+                                        'profesional_id_profesional' => $request->id_profesional, 
+                                        'sucursal_id' => $request->sucursal['id_sucursal']]);
         }
 
-        $profesional->horario()->sync($arrayHorario);
-
-        return $profesional;
+        return "Horario Actualizado exitosamente.";
 
     }
 
@@ -122,46 +126,42 @@ class ProfesionalController extends Controller
 
          // insertamos los servicios
 
-
          $arrayServicio = array();
 
          for ($i=0; $i < count($request->servicios) ; $i++) {
                 $servicios = $request->servicios[$i];
              foreach ($servicios["servicio_id_servicio"] as $key => $item) {
 
-                $arrays  = ["servicio_id_servicio" => $item["id_servicio"], "sucursal_id_sucursal" => $servicios["sucursal_id_sucursal"]["id_sucursal"]];
-                array_push($arrayServicio, $arrays);
+                $existe = profesional_servicio::where("servicio_id_servicio", $item["id_servicio"])
+                                        ->where("sucursal_id_sucursal", $servicios["sucursal_id_sucursal"]["id_sucursal"])
+                                        ->where('profesional_id_profesional', $request->id_profesional)->first();
+                if(empty($existe)){
+                    profesional_servicio::create(["servicio_id_servicio" => $item["id_servicio"], "sucursal_id_sucursal" => $servicios["sucursal_id_sucursal"]["id_sucursal"],'profesional_id_profesional' => $request->id_profesional]);
+                }
+
              }
          }
 
-         $profesional = Profesional::where('id_profesional', $request->id_profesional)->first();
-
-         $profesional->servicio()->sync($arrayServicio);
-
-         return $profesional;
+         return "Servicio añadido a profesional exitosamente.";
 
     }
 
     public function show(Profesional $profesional)
-    {
+    {   
         $profesional = Profesional::all();
-        $profesional->load('servicio','horarioM','user');
+        $profesional->load('servicio','horarioM','user', 'especialidad');
 
-        return $profesional;
+        $especialidades = Especialidad::all();
+
+        return ['profesional' => $profesional, 'especialidades' => $especialidades];
     }
 
     public function showxservicio($id){
 
         return profesional_servicio::where('servicio_id_servicio', $id)->with('profesional')->get();
     }
+
     public function showserviciosucursal($id_servicio, $id_sucursal){
-
-
-        // $servicio = profesional_servicio::select('profesionals.*')
-        //                     ->join('profesionals','profesionals.id_profesional','=','profesional_servicio.profesional_id_profesional')
-        //                     ->where('profesional_servicio.sucursal_id_sucursal','=', $id_sucursal)
-        //                     ->where('profesional_servicio.servicio_id_servicio','=',$id_servicio)
-        //                     ->get();
 
         $profesional = profesional_servicio::where([['servicio_id_servicio', $id_servicio],['sucursal_id_sucursal', $id_sucursal]])->with('profesional')->get();
 
@@ -179,7 +179,7 @@ class ProfesionalController extends Controller
 
             $id_dia = $dia->id_dia;
 
-            $horario = HorarioProfesional::where([['dia_id','=', $id_dia],['profesional_id_profesional','=',$request->id_profesional]])->first();
+            $horario = HorarioProfesional::where([['dia_id','=', $id_dia],['profesional_id_profesional','=',$request->id_profesional],['sucursal_id', '=', $request->id_sucursal]])->first();
 
         }else{
 
@@ -193,12 +193,12 @@ class ProfesionalController extends Controller
 
         // traer reservas
 
-        $reserva = Reserva::where([['profesional_id',$request->id_profesional],['sucursal_id','=', $request->id_sucursal]])->get();
+        $reserva = Reserva::where([['profesional_id',$request->id_profesional],['sucursal_id','=', $request->id_sucursal]])->get(); 
+        $reserva->load('paciente');
 
         return ["horario" => $horario, "bloqueo" => $bloqueo, "reserva" => $reserva];
 
     }
-
 
     public function traerhorariounico(Request $request){
 
@@ -234,10 +234,37 @@ class ProfesionalController extends Controller
 
     }
 
-
     public function destroy(Profesional $profesional)
     {
         $profesional->user->delete();
-        return $profesional->delete();
+        return $profesional->delete(); 
+    }
+
+    public function eliminarServicioProfesional($servicio, $sucursal, $profesional)
+    {
+        $delete = profesional_servicio::where('sucursal_id_sucursal', $sucursal)
+                                        ->where('servicio_id_servicio', $servicio)
+                                        ->where('profesional_id_profesional', $profesional)
+                                        ->delete();
+
+        return "Servicio eliminado exitosamente del profesional";
+    }
+
+    public function getHorarioProfesionalSucursal($sucursal, $profesional)
+    {
+        $horario = HorarioProfesional::where('sucursal_id', $sucursal)->where('profesional_id_profesional', $profesional)->get();
+        $horario->load('dia');
+        return $horario;
+    }
+
+    public function changePasswordProfesional(Request $request)
+    {
+        User::updateOrCreate(['id' => $request->profesional['user_id']],['password' => Hash::make($request->contrasena)]);
+
+        $estado = 2;
+            
+        Mail::to($request->profesional['user']['email'])->send(new SendMailUser($request->profesional['nombres'], $request->profesional['apellidos'], $request->profesional['user']['email'], $request->contrasena, $estado));
+
+        return "Contraseña actualizada exitosamente.";
     }
 }

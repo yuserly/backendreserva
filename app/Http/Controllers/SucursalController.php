@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Profesional;
 use App\Models\Servicio;
 use App\Models\Sucursal;
+use App\Models\profesional_servicio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +13,7 @@ class SucursalController extends Controller
 {
 
     public function validarnombre($nombre)
-    {
+    {   
         $sucursal =  Sucursal::where('nombre', $nombre)->first();
 
         if($sucursal){
@@ -50,12 +51,35 @@ class SucursalController extends Controller
         return $sucursal;
     }
 
-    public function showServicios($id)
-    {
+    public function showServicios($id, $profesional)
+    {   
         $sucursal = Sucursal::where('id_sucursal',$id)->first();
         $sucursal->load('serviciosucursal');
 
-        return $sucursal;
+        $idEspecialidad = Profesional::find($profesional); //obtenemos la ID de la especialidad
+        $servicios = array();
+        
+        foreach ($sucursal->serviciosucursal as $key => $value) {
+            if($value->especialidad_id == $idEspecialidad->especialidad_id){
+                array_push($servicios, $value);
+            }
+        }
+
+        $info = profesional_servicio::where('sucursal_id_sucursal', $id)->where('profesional_id_profesional', $profesional)->get();
+        $info->load('sucursal', 'servicio');
+
+        $datos = array();
+        $servicio_id_servicio = array();
+        $sucursal_id_sucursal = $sucursal;
+
+        foreach ($info as $key => $value) {
+          
+            array_push($servicio_id_servicio, $value->servicio);
+        }
+
+        $datos = ['sucursal_id_sucursal' => $sucursal_id_sucursal, 'servicio_id_servicio' => $servicio_id_servicio];
+
+        return ['serviciosSucursal' => $servicios, 'formrequest' => $datos];
     }
 
     public function showserviciosucursal($id_especialidad, $id_sucursal){

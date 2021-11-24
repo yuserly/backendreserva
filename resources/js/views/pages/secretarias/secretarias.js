@@ -18,9 +18,19 @@ export default {
         id_user: "",
         sucursal_id: "",
       },
+
+      formPassword: {
+        secretaria: "",
+        contrasena: "",
+        repetir: "",
+      },
       submitted: false,
+      repetirValidar: false,
+      btnContrasena: false,
       typeform: "create",
       titlemodal: "Crear Secretaria",
+      titleContrasena: "Cambio Contraseña",
+      modalContrasena: false,
       modal: false,
       emailexist: false,
       btnCreate: true,
@@ -80,11 +90,17 @@ export default {
         required,
       },
     },
+    formPassword: {
+      contrasena: {
+        required,
+      },
+      repetir: {
+        required,
+      },
+    },
   },
   computed: {
-    /**
-     * Total no. of records
-     */
+
     rows() {
       return this.tableData.length;
     },
@@ -96,7 +112,6 @@ export default {
   },
   methods: {
     onFiltered(filteredItems) {
-      // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
     },
@@ -190,18 +205,24 @@ export default {
         this.axios
           .post(`/api/crearsecretaria`, this.form)
           .then((res) => {
-            let title = "";
-            let message = "";
-            let type = "";
+
             if (res.data) {
               if (this.form.id_secretaria == "") {
-                title = "Crear secretaria";
-                message = "secretaria creada con exito";
-                type = "success";
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Crear secretaria',
+                  text: "Secretaria  creada con exito",
+                  timer: 1500,
+                  showConfirmButton: false
+                });
               } else {
-                title = "Editar secretaria";
-                message = "secretaria editada con exito";
-                type = "success";
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Crear secretaria',
+                  text: "Secretaria editada con exito",
+                  timer: 1500,
+                  showConfirmButton: false
+                });
               }
               this.modal = false;
               this.emailexist = false;
@@ -210,32 +231,78 @@ export default {
               this.$v.form.$reset();
               this.traerSurcusal();
               this.traerSecretarias();
-              this.successmsg(title, message, type);
             }
           })
           .catch((error) => {
             console.log("error", error);
 
-            let title = "";
-            let message = "";
-            let type = "";
-
             if (this.form.id_secretaria) {
-              title = "Crear secretaria";
-              message = "Secretaria  creada con exito";
-              type = "error";
+              Swal.fire({
+                icon: 'success',
+                title: 'Crear secretaria',
+                text: "Secretaria  creada con exito",
+                timer: 1500,
+                showConfirmButton: false
+              });
             } else {
-              title = "Editar Secretaria";
-              message = "Secretaria editada con exito";
-              type = "error";
+              Swal.fire({
+                icon: 'success',
+                title: 'Crear secretaria',
+                text: "Secretaria editada con exito",
+                timer: 1500,
+                showConfirmButton: false
+              });
             }
 
             this.modal = false;
             this.btnCreate = false;
             this.$v.form.$reset();
 
-            this.successmsg(title, message, type);
           });
+      }
+    },
+
+    formSubmitPassword() {
+      this.axios
+        .post(`/api/changePasswordSecretaria`, this.formPassword)
+        .then((res) => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Secretaria',
+            text: res.data,
+            timer: 1500,
+            showConfirmButton: false
+          });
+          this.modalContrasena = false;
+          this.formPassword = {
+            secretaria: "",
+            contrasena: "",
+            repetir: "",
+          }
+          this.repetirValidar = false;
+          this.btnContrasena = false;
+        })
+        .catch((error) => {
+          console.log("error", error);
+      });
+    },
+
+    contraseña(data)
+    { 
+      this.formPassword.secretaria = data;
+      this.modalContrasena = true;
+    },
+
+    verificarContrasena()
+    { 
+      if(this.formPassword.repetir.length == 0 && this.formPassword.contrasena.length == 0){
+        this.btnContrasena = false;
+      }else if(this.formPassword.repetir == this.formPassword.contrasena){
+        this.repetirValidar = false;
+        this.btnContrasena = true;
+      }else{
+        this.repetirValidar = true;
+        this.btnContrasena = false;
       }
     },
 

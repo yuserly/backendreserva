@@ -57,12 +57,6 @@ class EspecialidadController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Especialidad  $especialidad
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Especialidad $especialidad)
     {
        return $especialidad->delete();

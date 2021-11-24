@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use App\Mail\SendMailUser;
+use Mail;
 
 class SecretariaController extends Controller
 {
@@ -25,20 +27,17 @@ class SecretariaController extends Controller
 
     public function store(Request $request)
     {
-        // creamos el usuario
-
         if($request->password){
 
         $password = $request->password;
 
         }else{
 
-        // $password = Hash::make(Str::random(8));
-            $password = Hash::make('12345678');
+            $code = Str::random(8);
+            $password = Hash::make($code);
 
 
         }
-
 
         $user = User::updateOrCreate(['id' => $request->id_user],[
                                     'name' => $request->nombres ." ".$request->apellidos ,
@@ -67,6 +66,10 @@ class SecretariaController extends Controller
 
         $secretaria->secretariasucursal()->sync($arraySucursal);
 
+        $estado = 1;
+            
+        Mail::to($request->email)->send(new SendMailUser($request->nombres, $request->apellidos, $request->email, $code, $estado));
+
         return $secretaria;
     }
 
@@ -77,6 +80,17 @@ class SecretariaController extends Controller
         $secretaria->load('secretariasucursal','user');
 
         return $secretaria;
+    }
+
+    public function changePasswordSecretaria(Request $request)
+    {   
+        User::updateOrCreate(['id' => $request->secretaria['user_id']],['password' => Hash::make($request->contrasena)]);
+
+        $estado = 2;
+            
+        Mail::to($request->secretaria['user']['email'])->send(new SendMailUser($request->secretaria['nombres'], $request->secretaria['apellidos'], $request->secretaria['user']['email'], $request->contrasena, $estado));
+
+        return "Contraseña actualizada exitosamente.";
     }
 
     public function destroy(Secretaria $secretaria)

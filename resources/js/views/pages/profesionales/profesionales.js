@@ -2,6 +2,7 @@ import Layout from "../../layouts/main";
 import Swal from "sweetalert2";
 import { required, email } from "vuelidate/lib/validators";
 import Multiselect from "vue-multiselect";
+import $ from 'jquery'
 // import vue2Dropzone from "vue2-dropzone";
 
 // import "vue2-dropzone/dist/vue2Dropzone.min.css";
@@ -10,12 +11,15 @@ export default {
   components: {
     Layout,
     Multiselect,
-    // vueDropzone: vue2Dropzone
   },
 
   data() {
     return {
       urlbackend: this.$urlBackend,
+      titleContrasena: "Cambio Contraseña",
+      modalContrasena: false,
+      repetirValidar: false,
+      btnContrasena: false,
       form: {
         rut: "",
         nombres: "",
@@ -25,6 +29,7 @@ export default {
         url_perfil: "",
         email: "",
         user_id: "",
+        especialidad: "",
       },
       dropzoneOptions: {
         thumbnailWidth: 150,
@@ -57,15 +62,29 @@ export default {
       summitedH: false,
       summitedS: false,
       formhorario: {
+        sucursal: "",
         id_profesional: "",
         horario: "",
         // servicio_id_servicio: "",
       },
-      // tabla
+      // tabla  
+
+      datosModal: [],
 
       formrequest: [],
 
-      formservicio: [],
+      selectEspecialidad: [],
+
+      formservicio: {
+        sucursal_id_sucursal: "",
+        servicio_id_servicio: ""
+      },
+
+      formPassword: {
+        profesional: "",
+        contrasena: "",
+        repetir: "",
+      },
 
       id_profesionalservicio:'',
 
@@ -99,7 +118,8 @@ export default {
           sortable: true,
         },
         {
-          key: "profesion",
+          label: "Especialidad",
+          key: "especialidadDoc",
           sortable: true,
         },
         {
@@ -131,11 +151,21 @@ export default {
         email,
       },
     },
+
+    formPassword: {
+      profesional: {
+        required,
+      },
+      contrasena: {
+        required,
+      },
+      repetir: {
+        required,
+      },
+    },
   },
+
   computed: {
-    /**
-     * Total no. of records
-     */
     rows() {
       return this.tableData.length;
     },
@@ -143,7 +173,6 @@ export default {
   mounted() {
     this.totalRows = this.items.length;
     this.traerProfesional();
-    // this.traerServicio();
     this.traerDia();
     this.traerSurcusal();
   },
@@ -157,16 +186,20 @@ export default {
     traerProfesional() {
       this.axios
         .get(`/api/obtenerprofesional`)
-        .then((response) => {
-          console.log(response);
-          this.tableData = response.data;
+        .then((response) => { 
+          this.tableData            = response.data.profesional;
+          response.data.profesional.map((p) => {
+            p["especialidadDoc"] = p.especialidad.nombre;
+            return p;
+          });
+          this.selectEspecialidad   = response.data.especialidades; 
         });
     },
+
     traerSurcusal() {
       this.axios
         .get(`/api/obtenersucursal`)
         .then((response) => {
-          console.log(response);
           this.optionsSucursal = response.data;
         });
     },
@@ -179,17 +212,57 @@ export default {
         });
     },
 
-    eliminar(data) {
-      console.log(data);
+    checkRut() {
 
+      var valor = this.form.rut.replace('.','');  // Quita Punto
+      valor = valor.replace('-','');// Quita Guión
+      var cuerpo = valor.slice(0,-1);// Aislar Cuerpo y Dígito Verificador
+      var dv = valor.slice(-1).toUpperCase();
+      this.form.rut = cuerpo + '-'+ dv// Formatear RUN
+
+      if(cuerpo.length < 7) {// Si no cumple con el mínimo de digitos ej. (n.nnn.nnn)
+          $('.inputRUT').attr('style', 'border-color: red !important');
+          $('.btnSubmit').prop('disabled',  true);
+          return false;
+      }
+
+      var suma = 0; // Calcular Dígito Verificador
+      var multiplo = 2;
+
+      for(var i=1;i<=cuerpo.length;i++) // Para cada dígito del Cuerpo
+      {
+          var index = multiplo * valor.charAt(cuerpo.length - i); // Obtener su Producto con el Múltiplo Correspondiente
+          suma = suma + index; // Sumar al Contador General
+          if(multiplo < 7) {
+              multiplo = multiplo + 1;
+          }else{
+              multiplo = 2;
+          } // Consolidar Múltiplo dentro del rango [2,7]
+      }
+
+      var dvEsperado = 11 - (suma % 11); // Calcular Dígito Verificador en base al Módulo 11
+      dv = (dv == 'K')?10:dv; // Casos Especiales (0 y K)
+      dv = (dv == 0)?11:dv;
+
+      if(dvEsperado != dv) {
+          $('.inputRUT').attr('style', 'border-color: red !important');
+          $('.btnSubmit').prop('disabled',  true);
+          return false;
+      } // Validar que el Cuerpo coincide con su Dígito Verificador
+
+      $('.inputRUT').attr('style', 'border-color: #40A944 !important');  // Si todo sale bien, eliminar errores (decretar que es válido)
+      $('.btnSubmit').prop('disabled',  false);
+    },
+
+    eliminar(data) {
       if (data.deleted_at == null) {
         var estado = 2;
         var title = "Desactivar Profesional";
-        var text = `¿Esta seguro de desativar profesional ${data.nombre} ${data.apellidos}?`;
+        var text = `¿Esta seguro de desativar profesional ${data.nombres} ${data.apellidos}?`;
       } else {
         estado = 1;
         title = "Activar Profesional";
-        text = `¿Esta seguro de activar profesional ${data.nombre} ${data.apellidos}?`;
+        text = `¿Esta seguro de activar profesional ${data.nombres} ${data.apellidos}?`;
       }
 
       Swal.fire({
@@ -202,28 +275,75 @@ export default {
         confirmButtonText: "Si",
       }).then((result) => {
         if (result.value) {
-          this.axios
+          this.axios 
             .delete(
               `/api/eliminarprofesional/${data.id_profesional}`
             )
             .then((res) => {
               console.log(res);
               if (res.data) {
-                var message = "Profesional ha sido desactivada";
-                var type = "success";
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Crear Profesional',
+                  text: "Profesional ha sido desactivado",
+                  timer: 1500,
+                  showConfirmButton: false
+                });
               } else {
                 if (estado == 1) {
-                  message = "Error al activar Profesional";
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Crear Profesional',
+                    text: "Error al activar Profesional",
+                    timer: 1500,
+                    showConfirmButton: false
+                  });
                 } else {
-                  message = "Error al desactivar Profesional";
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Crear Profesional',
+                    text: "Error al desactivar Profesional",
+                    timer: 1500,
+                    showConfirmButton: false
+                  });
                 }
                 type = "error";
               }
 
-              this.successmsg(title, message, type);
-
               this.traerProfesional();
-              // this.traerServicio();
+            });
+        }
+      });
+    },
+
+    eliminarServicio(data)
+    {
+      Swal.fire({
+        title: "Eliminar Servicio a Profesional",
+        text: "Esta seguro que desea eliminar este servicio",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#34c38f",
+        cancelButtonColor: "#f46a6a",
+        confirmButtonText: "Si",
+      }).then((result) => {
+        if (result.value) {
+          console.log(data);
+          this.axios
+            .delete(
+              `/api/eliminarservicioprofesional/${data}/${this.formservicio.sucursal_id_sucursal.id_sucursal}/${this.id_profesionalservicio}`
+            )
+            .then((res) => {
+              
+              Swal.fire({
+                icon: 'error',
+                title: 'Servicio Eliminado',
+                text: res.data,
+                timer: 1500,
+                showConfirmButton: false
+              });
+
+              this.traerServicio();
             });
         }
       });
@@ -241,48 +361,51 @@ export default {
       this.form.email = data.user.email;
       this.modal = true;
       this.btnCreate = false;
+      this.form.especialidad = data.especialidad;
     },
 
     config(data) {
-        console.log(this.formhorario)
-        console.log(this.fieldsH)
-
-      this.form.nombres = data.nombres;
-      this.form.id_profesional = data.id_profesional;
-      this.form.apellidos = data.apellidos;
-      this.form.profesion = data.profesion;
-      this.form.url_perfil = data.url_perfil;
-      this.form.user_id = data.user.id;
-      this.form.email = data.user.email;
+  
       this.modalhorario = true;
-      // this.formhorario.servicio_id_servicio = data.servicio;
+      this.formhorario.id_profesional = data.id_profesional;
 
-      if (data.horario_m.length > 0) {
-        this.fieldsH = [];
-        for (let i = 0; i < data.horario_m.length; i++) {
-          this.fieldsH.push({
-            id_dia: data.horario_m[i],
-            hora_inicio: data.horario_m[i]["pivot"]["hora_inicio"],
-            hora_fin: data.horario_m[i]["pivot"]["hora_fin"],
-          });
-        }
-      } else {
-        this.fieldsH.push({
-          id_dia: "",
-          hora_inicio: "",
-          hora_fin: "",
-        });
-      }
+    },
+
+    getHorarioProfesional()
+    {
+      this.axios 
+        .get(`/api/getHorarioProfesionalSucursal/${this.formhorario.sucursal.id_sucursal}/${this.formhorario.id_profesional}`)
+        .then((res) => {
+
+          this.fieldsH = [];
+
+          if (res.data.length > 0) {
+            this.fieldsH = [];
+            for (let i = 0; i < res.data.length; i++) {
+              this.fieldsH.push({
+                id_dia: res.data[i]['dia'],
+                hora_inicio: res.data[i]['hora_inicio'],
+                hora_fin: res.data[i]["hora_fin"],
+              });
+            }
+          } else {
+            this.fieldsH.push({
+              id_dia: "",
+              hora_inicio: "",
+              hora_fin: "",
+            });
+          }
+              
+      });
     },
 
     formSubmit() {
       this.submitted = true;
-      // stop here if form is invalid
-      this.$v.$touch();
+      this.$v.form.$touch();
+      alert("hola");
 
-      // this.form.url_perfil = this.$refs.myVueDropzone.dropzone.files[0];
-
-      if (!this.$v.$invalid && !this.emailexist && !this.rutexist) {
+      if (!this.$v.form.$invalid && !this.emailexist && !this.rutexist) {
+        alert("hola");
         var fd = new FormData();
         fd.append("rut", this.form.rut);
         fd.append("nombres", this.form.nombres);
@@ -292,6 +415,7 @@ export default {
         fd.append("id_profesional", this.form.id_profesional);
         fd.append("user_id", this.form.user_id);
         fd.append("url_perfil", this.form.url_perfil);
+        fd.append('especialidad', this.form.especialidad.id_especialidad);
 
         this.axios
           .post(`/api/crearprofesional`, fd, {
@@ -300,18 +424,23 @@ export default {
             },
           })
           .then((res) => {
-            let title = "";
-            let message = "";
-            let type = "";
             if (res.data) {
               if (this.form.id_profesional == "") {
-                title = "Crear profesional";
-                message = "profesional creada con exito";
-                type = "success";
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Crear Profesional',
+                  text: "Profesional creado con exitosamente",
+                  timer: 1500,
+                  showConfirmButton: false
+                });
               } else {
-                title = "Editar profesional";
-                message = "profesional editada con exito";
-                type = "success";
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Crear Profesional',
+                  text: "Profesional editado exitosamente",
+                  timer: 1500,
+                  showConfirmButton: false
+                });
               }
               this.modal = false;
               this.emailexist = false;
@@ -319,8 +448,6 @@ export default {
 
               this.$v.form.$reset();
               this.traerProfesional();
-              // this.traerServicio();
-              this.successmsg(title, message, type);
             }
           })
           .catch((error) => {
@@ -382,22 +509,6 @@ export default {
       }
     },
 
-    validarRut($event) {
-      if ($event.target.value.length > 4) {
-        this.axios
-          .get(
-            `/api/validarrutprofesional/${$event.target.value}`
-          )
-          .then((response) => {
-            if (response.data == 1) {
-              this.rutexist = true;
-            } else {
-              this.rutexist = false;
-            }
-          });
-      }
-    },
-
     onFileChange($event) {
       var files = $event.target.files || $event.dataTransfer.files;
       if (!files.length) return;
@@ -419,8 +530,6 @@ export default {
     formSubmitSettings() {
       this.summitedH = true;
 
-      console.log(this.fieldsH);
-
       for (let i = 0; i < this.fieldsH.length; i++) {
         if (!this.fieldsH[i]["id_dia"]) {
           return;
@@ -429,13 +538,9 @@ export default {
         } else if (!this.fieldsH[i]["hora_fin"]) {
           return;
         }
-        // if (!this.formhorario.servicio_id_servicio) {
-        //   return;
-        // }
       }
 
-      (this.formhorario.id_profesional = this.form.id_profesional),
-        (this.formhorario.horario = this.fieldsH);
+      (this.formhorario.horario = this.fieldsH);
 
       this.axios
         .post(
@@ -443,27 +548,28 @@ export default {
           this.formhorario
         )
         .then((res) => {
-          let title = "Configurar profesional";
-          let message = "profesional configurado con exito";
-          let type = "success";
           if (res.data) {
-            console.log(res);
+            Swal.fire({
+              icon: 'success',
+              title: 'Horario Profesional',
+              text: "Horario de profesional actualizado.",
+              timer: 1500,
+              showConfirmButton: false
+            });
+
             this.modalhorario = false;
             this.btnCreate = false;
 
             this.formhorario = {
               id_profesional: "",
               horario: "",
-              // servicio_id_servicio: "",
+              sucursal: "",
             };
 
             this.fieldsH = [];
 
             this.summitedH = false;
 
-            this.traerProfesional();
-            // this.traerServicio();
-            this.successmsg(title, message, type);
           }
         })
         .catch((error) => {
@@ -473,19 +579,21 @@ export default {
           this.formhorario = {
             id_profesional: "",
             horario: "",
-            // servicio_id_servicio: "",
+            sucursal: "",
           };
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Horario Profesional Error',
+            text: "Error, comunicarse con encargado.",
+            timer: 1500,
+            showConfirmButton: false
+          });
 
           this.fieldsH = [];
 
-          let title = "Configurar profesional";
-          let message = "profesional configurado con exito";
-          let type = "error";
-
           this.modalhorario = false;
           this.btnCreate = false;
-
-          this.successmsg(title, message, type);
         });
     },
 
@@ -493,27 +601,76 @@ export default {
       Swal.fire(title, message, type);
     },
 
+    formSubmitPassword() {
+      this.axios
+        .post(`/api/changePasswordProfesional`, this.formPassword)
+        .then((res) => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Profesional',
+            text: res.data,
+            timer: 1500,
+            showConfirmButton: false
+          });
+          this.modalContrasena = false;
+          this.formPassword = {
+            profesional: "",
+            contrasena: "",
+            repetir: "",
+          }
+          this.repetirValidar = false;
+          this.btnContrasena = false;
+        })
+        .catch((error) => {
+          console.log("error", error);
+      });
+    },
+
+    contraseña(data)
+    { 
+      this.formPassword.profesional = data;
+      this.modalContrasena = true;
+    },
+
+    verificarContrasena()
+    { 
+      if(this.formPassword.repetir.length == 0 && this.formPassword.contrasena.length == 0){
+        this.btnContrasena = false;
+      }else if(this.formPassword.repetir == this.formPassword.contrasena){
+        this.repetirValidar = false;
+        this.btnContrasena = true;
+      }else{
+        this.repetirValidar = true;
+        this.btnContrasena = false;
+      }
+    },
+
     // MANIPULACION PARA LOS SERVICIOS
 
     traerServicio() {
-      if (this.formrequest.length > 0) {
-        this.formrequest.forEach((element, i) => {
-          if (
-            element.sucursal_id_sucursal.id_sucursal ==
-            this.formservicio.sucursal_id_sucursal.id_sucursal
-          ) {
-            this.formrequest.splice(i, 1);
-          }
+      if(this.formservicio.sucursal_id_sucursal == null){
+        Swal.fire({
+          icon: 'warning',
+          title: "Error!!",
+          text: 'Debe seleccionar sucursal y servicios.',
+          timer: 1500,
+          showConfirmButton: false
         });
-      }
-      this.axios
+        this.datosModal = [];
+        this.formservicio = {
+          sucursal_id_sucursal: "",
+          servicio_id_servicio: "",
+        }
+      }else{
+        this.axios
         .get(
-          `/api/obtenerservicios/sucursal/${this.formservicio.sucursal_id_sucursal.id_sucursal}`
+          `/api/obtenerservicios/sucursal/${this.formservicio.sucursal_id_sucursal.id_sucursal}/${this.id_profesionalservicio}`
         )
         .then((response) => {
-          console.log(response);
-          this.options = response.data.serviciosucursal;
+          this.options = response.data.serviciosSucursal;
+          this.datosModal = response.data.formrequest;
         });
+      }
     },
 
     AddformDataServicio(data) {
@@ -531,6 +688,25 @@ export default {
     },
 
     formSubmitServicios() {
+      console.log(this.formservicio);
+      if(this.formservicio.servicio_id_servicio == ""){
+        Swal.fire({
+          icon: 'warning',
+          title: "Error!!",
+          text: 'Debe seleccionar sucursal y servicios.',
+          timer: 1500,
+          showConfirmButton: false
+        });
+        this.datosModal = [];
+        this.formservicio = {
+          sucursal_id_sucursal: "",
+          servicio_id_servicio: "",
+        }
+        return false;
+      }
+      
+      this.formrequest.push(this.formservicio);
+
       if(this.formrequest.length > 0){
 
         var form = {
@@ -545,85 +721,24 @@ export default {
           form
         )
         .then((res) => {
-          let title = "Servicios profesional";
-          let message = "Servicios profesional agregados con exito";
-          let type = "success";
-          if (res.data) {
-            console.log(res);
-
-            if(res.data && (res.status == 200 || res.status == 201) ){
-
-              this.modalservicio= false;
-              this.btnCreate = false;
-
-              this.formrequest = [];
-
-              this.summitedS = false;
-
-              this.traerProfesional();
-              // this.traerServicio();
-              this.successmsg(title, message, type);
-
-            }
-
-          }
+          
+          Swal.fire({
+            icon: 'success',
+            title: 'Servicio Añadido',
+            text: res.data,
+            timer: 1500,
+            showConfirmButton: false
+          });
+          this.traerServicio();
+          this.datosModal = [];
+          this.formservicio.servicio_id_servicio = "";
+          console.log(this.formservicio);
         })
         .catch((error) => {
           console.log("error", error);
         });
-
-
       }
     },
-    agregarotra() {
-      // if (this.formrequest.length > 0) {
-      //   this.formrequest.forEach((element) => {
-      //     console.log(element);
-
-      //     if (
-      //       element.sucursal_id_sucursal.id_sucursal ==
-      //       this.formservicio.sucursal_id_sucursal.id_sucursal
-      //     ) {
-      //       for (
-      //         let i = 0;
-      //         i < this.formservicio.servicio_id_servicio.length;
-      //         i++
-      //       ) {
-      //         element.servicio_id_servicio.push(
-      //           this.formservicio.servicio_id_servicio[i]
-      //         );
-      //       }
-      //     } else {
-      //       this.formrequest.push(this.formservicio);
-      //     }
-      //     // servicio
-
-      //     let servicioMap = element.servicio_id_servicio.map((item) => {
-      //       return [item.id_servicio, item];
-      //     });
-      //     var servicioMapArr = new Map(servicioMap); // Pares de clave y valor
-
-      //     let unicos = [...servicioMapArr.values()]; // Conversión a un array
-
-      //     element.servicio_id_servicio = [];
-
-      //     for (let i = 0; i < unicos.length; i++) {
-      //       element.servicio_id_servicio.push(unicos[i]);
-      //     }
-      //   });
-      // } else {
-      // }
-
-      this.formrequest.push(this.formservicio);
-
-      console.log(this.formrequest);
-
-      this.formservicio = {
-        servicio_id_servicio: "",
-        sucursal_id_sucursal: "",
-      };
-    },
-
 
   },
 };
