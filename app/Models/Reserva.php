@@ -27,4 +27,9 @@ class Reserva extends Model
     {
         return $this->belongsTo(Servicio::class,'servicio_id');
     }
+
+    public function routeNotificationForWhatsApp()
+    {
+        return $this->paciente->paciente_id->celular;
+    }
 }
