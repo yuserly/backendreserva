@@ -129,6 +129,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('buscarventafecha',[VentaController::class,'buscarventafecha']);
     Route::post('cambiarestadoventa',[VentaController::class,'cambiarestadoventa']);
     Route::post('eliminarventa',[VentaController::class,'eliminarventa']);
+    Route::post('buscarinformediario',[VentaController::class,'buscarinformediario']);
+    Route::post('buscarinformemensual',[VentaController::class,'buscarinformemensual']);
     // bloqueo hora
 
     Route::get('obtenerbloqueohora',[BloqueoHoraController::class,'show']);

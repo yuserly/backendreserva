@@ -13,6 +13,7 @@ let reservas = false;
 let misreservas = false;
 let ventas = false;
 let confirmarreserva = false;
+let informediario = false;
 
 if (Vue.prototype.$administrador) {
 
@@ -28,6 +29,7 @@ if (Vue.prototype.$administrador) {
     reservas = true;
     ventas =true;
     confirmarreserva = true;
+    informediario = true;
 } else if(Vue.prototype.$secretaria){
 
     administración = true;
@@ -42,8 +44,6 @@ if (Vue.prototype.$administrador) {
     reservas = true;
     ventas =true;
     confirmarreserva = true;
-
-
 
 }else {
     pacientes = true;
@@ -164,6 +164,28 @@ export const menuItems = [
         icon: "uil-usd-square",
         link: "/ventas",
         permiso: ventas
+    },
+    {
+        id: 5,
+        label: "Informes",
+        icon: "uil-arrow-growth",
+        permiso: informediario,
+        subItems: [
+            {
+                id: 5.1,
+                label: "Informe diario",
+                link: "/informe-diario",
+                parentId: 5,
+                permiso: informediario
+            },
+            {
+                id: 5.2,
+                label: "Informe Mensual",
+                link: "/informe-mensual",
+                parentId: 5,
+                permiso: reservas
+            }
+        ]
     },
 
 ];

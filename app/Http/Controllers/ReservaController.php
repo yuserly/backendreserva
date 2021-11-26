@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\SendMailReserva;
 use Mail;
+use Twilio\Rest\Client;
 
 class ReservaController extends Controller
 {
@@ -137,6 +138,24 @@ class ReservaController extends Controller
 
         }else{
 
+            // aqui falta algo
+
+
+
+        }
+
+        $reserva = Reserva::updateOrCreate(['id_reserva' => $request->id_reserva],[
+            'dia' => $request->dia,
+            'hora_inicio' => $request->hora_inicio,
+            'hora_fin' => $request->hora_fin,
+            'paciente_id'  => $paciente->id_paciente,
+            'profesional_id' => $profesional->id_profesional,
+            'estado_id' => 2,
+            'codigo' => $codigo,
+            'sucursal_id' => $request->id_sucursal,
+            'servicio_id' => $servicio
+        ]);
+
             $sid = 'ACfda009a24ec093e8d327c6c3438ca950';
             $token = '15a29beb9c942f2f0ab429ccb1d0af4a';
             $twilio = new Client($sid, $token);
@@ -161,23 +180,6 @@ class ReservaController extends Controller
                     'body' => $body
                 )
             );
-
-
-            return $reserva;
-        }
-
-        $reserva = Reserva::updateOrCreate(['id_reserva' => $request->id_reserva],[
-            'dia' => $request->dia,
-            'hora_inicio' => $request->hora_inicio,
-            'hora_fin' => $request->hora_fin,
-            'paciente_id'  => $paciente->id_paciente,
-            'profesional_id' => $profesional->id_profesional,
-            'estado_id' => 2,
-            'codigo' => $codigo,
-            'sucursal_id' => $request->id_sucursal,
-            'servicio_id' => $servicio
-        ]);
-
         return $reserva;
     }
 
@@ -295,22 +297,22 @@ class ReservaController extends Controller
     }
 
     public function confirmarAsistencia($reserva)
-    {   
+    {
         Reserva::updateOrCreate(['id_reserva' => $reserva],['estado_id' => 3]);
-        
+
         return $reserva;
     }
 
     public function deshacerConfirmarAsistencia($reserva)
     {
         Reserva::updateOrCreate(['id_reserva' => $reserva],['estado_id' => 2]);
-        
+
         return $reserva;
     }
 
     public function destroy(Reserva $reserva)
-    {   
-        
+    {
+
         $reserva->delete();
         return "Reserva eliminada exitosamente.";
     }

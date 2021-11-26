@@ -2585,6 +2585,7 @@ var reservas = false;
 var misreservas = false;
 var ventas = false;
 var confirmarreserva = false;
+var informediario = false;
 
 if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$administrador) {
   administración = true;
@@ -2599,6 +2600,7 @@ if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$administrador) {
   reservas = true;
   ventas = true;
   confirmarreserva = true;
+  informediario = true;
 } else if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$secretaria) {
   administración = true;
   especialidades = true;
@@ -2712,6 +2714,24 @@ var menuItems = [{
   icon: "uil-usd-square",
   link: "/ventas",
   permiso: ventas
+}, {
+  id: 5,
+  label: "Informes",
+  icon: "uil-arrow-growth",
+  permiso: informediario,
+  subItems: [{
+    id: 5.1,
+    label: "Informe diario",
+    link: "/informe-diario",
+    parentId: 5,
+    permiso: informediario
+  }, {
+    id: 5.2,
+    label: "Informe Mensual",
+    link: "/informe-mensual",
+    parentId: 5,
+    permiso: reservas
+  }]
 }];
 
 /***/ }),
@@ -24530,7 +24550,9 @@ var render = function () {
           _vm._v(" "),
           _c("div", [
             _c("h4", { staticClass: "mb-1 mt-1" }, [
-              _vm._v("\n                        $\n                        "),
+              _vm._v(
+                "\r\n                        $\r\n                        "
+              ),
               _c(
                 "span",
                 { attrs: { "data-plugin": "counterup" } },
@@ -24678,9 +24700,9 @@ var staticRenderFns = [
     return _c("p", { staticClass: "text-muted mt-3 mb-0" }, [
       _c("span", { staticClass: "text-success me-1" }, [
         _c("i", { staticClass: "mdi mdi-arrow-up-bold me-1" }),
-        _vm._v("2.65%\n                    "),
+        _vm._v("2.65%\r\n                    "),
       ]),
-      _vm._v("\n                    since last week\n                "),
+      _vm._v("\r\n                    since last week\r\n                "),
     ])
   },
   function () {
@@ -24690,9 +24712,9 @@ var staticRenderFns = [
     return _c("p", { staticClass: "text-muted mt-3 mb-0" }, [
       _c("span", { staticClass: "text-danger me-1" }, [
         _c("i", { staticClass: "mdi mdi-arrow-down-bold me-1" }),
-        _vm._v("0.82%\n                    "),
+        _vm._v("0.82%\r\n                    "),
       ]),
-      _vm._v("\n                    since last week\n                "),
+      _vm._v("\r\n                    since last week\r\n                "),
     ])
   },
   function () {
@@ -24702,9 +24724,9 @@ var staticRenderFns = [
     return _c("p", { staticClass: "text-muted mt-3 mb-0" }, [
       _c("span", { staticClass: "text-danger me-1" }, [
         _c("i", { staticClass: "mdi mdi-arrow-down-bold me-1" }),
-        _vm._v("6.24%\n                    "),
+        _vm._v("6.24%\r\n                    "),
       ]),
-      _vm._v("\n                    since last week\n                "),
+      _vm._v("\r\n                    since last week\r\n                "),
     ])
   },
   function () {
@@ -24713,11 +24735,11 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", [
       _c("h4", { staticClass: "mb-1 mt-1" }, [
-        _vm._v("\n                        +\n                        "),
+        _vm._v("\r\n                        +\r\n                        "),
         _c("span", { attrs: { "data-plugin": "counterup" } }, [
           _vm._v("12.58"),
         ]),
-        _vm._v("%\n                    "),
+        _vm._v("%\r\n                    "),
       ]),
       _vm._v(" "),
       _c("p", { staticClass: "text-muted mb-0" }, [_vm._v("Growth")]),
@@ -24730,9 +24752,9 @@ var staticRenderFns = [
     return _c("p", { staticClass: "text-muted mt-3 mb-0" }, [
       _c("span", { staticClass: "text-success me-1" }, [
         _c("i", { staticClass: "mdi mdi-arrow-up-bold me-1" }),
-        _vm._v("10.51%\n                    "),
+        _vm._v("10.51%\r\n                    "),
       ]),
-      _vm._v("\n                    since last week\n                "),
+      _vm._v("\r\n                    since last week\r\n                "),
     ])
   },
 ]
@@ -25068,7 +25090,7 @@ var render = function () {
                         _vm._v(" "),
                         _c("span", { staticClass: "text-muted" }, [
                           _vm._v(
-                            "\n                            Yearly\n                            "
+                            "\r\n                            Yearly\r\n                            "
                           ),
                           _c("i", { staticClass: "mdi mdi-chevron-down ms-1" }),
                         ]),
@@ -25117,7 +25139,7 @@ var render = function () {
               [
                 _c("h3", { staticClass: "text-primary" }, [
                   _vm._v(
-                    "\n                            $\n                            "
+                    "\r\n                            $\r\n                            "
                   ),
                   _c(
                     "span",
@@ -25208,7 +25230,7 @@ var staticRenderFns = [
           _c("span", { attrs: { "data-plugin": "counterup" } }, [
             _vm._v("3.6"),
           ]),
-          _vm._v("%\n                            "),
+          _vm._v("%\r\n                            "),
           _c(
             "span",
             { staticClass: "text-muted d-inline-block font-size-15 ms-3" },
@@ -25267,7 +25289,7 @@ var render = function () {
                       _vm._v(" "),
                       _c("span", { staticClass: "text-muted" }, [
                         _vm._v(
-                          "\n                        Yearly\n                        "
+                          "\r\n                        Yearly\r\n                        "
                         ),
                         _c("i", { staticClass: "mdi mdi-chevron-down ms-1" }),
                       ]),
@@ -25390,7 +25412,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col-sm-3" }, [
       _c("p", { staticClass: "text-truncate mt-1 mb-0" }, [
         _c("i", { staticClass: "mdi mdi-circle-medium text-primary me-2" }),
-        _vm._v(" Desktops\n                "),
+        _vm._v(" Desktops\r\n                "),
       ]),
     ])
   },
@@ -25401,7 +25423,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col-sm-3" }, [
       _c("p", { staticClass: "text-truncate mt-1 mb-0" }, [
         _c("i", { staticClass: "mdi mdi-circle-medium text-info me-2" }),
-        _vm._v(" iPhones\n                "),
+        _vm._v(" iPhones\r\n                "),
       ]),
     ])
   },
@@ -25412,7 +25434,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col-sm-3" }, [
       _c("p", { staticClass: "text-truncate mt-1 mb-0" }, [
         _c("i", { staticClass: "mdi mdi-circle-medium text-success me-2" }),
-        _vm._v(" Android\n                "),
+        _vm._v(" Android\r\n                "),
       ]),
     ])
   },
@@ -25423,7 +25445,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col-sm-3" }, [
       _c("p", { staticClass: "text-truncate mt-1 mb-0" }, [
         _c("i", { staticClass: "mdi mdi-circle-medium text-warning me-2" }),
-        _vm._v(" Tablets\n                "),
+        _vm._v(" Tablets\r\n                "),
       ]),
     ])
   },
@@ -25434,7 +25456,7 @@ var staticRenderFns = [
     return _c("div", { staticClass: "col-sm-3" }, [
       _c("p", { staticClass: "text-truncate mt-1 mb-0" }, [
         _c("i", { staticClass: "mdi mdi-circle-medium text-purple me-2" }),
-        _vm._v(" Cables\n                "),
+        _vm._v(" Cables\r\n                "),
       ]),
     ])
   },
