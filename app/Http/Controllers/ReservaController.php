@@ -65,7 +65,9 @@ class ReservaController extends Controller
 
         $sucursal = Sucursal::find($request->id_sucursal);
 
-        Mail::to($request->email)->send(new SendMailReserva($request->rut, $request->nombres,
+        $domain = explode('@', $request->email);
+        if (checkdnsrr($domain[1], "MX")){
+            Mail::to($request->email)->send(new SendMailReserva($request->rut, $request->nombres,
                                                          $request->apellidos, $request->email,
                                                          $request->dia, $request->hora_inicio,
                                                          $request->id_profesional["profesional"]["nombres"],
@@ -73,31 +75,32 @@ class ReservaController extends Controller
                                                          $sucursal->nombre, $sucursal->direccion,
                                                          $estado
                                                         ));
+        }
 
-        $sid = 'ACfda009a24ec093e8d327c6c3438ca950';
-        $token = '15a29beb9c942f2f0ab429ccb1d0af4a';
-        $twilio = new Client($sid, $token);
-        $body = "Tu reserva {$codigo}, para el dia {$request->dia} a las {$request->hora_inicio} ha sido agendada.";
+        // $sid = 'ACfda009a24ec093e8d327c6c3438ca950';
+        // $token = '15a29beb9c942f2f0ab429ccb1d0af4a';
+        // $twilio = new Client($sid, $token);
+        // $body = "Tu reserva {$codigo}, para el dia {$request->dia} a las {$request->hora_inicio} ha sido agendada.";
 
         // whatsapp
 
-        $twilio->messages
-                  ->create("whatsapp:+56936298783", // to
-                           [
-                               "from" => "whatsapp:+14155238886",
-                               "body" => $body
-                           ]
-                  );
+        // $twilio->messages
+        //           ->create("whatsapp:+56936298783", // to
+        //                    [
+        //                        "from" => "whatsapp:+14155238886",
+        //                        "body" => $body
+        //                    ]
+        //           );
 
-        // sms
+        // // sms
 
-        $twilio->messages->create(
-            '+56936298783',
-            array(
-                "messagingServiceSid" => "MGdae3f06088a728999bde05354a72ce73",
-                'body' => $body
-            )
-        );
+        // $twilio->messages->create(
+        //     '+56936298783',
+        //     array(
+        //         "messagingServiceSid" => "MGdae3f06088a728999bde05354a72ce73",
+        //         'body' => $body
+        //     )
+        // );
 
 
 

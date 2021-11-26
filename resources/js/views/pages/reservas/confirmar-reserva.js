@@ -41,6 +41,7 @@ export default {
                 porcentajedescuento: 0,
                 precio_descuento: 0,
                 iva: 0,
+                retencion: 0,
                 total: 0,
                 codigo_boucher: "",
                 codigo_bono_fonasa: "",
@@ -48,6 +49,7 @@ export default {
                 n_honorario: "",
                 picked: 1,
             },
+
             // tabla
             tableData: [],
 
@@ -125,9 +127,6 @@ export default {
         },
     },
     computed: {
-        /**
-         * Total no. of records
-         */
         rows() {
             return this.tableData.length;
         },
@@ -140,8 +139,9 @@ export default {
     },
 
     methods: {
-        onFiltered(filteredItems) {
-            // Trigger pagination to update the number of buttons/pages due to filtering
+
+        onFiltered(filteredItems) 
+        {
             this.totalRows = filteredItems.length;
             this.currentPage = 1;
         },
@@ -252,6 +252,7 @@ export default {
         },
 
         FinalizarReserva(data) {
+
             this.modal = true;
             this.cambiarprevision.id_paciente = data.paciente.id_paciente;
             this.cambiarprevision.id_prevision = data.paciente.prevision;
@@ -282,18 +283,16 @@ export default {
             this.formventa.subtotal = this.precioservicio;
 
             let descuento =
-                (this.formventa.subtotal * this.formventa.porcentajedescuento) /
-                100;
+                (this.formventa.subtotal * this.formventa.porcentajedescuento) / 100;
             this.formventa.id_reserva = data.id_reserva;
             this.formventa.id_paciente = data.paciente_id;
             this.formventa.precio_descuento =
                 this.formventa.subtotal - descuento;
 
             let iva = this.formventa.precio_descuento * 0.19;
-
             this.formventa.iva = iva;
+            this.formventa.total = this.formventa.precio_descuento;
 
-            this.formventa.total = this.formventa.precio_descuento + iva;
         },
 
         cambiarPrevision() {
@@ -326,11 +325,19 @@ export default {
             this.formventa.precio_descuento =
                 this.formventa.subtotal - descuento;
 
-            let iva = this.formventa.precio_descuento * 0.19;
+            if(this.formventa.picked == 1)
+            {
+                let iva = Math.round(this.formventa.precio_descuento * 0.19);
+                this.formventa.iva = iva;
+                this.formventa.total = this.formventa.precio_descuento;
 
-            this.formventa.iva = iva;
-
-            this.formventa.total = this.formventa.precio_descuento + iva;
+            }else if(this.formventa.picked == 2)
+            {
+                let retencion = Math.round(this.formventa.precio_descuento * 0.115);
+                this.formventa.retencion = retencion;
+                this.formventa.total = this.formventa.precio_descuento;
+            }
+            
         },
 
         cambiarprecio() {
@@ -368,11 +375,18 @@ export default {
             this.formventa.precio_descuento =
                 this.formventa.subtotal - descuento;
 
-            let iva = this.formventa.precio_descuento * 0.19;
+            if(this.formventa.picked == 1)
+            {
+                let iva = Math.round(this.formventa.precio_descuento * 0.19);
+                this.formventa.iva = iva;
+                this.formventa.total = this.formventa.precio_descuento;
 
-            this.formventa.iva = iva;
-
-            this.formventa.total = this.formventa.precio_descuento + iva;
+            }else if(this.formventa.picked == 2)
+            {
+                let retencion = Math.round(this.formventa.precio_descuento * 0.115);
+                this.formventa.retencion = retencion;
+                this.formventa.total = this.formventa.precio_descuento;
+            }
         },
 
         changeBoleta()
@@ -381,8 +395,16 @@ export default {
             {
                 this.formventa.codigo_boucher = "";
                 this.formventa.codigo_bono_fonasa = "";
+                this.formventa.retencion = 0;
+                let iva = Math.round(this.formventa.precio_descuento * 0.19);
+                this.formventa.iva = iva;
+                this.formventa.total = this.formventa.precio_descuento;
             }else{
                 this.formventa.n_honorario = "";
+                this.formventa.iva = 0;
+                let retencion = Math.round(this.formventa.precio_descuento * 0.115);
+                this.formventa.retencion = retencion;
+                this.formventa.total = this.formventa.precio_descuento;
             }
         },
 
@@ -406,6 +428,16 @@ export default {
                 Swal.fire({
                     icon: 'warning',
                     text: "Debes ingresar numero de boleta de honorario.",
+                    timer: 1500,
+                    showConfirmButton: false
+                  });
+                  return false;
+            }
+
+            if (this.cambiarprevision.id_prevision.nombre == "Fonasa" && this.formventa.codigo_bono_fonasa == "") {
+                Swal.fire({
+                    icon: 'warning',
+                    text: "Debes ingresar numero de bono fonasa.",
                     timer: 1500,
                     showConfirmButton: false
                   });
@@ -458,7 +490,7 @@ export default {
         eliminar(data){
 
             let id_reserva = data.id_reserva
-
+ 
             Swal.fire({
                 title: 'Eliminar Reserva',
                 text: '¿La reserva será eliminada permanentemente, está seguro de eliminarla?',

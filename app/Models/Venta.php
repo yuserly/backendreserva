@@ -27,7 +27,8 @@ class Venta extends Model
         'boleta_honorario',
         'n_honorario',
         'estado_id',
-        'sucursal_id'
+        'sucursal_id',
+        'retencion'
     ];
 
     public function reserva()

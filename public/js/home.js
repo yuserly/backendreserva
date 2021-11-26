@@ -17409,7 +17409,8 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       options: [],
-      sucursalselect: ""
+      sucursalselect: "",
+      nameUser: localStorage.getItem('usuarioName')
     };
   },
   mounted: function mounted() {
@@ -17746,12 +17747,13 @@ __webpack_require__.r(__webpack_exports__);
           console.log(res.data);
 
           if (res.data.token) {
-            // console.log("Logiiin");
             var token = res.data.token;
             var perfil = res.data.perfil;
+            var name = res.data.name;
             var sucursales = JSON.stringify(res.data.sucursales);
             localStorage.setItem("token", token);
             localStorage.setItem("perfil", perfil);
+            localStorage.setItem("usuarioName", name);
             localStorage.setItem('sucursales', sucursales);
 
             if (perfil == 1 || perfil == '1') {
@@ -18180,9 +18182,11 @@ var reservas = false;
 var misreservas = false;
 var ventas = false;
 var confirmarreserva = false;
+var administraciónReserva = false;
 
 if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$administrador) {
   administración = true;
+  administraciónReserva = true;
   especialidades = true;
   servicios = true;
   sucursales = true;
@@ -18195,14 +18199,7 @@ if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$administrador) {
   ventas = true;
   confirmarreserva = true;
 } else if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$secretaria) {
-  administración = true;
-  especialidades = true;
-  servicios = true;
-  sucursales = true;
-  secretarias = true;
-  previsiones = true;
-  profesionales = true;
-  bloqueohora = true;
+  administraciónReserva = true;
   pacientes = true;
   reservas = true;
   ventas = true;
@@ -18275,7 +18272,7 @@ var menuItems = [{
   id: 3,
   label: "Reservas",
   icon: "fas fa-users",
-  permiso: administración,
+  permiso: administraciónReserva,
   subItems: [{
     id: 1.1,
     label: "Pacientes",
@@ -20214,6 +20211,7 @@ __webpack_require__.r(__webpack_exports__);
         porcentajedescuento: 0,
         precio_descuento: 0,
         iva: 0,
+        retencion: 0,
         total: 0,
         codigo_boucher: "",
         codigo_bono_fonasa: "",
@@ -20285,9 +20283,6 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   computed: {
-    /**
-     * Total no. of records
-     */
     rows: function rows() {
       return this.tableData.length;
     }
@@ -20300,7 +20295,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     onFiltered: function onFiltered(filteredItems) {
-      // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
     },
@@ -20437,7 +20431,7 @@ __webpack_require__.r(__webpack_exports__);
       this.formventa.precio_descuento = this.formventa.subtotal - descuento;
       var iva = this.formventa.precio_descuento * 0.19;
       this.formventa.iva = iva;
-      this.formventa.total = this.formventa.precio_descuento + iva;
+      this.formventa.total = this.formventa.precio_descuento;
     },
     cambiarPrevision: function cambiarPrevision() {
       var _this7 = this;
@@ -20467,9 +20461,16 @@ __webpack_require__.r(__webpack_exports__);
     calculo: function calculo() {
       var descuento = this.formventa.subtotal * this.formventa.porcentajedescuento / 100;
       this.formventa.precio_descuento = this.formventa.subtotal - descuento;
-      var iva = this.formventa.precio_descuento * 0.19;
-      this.formventa.iva = iva;
-      this.formventa.total = this.formventa.precio_descuento + iva;
+
+      if (this.formventa.picked == 1) {
+        var iva = Math.round(this.formventa.precio_descuento * 0.19);
+        this.formventa.iva = iva;
+        this.formventa.total = this.formventa.precio_descuento;
+      } else if (this.formventa.picked == 2) {
+        var retencion = Math.round(this.formventa.precio_descuento * 0.115);
+        this.formventa.retencion = retencion;
+        this.formventa.total = this.formventa.precio_descuento;
+      }
     },
     cambiarprecio: function cambiarprecio() {
       this.servicioprevision = this.cambiarprevision.id_prevision.nombre;
@@ -20493,16 +20494,31 @@ __webpack_require__.r(__webpack_exports__);
       this.formventa.subtotal = this.precioservicio;
       var descuento = this.formventa.subtotal * this.formventa.porcentajedescuento / 100;
       this.formventa.precio_descuento = this.formventa.subtotal - descuento;
-      var iva = this.formventa.precio_descuento * 0.19;
-      this.formventa.iva = iva;
-      this.formventa.total = this.formventa.precio_descuento + iva;
+
+      if (this.formventa.picked == 1) {
+        var iva = Math.round(this.formventa.precio_descuento * 0.19);
+        this.formventa.iva = iva;
+        this.formventa.total = this.formventa.precio_descuento;
+      } else if (this.formventa.picked == 2) {
+        var retencion = Math.round(this.formventa.precio_descuento * 0.115);
+        this.formventa.retencion = retencion;
+        this.formventa.total = this.formventa.precio_descuento;
+      }
     },
     changeBoleta: function changeBoleta() {
       if (this.formventa.picked == 1) {
         this.formventa.codigo_boucher = "";
         this.formventa.codigo_bono_fonasa = "";
+        this.formventa.retencion = 0;
+        var iva = Math.round(this.formventa.precio_descuento * 0.19);
+        this.formventa.iva = iva;
+        this.formventa.total = this.formventa.precio_descuento;
       } else {
         this.formventa.n_honorario = "";
+        this.formventa.iva = 0;
+        var retencion = Math.round(this.formventa.precio_descuento * 0.115);
+        this.formventa.retencion = retencion;
+        this.formventa.total = this.formventa.precio_descuento;
       }
     },
     formSubmit: function formSubmit() {
@@ -20526,6 +20542,16 @@ __webpack_require__.r(__webpack_exports__);
         sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
           icon: 'warning',
           text: "Debes ingresar numero de boleta de honorario.",
+          timer: 1500,
+          showConfirmButton: false
+        });
+        return false;
+      }
+
+      if (this.cambiarprevision.id_prevision.nombre == "Fonasa" && this.formventa.codigo_bono_fonasa == "") {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
+          icon: 'warning',
+          text: "Debes ingresar numero de bono fonasa.",
           timer: 1500,
           showConfirmButton: false
         });
@@ -23142,7 +23168,11 @@ __webpack_require__.r(__webpack_exports__);
     eliminar: function eliminar(data) {
       var _this4 = this;
 
-      sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
+      this.formaccion = {
+        id_reserva: data.reserva_id,
+        id_venta: data.id_venta,
+        estado: 7
+      }, sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
         title: 'Eliminar Venta',
         text: '¿Está seguro de eliminar esta venta? esta acción podría ocasionar cambios en la reserva',
         icon: "warning",
@@ -23153,18 +23183,13 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (result) {
         if (result.value) {
           _this4.axios.post("/api/eliminarventa/", _this4.formaccion).then(function (res) {
-            var titulo = "";
-            var icon = "";
-
-            if (res.data == 1) {
-              titulo = "Venta eliminada con éxito";
-              icon = "success";
-            } else {
-              titulo = "Error al eliminar la venta";
-              icon = "error";
-            }
-
-            _this4.sweealerta(icon, titulo);
+            p;
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
+              icon: 'error',
+              text: res.data,
+              timer: 1500,
+              showConfirmButton: false
+            });
 
             _this4.traerVentas();
           });
@@ -71268,7 +71293,7 @@ var render = function () {
                           staticClass:
                             "d-xl-inline-block ms-1 fw-medium font-size-15",
                         },
-                        [_vm._v("Nombre")]
+                        [_vm._v(_vm._s(_vm.nameUser))]
                       ),
                       _vm._v(" "),
                       _c("i", {
@@ -75836,200 +75861,6 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
                         _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
-                            _c("h6", [_vm._v("Subtotal")]),
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-2" }, [
-                            _c("h6", [_vm._v("% Descuento")]),
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-2" }, [
-                            _c("h6", [_vm._v("Precio con descuento")]),
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-2" }, [
-                            _c("h6", [_vm._v("IVA")]),
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
-                            _c("h6", [_vm._v("TOTAL")]),
-                          ]),
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
-                            _c("input", {
-                              directives: [
-                                {
-                                  name: "model",
-                                  rawName: "v-model",
-                                  value: _vm.formventa.subtotal,
-                                  expression: "formventa.subtotal",
-                                },
-                              ],
-                              staticClass: "form-control",
-                              attrs: {
-                                id: "subtotal",
-                                type: "number",
-                                disabled: "",
-                              },
-                              domProps: { value: _vm.formventa.subtotal },
-                              on: {
-                                input: function ($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(
-                                    _vm.formventa,
-                                    "subtotal",
-                                    $event.target.value
-                                  )
-                                },
-                              },
-                            }),
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-2" }, [
-                            _c("input", {
-                              directives: [
-                                {
-                                  name: "model",
-                                  rawName: "v-model",
-                                  value: _vm.formventa.porcentajedescuento,
-                                  expression: "formventa.porcentajedescuento",
-                                },
-                              ],
-                              staticClass: "form-control",
-                              attrs: {
-                                id: "porcentajedescuento",
-                                type: "number",
-                              },
-                              domProps: {
-                                value: _vm.formventa.porcentajedescuento,
-                              },
-                              on: {
-                                input: [
-                                  function ($event) {
-                                    if ($event.target.composing) {
-                                      return
-                                    }
-                                    _vm.$set(
-                                      _vm.formventa,
-                                      "porcentajedescuento",
-                                      $event.target.value
-                                    )
-                                  },
-                                  function ($event) {
-                                    return _vm.calculo()
-                                  },
-                                ],
-                              },
-                            }),
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-2" }, [
-                            _c("input", {
-                              directives: [
-                                {
-                                  name: "model",
-                                  rawName: "v-model",
-                                  value: _vm.formventa.precio_descuento,
-                                  expression: "formventa.precio_descuento",
-                                },
-                              ],
-                              staticClass: "form-control",
-                              attrs: {
-                                id: "precio_descuento",
-                                type: "number",
-                                disabled: "",
-                              },
-                              domProps: {
-                                value: _vm.formventa.precio_descuento,
-                              },
-                              on: {
-                                input: function ($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(
-                                    _vm.formventa,
-                                    "precio_descuento",
-                                    $event.target.value
-                                  )
-                                },
-                              },
-                            }),
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-2" }, [
-                            _c("input", {
-                              directives: [
-                                {
-                                  name: "model",
-                                  rawName: "v-model",
-                                  value: _vm.formventa.iva,
-                                  expression: "formventa.iva",
-                                },
-                              ],
-                              staticClass: "form-control",
-                              attrs: {
-                                id: "iva",
-                                type: "number",
-                                disabled: "",
-                              },
-                              domProps: { value: _vm.formventa.iva },
-                              on: {
-                                input: function ($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(
-                                    _vm.formventa,
-                                    "iva",
-                                    $event.target.value
-                                  )
-                                },
-                              },
-                            }),
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
-                            _c("input", {
-                              directives: [
-                                {
-                                  name: "model",
-                                  rawName: "v-model",
-                                  value: _vm.formventa.total,
-                                  expression: "formventa.total",
-                                },
-                              ],
-                              staticClass: "form-control",
-                              attrs: {
-                                id: "total",
-                                type: "number",
-                                disabled: "",
-                              },
-                              domProps: { value: _vm.formventa.total },
-                              on: {
-                                input: function ($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(
-                                    _vm.formventa,
-                                    "total",
-                                    $event.target.value
-                                  )
-                                },
-                              },
-                            }),
-                          ]),
-                        ]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
-                        _c("div", { staticClass: "row" }, [
                           _c("div", { staticClass: "col-12 col-md-4" }, [
                             _c("h6", [_vm._v("Boleta")]),
                           ]),
@@ -76045,10 +75876,6 @@ var render = function () {
                                 _c("h6", [_vm._v("N° Boleta Honorario")]),
                               ])
                             : _vm._e(),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
-                            _c("h6", [_vm._v("Codigo Bono Fonasa")]),
-                          ]),
                         ]),
                         _vm._v(" "),
                         _c("div", { staticClass: "row" }, [
@@ -76187,7 +76014,259 @@ var render = function () {
                                 }),
                               ])
                             : _vm._e(),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
+                        _c("div", { staticClass: "row" }, [
+                          _c("div", { staticClass: "col-12 col-md-3" }, [
+                            _c("h6", [_vm._v("Subtotal")]),
+                          ]),
                           _vm._v(" "),
+                          _c("div", { staticClass: "col-12 col-md-2" }, [
+                            _c("h6", [_vm._v("% Descuento")]),
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "col-12 col-md-2" }, [
+                            _c("h6", [_vm._v("Precio con descuento")]),
+                          ]),
+                          _vm._v(" "),
+                          _vm.formventa.picked == 1
+                            ? _c("div", { staticClass: "col-12 col-md-2" }, [
+                                _c("h6", [_vm._v("IVA")]),
+                              ])
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _vm.formventa.picked == 2
+                            ? _c("div", { staticClass: "col-12 col-md-2" }, [
+                                _c("h6", [_vm._v("RETENCIÓN")]),
+                              ])
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "col-12 col-md-3" }, [
+                            _c("h6", [_vm._v("TOTAL")]),
+                          ]),
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "row" }, [
+                          _c("div", { staticClass: "col-12 col-md-3" }, [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.formventa.subtotal,
+                                  expression: "formventa.subtotal",
+                                },
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                id: "subtotal",
+                                type: "number",
+                                disabled: "",
+                              },
+                              domProps: { value: _vm.formventa.subtotal },
+                              on: {
+                                input: function ($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.formventa,
+                                    "subtotal",
+                                    $event.target.value
+                                  )
+                                },
+                              },
+                            }),
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "col-12 col-md-2" }, [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.formventa.porcentajedescuento,
+                                  expression: "formventa.porcentajedescuento",
+                                },
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                id: "porcentajedescuento",
+                                type: "number",
+                              },
+                              domProps: {
+                                value: _vm.formventa.porcentajedescuento,
+                              },
+                              on: {
+                                input: [
+                                  function ($event) {
+                                    if ($event.target.composing) {
+                                      return
+                                    }
+                                    _vm.$set(
+                                      _vm.formventa,
+                                      "porcentajedescuento",
+                                      $event.target.value
+                                    )
+                                  },
+                                  function ($event) {
+                                    return _vm.calculo()
+                                  },
+                                ],
+                              },
+                            }),
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "col-12 col-md-2" }, [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.formventa.precio_descuento,
+                                  expression: "formventa.precio_descuento",
+                                },
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                id: "precio_descuento",
+                                type: "number",
+                                disabled: "",
+                              },
+                              domProps: {
+                                value: _vm.formventa.precio_descuento,
+                              },
+                              on: {
+                                input: function ($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.formventa,
+                                    "precio_descuento",
+                                    $event.target.value
+                                  )
+                                },
+                              },
+                            }),
+                          ]),
+                          _vm._v(" "),
+                          _vm.formventa.picked == 1
+                            ? _c("div", { staticClass: "col-12 col-md-2" }, [
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.formventa.iva,
+                                      expression: "formventa.iva",
+                                    },
+                                  ],
+                                  staticClass: "form-control",
+                                  attrs: {
+                                    id: "iva",
+                                    type: "number",
+                                    disabled: "",
+                                  },
+                                  domProps: { value: _vm.formventa.iva },
+                                  on: {
+                                    input: function ($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.$set(
+                                        _vm.formventa,
+                                        "iva",
+                                        $event.target.value
+                                      )
+                                    },
+                                  },
+                                }),
+                              ])
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _vm.formventa.picked == 2
+                            ? _c("div", { staticClass: "col-12 col-md-2" }, [
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.formventa.retencion,
+                                      expression: "formventa.retencion",
+                                    },
+                                  ],
+                                  staticClass: "form-control",
+                                  attrs: {
+                                    id: "iva",
+                                    type: "number",
+                                    disabled: "",
+                                  },
+                                  domProps: { value: _vm.formventa.retencion },
+                                  on: {
+                                    input: function ($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.$set(
+                                        _vm.formventa,
+                                        "retencion",
+                                        $event.target.value
+                                      )
+                                    },
+                                  },
+                                }),
+                              ])
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "col-12 col-md-3" }, [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.formventa.total,
+                                  expression: "formventa.total",
+                                },
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                id: "total",
+                                type: "number",
+                                disabled: "",
+                              },
+                              domProps: { value: _vm.formventa.total },
+                              on: {
+                                input: function ($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.formventa,
+                                    "total",
+                                    $event.target.value
+                                  )
+                                },
+                              },
+                            }),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
+                        _c("div", { staticClass: "row" }, [
+                          _c("div", { staticClass: "col-12 col-md-4" }, [
+                            _c("h6", [_vm._v("Codigo Bono Fonasa")]),
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "col-12 col-md-4" }, [
+                            _c("h6", [_vm._v("Medio de Pago")]),
+                          ]),
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "row" }, [
                           _c("div", { staticClass: "col-12 col-md-3" }, [
                             _c("input", {
                               directives: [
@@ -76217,17 +76296,7 @@ var render = function () {
                               },
                             }),
                           ]),
-                        ]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
-                        _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col-12 col-md-4" }, [
-                            _c("h6", [_vm._v("Medio de Pago")]),
-                          ]),
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "row" }, [
+                          _vm._v(" "),
                           _c(
                             "div",
                             { staticClass: "col-12 col-md-4" },
@@ -79782,45 +79851,69 @@ var render = function () {
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-12 mb-2" }, [
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Nombres Apellidos")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" NOMBRE COMPLETO ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("RUT")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" RUT ")])])]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Email")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" CORREO ")])])]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Prevision")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" PREVISIÓN ")])])]),
                       ]),
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.nombrepaciente))]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.rutpaciente))]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.emailpaciente))]),
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.nombrepaciente) + " "
+                            ),
+                          ]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(_vm._s(_vm.detalle.servicioprevision)),
+                          _c("small", [
+                            _vm._v(" " + _vm._s(_vm.detalle.rutpaciente) + " "),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.emailpaciente) + " "
+                            ),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.servicioprevision) + " "
+                            ),
+                          ]),
                         ]),
                       ]),
                     ]),
                   ]),
                 ]),
+                _vm._v(" "),
+                _c("hr"),
                 _vm._v(" "),
                 _c("div", { staticClass: "row" }, [
                   _c("div", { staticClass: "col-12 mb-2" }, [
@@ -79838,53 +79931,77 @@ var render = function () {
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-12 mb-2" }, [
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Profesional")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" ESPECIALISTA ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Servicio")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" SERVICIO ")])])]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Previsión")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" PREVISIÓN ")])])]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Precio")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" PRECIO ")])])]),
                       ]),
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(_vm._s(_vm.detalle.nombreeprofesional)),
-                        ]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.nombreservicio))]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [
-                          _vm._v(_vm._s(_vm.detalle.servicioprevision)),
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.nombreeprofesional) + " "
+                            ),
+                          ]),
                         ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(
-                            _vm._s(
-                              _vm._f("toCurrency")(_vm.detalle.precioservicio)
-                            )
-                          ),
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.nombreservicio) + " "
+                            ),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.servicioprevision) + " "
+                            ),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " +
+                                _vm._s(
+                                  _vm._f("toCurrency")(
+                                    _vm.detalle.precioservicio
+                                  )
+                                ) +
+                                " "
+                            ),
+                          ]),
                         ]),
                       ]),
                     ]),
                   ]),
                 ]),
+                _vm._v(" "),
+                _c("hr"),
                 _vm._v(" "),
                 _c("div", { staticClass: "row" }, [
                   _c("div", { staticClass: "col-12 mt-3 mb-2" }, [
@@ -79902,131 +80019,191 @@ var render = function () {
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Medio de Pago")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" MEDIO DE PAGO ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Subtotal")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" TIPO COMPROBANTE ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("% Descuento")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" N° COMPROBANTE ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Precio con descuento")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" CODIGO FONASA ")])]),
+                        ]),
                       ]),
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.mediopago))]),
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(" " + _vm._s(_vm.detalle.mediopago) + " "),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _vm.detalle.boleta_honorario == 1
+                          ? _c("h6", [
+                              _c("small", [_vm._v(" Boleta Electronica ")]),
+                            ])
+                          : _c("h6", [
+                              _c("small", [_vm._v(" Boleta Honorarios ")]),
+                            ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _vm.detalle.boleta_honorario == 1
+                          ? _c("h6", [
+                              _c("small", [
+                                _vm._v(
+                                  " " + _vm._s(_vm.detalle.codigo_boucher) + " "
+                                ),
+                              ]),
+                            ])
+                          : _c("h6", [
+                              _c("small", [
+                                _vm._v(
+                                  " " + _vm._s(_vm.detalle.n_honorario) + " "
+                                ),
+                              ]),
+                            ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _vm.detalle.codigo_bono_fonasa != null
+                          ? _c("h6", [
+                              _c("small", [
+                                _vm._v(
+                                  " " +
+                                    _vm._s(_vm.detalle.codigo_bono_fonasa) +
+                                    "  "
+                                ),
+                              ]),
+                            ])
+                          : _c("h6", [_c("small", [_vm._v(" -  ")])]),
+                      ]),
+                    ]),
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
+                    _c("div", { staticClass: "row text-center" }, [
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" SUBTOTAL ")])])]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(
-                            _vm._s(_vm._f("toCurrency")(_vm.detalle.subtotal))
-                          ),
+                          _c("b", [_c("u", [_vm._v(" DESCUENTO. ")])]),
                         ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(
-                            _vm._s(_vm.detalle.porcentajedescuento) + " %"
-                          ),
+                          _c("b", [_c("u", [_vm._v(" PRECIO DESCUENTO ")])]),
                         ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(
-                            _vm._s(
-                              _vm._f("toCurrency")(_vm.detalle.precio_descuento)
-                            )
-                          ),
+                          _c("b", [_c("u", [_vm._v(" TOTAL PAGADO ")])]),
+                        ]),
+                      ]),
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "row text-center" }, [
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " +
+                                _vm._s(
+                                  _vm._f("toCurrency")(_vm.detalle.subtotal)
+                                ) +
+                                " "
+                            ),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " +
+                                _vm._s(_vm.detalle.porcentajedescuento) +
+                                " % "
+                            ),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " +
+                                _vm._s(
+                                  _vm._f("toCurrency")(
+                                    _vm.detalle.precio_descuento
+                                  )
+                                ) +
+                                " "
+                            ),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " +
+                                _vm._s(
+                                  _vm._f("toCurrency")(_vm.detalle.total)
+                                ) +
+                                " "
+                            ),
+                          ]),
                         ]),
                       ]),
                     ]),
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
-                    _c("div", { staticClass: "row" }, [
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("IVA")]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Total")]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Código Boucher")]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Código Bono Salud")]),
+                    _c("div", { staticClass: "row text-center" }, [
+                      _c("div", { staticClass: "col-12 col-md-12" }, [
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" ESTADO DE PAGO ")])]),
+                        ]),
                       ]),
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "row" }, [
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                    _c("div", { staticClass: "row text-center" }, [
+                      _c("div", { staticClass: "col-12 col-md-12" }, [
                         _c("h6", [
-                          _vm._v(_vm._s(_vm._f("toCurrency")(_vm.detalle.iva))),
+                          _c("small", [
+                            _vm._v(
+                              " " +
+                                _vm._s(
+                                  _vm._f("toCurrency")(_vm.detalle.estado)
+                                ) +
+                                " "
+                            ),
+                          ]),
                         ]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [
-                          _vm._v(
-                            _vm._s(_vm._f("toCurrency")(_vm.detalle.total))
-                          ),
-                        ]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.codigo_boucher))]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [
-                          _vm._v(_vm._s(_vm.detalle.codigo_bono_fonasa)),
-                        ]),
-                      ]),
-                    ]),
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
-                    _c("div", { staticClass: "row" }, [
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Boleta Honorario")]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("N° Boleta")]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Estado del Pago")]),
-                      ]),
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "row" }, [
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [
-                          _vm._v(_vm._s(_vm.detalle.boleta_honorario)),
-                        ]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.n_honorario))]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.estado))]),
                       ]),
                     ]),
                   ]),

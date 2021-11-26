@@ -1591,7 +1591,8 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       options: [],
-      sucursalselect: ""
+      sucursalselect: "",
+      nameUser: localStorage.getItem('usuarioName')
     };
   },
   mounted: function mounted() {
@@ -2585,9 +2586,11 @@ var reservas = false;
 var misreservas = false;
 var ventas = false;
 var confirmarreserva = false;
+var administraciónReserva = false;
 
 if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$administrador) {
   administración = true;
+  administraciónReserva = true;
   especialidades = true;
   servicios = true;
   sucursales = true;
@@ -2600,14 +2603,7 @@ if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$administrador) {
   ventas = true;
   confirmarreserva = true;
 } else if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$secretaria) {
-  administración = true;
-  especialidades = true;
-  servicios = true;
-  sucursales = true;
-  secretarias = true;
-  previsiones = true;
-  profesionales = true;
-  bloqueohora = true;
+  administraciónReserva = true;
   pacientes = true;
   reservas = true;
   ventas = true;
@@ -2680,7 +2676,7 @@ var menuItems = [{
   id: 3,
   label: "Reservas",
   icon: "fas fa-users",
-  permiso: administración,
+  permiso: administraciónReserva,
   subItems: [{
     id: 1.1,
     label: "Pacientes",
@@ -24438,7 +24434,7 @@ var render = function () {
                           staticClass:
                             "d-xl-inline-block ms-1 fw-medium font-size-15",
                         },
-                        [_vm._v("Nombre")]
+                        [_vm._v(_vm._s(_vm.nameUser))]
                       ),
                       _vm._v(" "),
                       _c("i", {

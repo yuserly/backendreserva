@@ -389,6 +389,50 @@
                                 </h3>
                             </div>
                         </div>
+
+                        <div class="col-12 mt-2 mb-2">
+                            <div class="row">
+                                <div class="col-12 col-md-4">
+                                    <h6>Boleta</h6>
+                                </div>
+                                <div class="col-12 col-md-3" v-if="formventa.picked == 1">
+                                    <h6>Codigo Boucher</h6>
+                                </div>
+                                <div class="col-12 col-md-2" v-if="formventa.picked == 2">
+                                    <h6>N° Boleta Honorario</h6>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 row">
+                                    <div class="col-md-6">
+                                        <input type="radio" id="1" value="1"  v-model="formventa.picked" v-on:change="changeBoleta()">
+                                        <label for="1">B. Electronica</label>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="radio" id="2" value="2" v-model="formventa.picked" v-on:change="changeBoleta()">
+                                        <label for="2">B. Honorario</label>    
+                                    </div>
+                                    
+                                </div>
+                                <div class="col-12 col-md-3" v-if="formventa.picked == 1">
+                                    <input
+                                        id="codigo_boucher"
+                                        v-model="formventa.codigo_boucher"
+                                        type="text"
+                                        class="form-control"
+                                    />
+                                </div>
+                                <div class="col-12 col-md-2" v-if="formventa.picked == 2">
+                                    <input
+                                        id="n_honorario"
+                                        v-model="formventa.n_honorario"
+                                        type="text"
+                                        class="form-control"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-12 mt-2 mb-2">
                             <div class="row">
                                 <div class="col-12 col-md-3">
@@ -400,8 +444,11 @@
                                 <div class="col-12 col-md-2">
                                     <h6>Precio con descuento</h6>
                                 </div>
-                                <div class="col-12 col-md-2">
+                                <div class="col-12 col-md-2" v-if="formventa.picked == 1">
                                     <h6>IVA</h6>
+                                </div>
+                                <div class="col-12 col-md-2" v-if="formventa.picked == 2">
+                                    <h6>RETENCIÓN</h6>
                                 </div>
                                 <div class="col-12 col-md-3">
                                     <h6>TOTAL</h6>
@@ -435,10 +482,19 @@
                                         disabled
                                     />
                                 </div>
-                                <div class="col-12 col-md-2">
+                                <div class="col-12 col-md-2" v-if="formventa.picked == 1">
                                     <input
                                         id="iva"
                                         v-model="formventa.iva"
+                                        type="number"
+                                        class="form-control"
+                                        disabled
+                                    />
+                                </div>
+                                <div class="col-12 col-md-2" v-if="formventa.picked == 2">
+                                    <input
+                                        id="iva"
+                                        v-model="formventa.retencion"
                                         type="number"
                                         class="form-control"
                                         disabled
@@ -455,49 +511,17 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-12 mt-2 mb-2">
                             <div class="row">
+                                 <div class="col-12 col-md-4">
+                                    <h6>Codigo Bono Fonasa</h6> 
+                                </div>
                                 <div class="col-12 col-md-4">
-                                    <h6>Boleta</h6>
-                                </div>
-                                <div class="col-12 col-md-3" v-if="formventa.picked == 1">
-                                    <h6>Codigo Boucher</h6>
-                                </div>
-                                <div class="col-12 col-md-2" v-if="formventa.picked == 2">
-                                    <h6>N° Boleta Honorario</h6>
-                                </div>
-                                <div class="col-12 col-md-3">
-                                    <h6>Codigo Bono Fonasa</h6>
+                                    <h6>Medio de Pago</h6>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-4 row">
-                                    <div class="col-md-6">
-                                        <input type="radio" id="1" value="1"  v-model="formventa.picked" v-on:change="changeBoleta()">
-                                        <label for="1">B. Electronica</label>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="radio" id="2" value="2" v-model="formventa.picked" v-on:change="changeBoleta()">
-                                        <label for="2">B. Honorario</label>    
-                                    </div>
-                                    
-                                </div>
-                                <div class="col-12 col-md-3" v-if="formventa.picked == 1">
-                                    <input
-                                        id="codigo_boucher"
-                                        v-model="formventa.codigo_boucher"
-                                        type="text"
-                                        class="form-control"
-                                    />
-                                </div>
-                                <div class="col-12 col-md-2" v-if="formventa.picked == 2">
-                                    <input
-                                        id="n_honorario"
-                                        v-model="formventa.n_honorario"
-                                        type="text"
-                                        class="form-control"
-                                    />
-                                </div>
                                 <div class="col-12 col-md-3">
                                     <input
                                         id="codigo_bono_fonasa"
@@ -506,15 +530,6 @@
                                         class="form-control"
                                     />
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-12 mt-2 mb-2">
-                            <div class="row">
-                                <div class="col-12 col-md-4">
-                                    <h6>Medio de Pago</h6>
-                                </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-12 col-md-4">
                                     <multiselect
                                         v-model="formventa.mediopago"

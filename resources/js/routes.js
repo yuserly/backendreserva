@@ -156,7 +156,6 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
     //A Logged-in user can't go to login page again
     if (to.name === "login" && localStorage.getItem("token")) {
-        //   let rol = atob(localStorage.getItem('cm9s'));
 
         let perfil = localStorage.getItem("perfil");
 

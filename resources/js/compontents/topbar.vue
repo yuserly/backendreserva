@@ -10,6 +10,7 @@ export default {
         return {
             options: [],
             sucursalselect: "",
+            nameUser : localStorage.getItem('usuarioName'),
         };
     },
     mounted() {
@@ -182,7 +183,7 @@ export default {
                     <template v-slot:button-content>
                         <span
                             class="d-xl-inline-block ms-1 fw-medium font-size-15"
-                            >Nombre</span
+                            >{{nameUser}}</span
                         >
                         <i
                             class="uil-angle-down  d-xl-inline-block font-size-15"

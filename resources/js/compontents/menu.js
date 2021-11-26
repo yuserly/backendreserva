@@ -13,10 +13,12 @@ let reservas = false;
 let misreservas = false;
 let ventas = false;
 let confirmarreserva = false;
+let administraciónReserva = false;
 
 if (Vue.prototype.$administrador) {
 
     administración = true;
+    administraciónReserva = true;
     especialidades = true;
     servicios = true;
     sucursales = true;
@@ -28,22 +30,14 @@ if (Vue.prototype.$administrador) {
     reservas = true;
     ventas =true;
     confirmarreserva = true;
+
 } else if(Vue.prototype.$secretaria){
 
-    administración = true;
-    especialidades = true;
-    servicios = true;
-    sucursales = true;
-    secretarias = true;
-    previsiones = true;
-    profesionales = true;
-    bloqueohora = true;
+    administraciónReserva = true;
     pacientes = true;
     reservas = true;
     ventas =true;
     confirmarreserva = true;
-
-
 
 }else {
     pacientes = true;
@@ -126,7 +120,7 @@ export const menuItems = [
         id: 3,
         label: "Reservas",
         icon: "fas fa-users",
-        permiso: administración,
+        permiso: administraciónReserva,
         subItems: [
             {
                 id: 1.1,

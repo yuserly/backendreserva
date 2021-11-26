@@ -39,16 +39,17 @@ export default {
           .then((res) => {
             console.log(res.data);
             if (res.data.token) {
-              // console.log("Logiiin");
+            
               const token = res.data.token;
               const perfil = res.data.perfil;
+              const name = res.data.name;
 
               const sucursales = JSON.stringify(res.data.sucursales);
 
               localStorage.setItem("token", token);
               localStorage.setItem("perfil", perfil);
+              localStorage.setItem("usuarioName", name );
               localStorage.setItem('sucursales', sucursales);
-
               if (perfil == 1 || perfil == '1') {
                 Vue.prototype.$administrador = true;
               } else if (perfil == 2 || perfil == '2') {

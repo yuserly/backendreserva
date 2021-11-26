@@ -146,7 +146,7 @@ export default {
             this.currentPage = 1;
         },
 
-        traerVentas() {
+        traerVentas() { 
             this.axios
                 .get(`/api/obtenerventas/${this.sucursal.id_sucursal}`)
                 .then((response) => {
@@ -264,8 +264,14 @@ export default {
                 }
             });
         },
+
         eliminar(data){
 
+            this.formaccion = {
+                id_reserva: data.reserva_id,
+                id_venta: data.id_venta,
+                estado: 7,
+            },
 
             Swal.fire({
                 title: 'Eliminar Venta',
@@ -281,20 +287,13 @@ export default {
                     .post(
                       `/api/eliminarventa/`, this.formaccion
                     )
-                    .then((res) => {
-                        var titulo = "";
-                        var icon = "";
-
-                      if (res.data == 1) {
-                         titulo = "Venta eliminada con éxito";
-                         icon = "success";
-                      } else {
-                         titulo = "Error al eliminar la venta";
-                         icon = "error";
-                      }
-
-                      this.sweealerta(icon, titulo);
-
+                    .then((res) => {p
+                        Swal.fire({
+                            icon: 'error',
+                            text: res.data,
+                            timer: 1500,
+                            showConfirmButton: false
+                          });
                       this.traerVentas();
                     });
                 }

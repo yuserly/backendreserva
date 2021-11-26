@@ -44,16 +44,17 @@ class VentaController extends Controller
             'paciente_id' => $request->id_paciente,
             'mediopago_id' => $request->mediopago["id_mediopago"],
             'sub_total' => (int)$request->subtotal,
-            'porcentaje_desc' => $request->porcentajedescuent,
+            'porcentaje_desc' => $request->porcentajedescuento,
             'precio_desc' => $request->precio_descuento,
             'iva' => $request->iva,
             'total' => $request->total,
             'codigo_boucher' => $request->codigo_boucher,
             'codigo_bono_fonasa' => $request->codigo_bono_fonasa,
             'boleta_honorario' => $request->picked,
-            'n_honorario' => $request->boleta_honorario,
+            'n_honorario' => $request->n_honorario,
             'estado_id' => 4,
-            'sucursal_id' => $request->id_sucursal
+            'sucursal_id' => $request->id_sucursal,
+            'retencion' => $request->retencion
         ]);
 
         if($venta){
@@ -65,30 +66,16 @@ class VentaController extends Controller
             return 1;
 
         }else{
-
             return 0;
-
         }
-
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Venta  $venta
-     * @return \Illuminate\Http\Response
-     */
+
     public function show($id_sucursal)
     {
-        return Venta::where('sucursal_id',$id_sucursal)->whereDate('created_at', '=', date('Y-m-d'))->with('medio','estado','reserva.paciente.prevision','reserva.profesional','reserva.servicio')->get();
+        return Venta::where([['sucursal_id',$id_sucursal],['estado_id', '!=', 7]])->whereDate('created_at', '=', date('Y-m-d'))->with('medio','estado','reserva.paciente.prevision','reserva.profesional','reserva.servicio')->get();
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Venta  $venta
-     * @return \Illuminate\Http\Response
-     */
     public function buscarventafecha(Request $request)
     {
         return Venta::where([['sucursal_id',$request->id_sucursal]])->whereDate('created_at', '=', $request->fecha)->with('medio','estado','reserva.paciente.prevision','reserva.profesional','reserva.servicio')->get();
@@ -124,44 +111,15 @@ class VentaController extends Controller
     }
 
     public function eliminarventa(Request $request)
-    {
-       $venta =  Venta::find($request->id_venta)->delete();
+    {   
+       Venta::updateOrCreate(['id_venta' => $request->id_venta],['estado_id' => $request->estado]);
 
-        if($venta){
+       Reserva::where('id_reserva', $request->id_reserva)->update([
+        'estado_id' => $request->estado
+       ]);
 
-            Reserva::where('id_reserva', $request->id_reserva)->update([
-                'estado_id' => 2
-            ]);
-            return 1; 
-
-        }else{
-
-            return 0;
-        }
+       return "Venta a sido anulada exitosamente";
 
     }
     
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Venta  $venta
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Venta $venta)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Venta  $venta
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Venta $venta)
-    {
-        //
-    }
 }
