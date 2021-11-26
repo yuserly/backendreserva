@@ -46,7 +46,7 @@ export default {
                 codigo_bono_fonasa: "",
                 boleta_honorario: "",
                 n_honorario: "",
-                estado:""
+                picked: 1,
             },
             // tabla
             tableData: [],
@@ -105,6 +105,11 @@ export default {
                     sortable: true,
                     label: "Servicio",
                 },
+                {
+                    key: "hora_inicio",
+                    sortable: true,
+                    label: "Hora",
+                },
                 "action",
             ],
         };
@@ -149,7 +154,6 @@ export default {
 
         traerMedioPago() {
             this.axios.get(`/api/obtenermediopago/`).then((response) => {
-                console.log(response);
                 this.optionsMedioPago = response.data;
             });
         },
@@ -160,7 +164,6 @@ export default {
             this.axios
                 .post(`/api/traerreservadia`, this.formbuscar)
                 .then((res) => {
-                    console.log(res);
                     this.tableData = res.data;
                 })
                 .catch((error) => {
@@ -177,6 +180,7 @@ export default {
                 this.axios
                     .post(`/api/buscarreserva`, this.formbuscar)
                     .then((res) => {
+                        console.log(res);
                         this.tableData = res.data;
                     })
                     .catch((error) => {
@@ -184,7 +188,70 @@ export default {
                     });
             }
         },
-        confirmar(data) {
+
+        confirmarAsistencia(data)
+        {
+            Swal.fire({
+                title: 'Confirmar Reserva',
+                text: '¿Esta seguro que desea confirmar la asistencia a esta reserva?',
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#34c38f",
+                cancelButtonColor: "#f46a6a",
+                confirmButtonText: "Si",
+              }).then((result) => {
+                if (result.value) {
+                    this.axios
+                    .get(`/api/confirmarAsistencia/${data.id_reserva}`)
+                    .then((res) => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Reserva ',
+                            text: "Confirmada asistencia exitosamente.",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        this.TraerReservaDia();
+                    })
+                    .catch((error) => {
+                    console.log("error", error);
+                 });
+                }
+            });
+        },
+
+        DeshacerConfirmacion(data)
+        {
+            Swal.fire({
+                title: 'Deshacer Confirmar Reserva',
+                text: '¿Esta seguro que desea deshacer la confirmacion de asistencia a esta reserva?',
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#34c38f",
+                cancelButtonColor: "#f46a6a",
+                confirmButtonText: "Si",
+              }).then((result) => {
+                if (result.value) {
+                    this.axios
+                    .get(`/api/deshacerConfirmarAsistencia/${data.id_reserva}`)
+                    .then((res) => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Reserva ',
+                            text: "Confirmacion de asistencia ha sido anulada.",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        this.TraerReservaDia();
+                    })
+                    .catch((error) => {
+                    console.log("error", error);
+                 });
+                }
+            });
+        },
+
+        FinalizarReserva(data) {
             this.modal = true;
             this.cambiarprevision.id_paciente = data.paciente.id_paciente;
             this.cambiarprevision.id_prevision = data.paciente.prevision;
@@ -228,6 +295,7 @@ export default {
 
             this.formventa.total = this.formventa.precio_descuento + iva;
         },
+
         cambiarPrevision() {
             this.axios
                 .post(`/api/cambiarprevisionpaciente`, this.cambiarprevision)
@@ -250,6 +318,7 @@ export default {
                     console.log("error", error);
                 });
         },
+
         calculo() {
             let descuento =
                 (this.formventa.subtotal * this.formventa.porcentajedescuento) /
@@ -263,6 +332,7 @@ export default {
 
             this.formventa.total = this.formventa.precio_descuento + iva;
         },
+
         cambiarprecio() {
             this.servicioprevision = this.cambiarprevision.id_prevision.nombre;
 
@@ -305,19 +375,48 @@ export default {
             this.formventa.total = this.formventa.precio_descuento + iva;
         },
 
+        changeBoleta()
+        {
+            if(this.formventa.picked == 1)
+            {
+                this.formventa.codigo_boucher = "";
+                this.formventa.codigo_bono_fonasa = "";
+            }else{
+                this.formventa.n_honorario = "";
+            }
+        },
+
         formSubmit() {
             this.submittedventa = true;
 
-            if (!this.formventa.mediopago || !this.formventa.estado ) {
+            if (!this.formventa.mediopago) {
                 return;
             }
+
+            if(this.formventa.picked == 1 && this.formventa.codigo_boucher.length < 1)
+            {
+                Swal.fire({
+                    icon: 'warning',
+                    text: "Debes ingresar codigo de boleta electronica",
+                    timer: 1500,
+                    showConfirmButton: false
+                  });
+                  return false;
+            }else if(this.formventa.picked == 2 && this.formventa.n_honorario.length < 1){
+                Swal.fire({
+                    icon: 'warning',
+                    text: "Debes ingresar numero de boleta de honorario.",
+                    timer: 1500,
+                    showConfirmButton: false
+                  });
+                  return false;
+            }
+
             this.formventa.id_sucursal = this.sucursal.id_sucursal;
 
             this.axios
                 .post(`/api/confirmarreserva`, this.formventa)
                 .then((res) => {
-                    console.log(res);
-
                     let titulo = "";
                     let icono = "";
                     if (res.data == 1) {
@@ -344,6 +443,7 @@ export default {
                             codigo_bono_fonasa: "",
                             boleta_honorario: "",
                             n_honorario: "",
+                            picked: 1,
                         }),
                         this.sweealerta(icono, titulo);
                         this.TraerReservaDia();
@@ -354,6 +454,7 @@ export default {
                     console.log("error", error);
                 });
         },
+
         eliminar(data){
 
             let id_reserva = data.id_reserva
@@ -373,25 +474,21 @@ export default {
                       `/api/deletereserva/${id_reserva}`
                     )
                     .then((res) => {
-                        var titulo = "";
-                        var icon = "";
-
-                      if (res.data == 1) {
-                         titulo = "Reserva eliminada con éxito";
-                         icon = "success";
-                      } else {
-                         titulo = "Error al eliminar la reserva";
-                         icon = "error";
-                      }
-
-                      this.sweealerta(icon, titulo);
-
-                      this.TraerReservaDia();
+                        
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Reserva',
+                            text: "Reserva eliminada exitosamente.",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        this.TraerReservaDia();
                     });
                 }
               });
 
         },
+
         sweealerta(icon, titulo) {
             Swal.fire({
                 position: "center",

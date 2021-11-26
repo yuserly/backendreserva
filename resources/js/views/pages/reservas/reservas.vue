@@ -84,6 +84,7 @@
                   id="rut"
                   v-model="form.rut"
                   type="text"
+                  maxlength="10"
                   class="form-control inputRUT"
                   :class="{
                     'is-invalid': submitted && $v.form.rut.$error,
@@ -107,7 +108,7 @@
             </div>
             <div class="col-12 col-lg-6">
               <div class="mb-3">
-                <label for="email">Email</label>
+                <label for="email">Correo Electronico</label>
                 <input
                   id="email"
                   v-model="form.email"
@@ -186,7 +187,9 @@
                   id="celular"
                   v-model="form.celular"
                   type="text"
+                  maxlength="9"
                   class="form-control"
+                  placeholder="9 12312312"
                   :class="{
                     'is-invalid': submitted && $v.form.celular.$error,
                   }"

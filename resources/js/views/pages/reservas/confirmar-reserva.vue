@@ -1,4 +1,4 @@
-<script src="./confirmar-reserva.js"></script>
+ <script src="./confirmar-reserva.js"></script>
 
 <template>
     <Layout>
@@ -154,22 +154,64 @@
                             >
                                 <template v-slot:cell(action)="data">
                                     <ul class="list-inline mb-0">
-                                        <li class="list-inline-item">
+                                        <li class="list-inline-item" v-if="data.item.estado_id == 2">
                                             <a
                                                 href="javascript:void(0);"
                                                 v-on:click="
-                                                    confirmar(data.item)
+                                                    confirmarAsistencia(data.item)
                                                 "
                                                 class="px-2 text-primary"
                                                 v-b-modal.confirarreserva
                                                 data-toggle="modal"
                                                 data-target=".bs-example-confirarreserva"
                                                 v-b-tooltip.hover
-                                                title="Confirmar reserva"
+                                                title="Confirmar Reserva"
                                             >
                                                 <i
                                                     class="
                                                         uil-check
+                                                        font-size-18
+                                                    "
+                                                ></i>
+                                            </a>
+                                        </li>
+                                        <li class="list-inline-item" v-if="data.item.estado_id != 2">
+                                            <a
+                                                href="javascript:void(0);"
+                                                v-on:click="
+                                                    DeshacerConfirmacion(data.item)
+                                                "
+                                                class="px-2 text-warning"
+                                                v-b-modal.confirarreserva
+                                                data-toggle="modal"
+                                                data-target=".bs-example-confirarreserva"
+                                                v-b-tooltip.hover
+                                                title="No Confirmada Reserva"
+                                            >
+                                                <i
+                                                    class="
+                                                        uil-times
+                                                        font-size-18
+                                                    "
+                                                ></i>
+                                            </a>
+                                        </li>
+                                        <li class="list-inline-item">
+                                            <a
+                                                href="javascript:void(0);"
+                                                v-on:click="
+                                                    FinalizarReserva(data.item)
+                                                "
+                                                class="px-2 text-success"
+                                                v-b-modal.confirarreserva
+                                                data-toggle="modal"
+                                                data-target=".bs-example-confirarreserva"
+                                                v-b-tooltip.hover
+                                                title="Finalizar Reserva"
+                                            >
+                                                <i
+                                                    class="
+                                                        uil-bill
                                                         font-size-18
                                                     "
                                                 ></i>
@@ -185,7 +227,7 @@
                                             >
                                                 <i
                                                     class="
-                                                        uil-times
+                                                        uil-trash
                                                         font-size-18
                                                     "
                                                 ></i>
@@ -225,7 +267,6 @@
             </div>
 
             <!-- modal -->
-
             <b-modal
                 id="confirarreserva"
                 size="xl"
@@ -351,35 +392,22 @@
                         <div class="col-12 mt-2 mb-2">
                             <div class="row">
                                 <div class="col-12 col-md-3">
-                                    <h6>Medio de Pago</h6>
-                                </div>
-                                <div class="col-12 col-md-3">
                                     <h6>Subtotal</h6>
                                 </div>
-                                <div class="col-12 col-md-3">
+                                <div class="col-12 col-md-2">
                                     <h6>% Descuento</h6>
                                 </div>
-                                <div class="col-12 col-md-3">
+                                <div class="col-12 col-md-2">
                                     <h6>Precio con descuento</h6>
+                                </div>
+                                <div class="col-12 col-md-2">
+                                    <h6>IVA</h6>
+                                </div>
+                                <div class="col-12 col-md-3">
+                                    <h6>TOTAL</h6>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-12 col-md-3">
-                                    <multiselect
-                                        v-model="formventa.mediopago"
-                                        :options="optionsMedioPago"
-                                        track-by="id_mediopago"
-                                        label="nombre"
-                                    ></multiselect>
-                                    <span
-                                        class="text-danger"
-                                        v-if="
-                                            submittedventa &&
-                                            !formventa.mediopago
-                                        "
-                                        >Debe seleccionar un medio de pago.</span
-                                    >
-                                </div>
                                 <div class="col-12 col-md-3">
                                     <input
                                         id="subtotal"
@@ -389,7 +417,7 @@
                                         disabled
                                     />
                                 </div>
-                                <div class="col-12 col-md-3">
+                                <div class="col-12 col-md-2">
                                     <input
                                         id="porcentajedescuento"
                                         v-model="formventa.porcentajedescuento"
@@ -398,7 +426,7 @@
                                         @input="calculo()"
                                     />
                                 </div>
-                                <div class="col-12 col-md-3">
+                                <div class="col-12 col-md-2">
                                     <input
                                         id="precio_descuento"
                                         v-model="formventa.precio_descuento"
@@ -407,25 +435,7 @@
                                         disabled
                                     />
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-12 mt-2 mb-2">
-                            <div class="row">
-                                <div class="col-12 col-md-3">
-                                    <h6>IVA</h6>
-                                </div>
-                                <div class="col-12 col-md-3">
-                                    <h6>Total</h6>
-                                </div>
-                                <div class="col-12 col-md-3">
-                                    <h6>Código Boucher</h6>
-                                </div>
-                                <div class="col-12 col-md-3">
-                                    <h6>Código Bono Salud</h6>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 col-md-3">
+                                <div class="col-12 col-md-2">
                                     <input
                                         id="iva"
                                         v-model="formventa.iva"
@@ -443,10 +453,47 @@
                                         disabled
                                     />
                                 </div>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-2 mb-2">
+                            <div class="row">
+                                <div class="col-12 col-md-4">
+                                    <h6>Boleta</h6>
+                                </div>
+                                <div class="col-12 col-md-3" v-if="formventa.picked == 1">
+                                    <h6>Codigo Boucher</h6>
+                                </div>
+                                <div class="col-12 col-md-2" v-if="formventa.picked == 2">
+                                    <h6>N° Boleta Honorario</h6>
+                                </div>
                                 <div class="col-12 col-md-3">
+                                    <h6>Codigo Bono Fonasa</h6>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 row">
+                                    <div class="col-md-6">
+                                        <input type="radio" id="1" value="1"  v-model="formventa.picked" v-on:change="changeBoleta()">
+                                        <label for="1">B. Electronica</label>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="radio" id="2" value="2" v-model="formventa.picked" v-on:change="changeBoleta()">
+                                        <label for="2">B. Honorario</label>    
+                                    </div>
+                                    
+                                </div>
+                                <div class="col-12 col-md-3" v-if="formventa.picked == 1">
                                     <input
                                         id="codigo_boucher"
                                         v-model="formventa.codigo_boucher"
+                                        type="text"
+                                        class="form-control"
+                                    />
+                                </div>
+                                <div class="col-12 col-md-2" v-if="formventa.picked == 2">
+                                    <input
+                                        id="n_honorario"
+                                        v-model="formventa.n_honorario"
                                         type="text"
                                         class="form-control"
                                     />
@@ -463,61 +510,38 @@
                         </div>
                         <div class="col-12 mt-2 mb-2">
                             <div class="row">
-                                <div class="col-12 col-md-3">
-                                    <h6>Boleta Honorario</h6>
-                                </div>
-                                <div class="col-12 col-md-3">
-                                    <h6>N° Boleta</h6>
-                                </div>
-                                <div class="col-12 col-md-3">
-                                    <h6>Estado del Pago</h6>
+                                <div class="col-12 col-md-4">
+                                    <h6>Medio de Pago</h6>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-12 col-md-3">
-                                    <input
-                                        id="boleta_honorario"
-                                        v-model="formventa.boleta_honorario"
-                                        type="text"
-                                        class="form-control"
-                                    />
-                                </div>
-                                <div class="col-12 col-md-3">
-                                    <input
-                                        id="n_honorario"
-                                        v-model="formventa.n_honorario"
-                                        type="text"
-                                        class="form-control"
-                                    />
-                                </div>
-                                <div class="col-12 col-md-3">
+                                <div class="col-12 col-md-4">
                                     <multiselect
-                                        v-model="formventa.estado"
-                                        :options="optionsPago"
-                                        track-by="id_pago"
+                                        v-model="formventa.mediopago"
+                                        :options="optionsMedioPago"
+                                        track-by="id_mediopago"
                                         label="nombre"
                                     ></multiselect>
                                     <span
                                         class="text-danger"
                                         v-if="
                                             submittedventa &&
-                                            !formventa.estado
+                                            !formventa.mediopago
                                         "
-                                        >Debe seleccionar el estado del pago.</span
+                                        >Debe seleccionar un medio de pago.</span
                                     >
                                 </div>
                             </div>
                         </div>
                     </div>
                     <button
-                        class="btn btn-primary mt-4 float-end"
+                        class="btn btn-success mt-4 float-end"
                         type="submit"
                     >
-                        <i class="far fa-save"></i> Crear
+                        <i class="far fa-check-circle"></i> Finalizar Reserva
                     </button>
                 </form>
             </b-modal>
-
             <!-- modal -->
         </div>
     </Layout>

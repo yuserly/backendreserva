@@ -119,6 +119,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('crearreservaprofesional',[ReservaController::class,'storeprofesional']);
     Route::post('buscarreserva',[ReservaController::class,'buscarreserva']);
     Route::post('traerreservadia',[ReservaController::class,'traerreservadia']);
+    Route::get('confirmarAsistencia/{reserva}', [ReservaController::class, 'confirmarAsistencia']);
+    Route::get('deshacerConfirmarAsistencia/{reserva}',[ReservaController::class, 'deshacerConfirmarAsistencia']);
 
     // venta
 

@@ -23,6 +23,7 @@ class ReservaController extends Controller
 
     public function store(Request $request)
     {
+
         // creamos el paciente o lo actualizamos
         $paciente = Paciente::updateOrCreate(['id_paciente'=>$request->id_paciente],
         [
@@ -65,7 +66,9 @@ class ReservaController extends Controller
         
         $sucursal = Sucursal::find($request->id_sucursal);
 
-        Mail::to($request->email)->send(new SendMailReserva($request->rut, $request->nombres, 
+        $domain = explode('@', $request->email);
+        if (checkdnsrr($domain[1], "MX")){
+            Mail::to($request->email)->send(new SendMailReserva($request->rut, $request->nombres, 
                                                          $request->apellidos, $request->email, 
                                                          $request->dia, $request->hora_inicio,
                                                          $request->id_profesional["profesional"]["nombres"], 
@@ -73,61 +76,61 @@ class ReservaController extends Controller
                                                          $sucursal->nombre, $sucursal->direccion,
                                                          $estado
                                                         ));
-
+        }
+        
         return $reserva;
     }
 
     public function storeprofesional(Request $request)
-        {
-            // creamos el paciente o lo actualizamos
-            $user = Auth::user();
+    {
+        // creamos el paciente o lo actualizamos
+        $user = Auth::user();
 
-            $profesional = Profesional::where('user_id',$user->id)->first();
+        $profesional = Profesional::where('user_id',$user->id)->first();
 
-            $paciente = Paciente::updateOrCreate(['id_paciente'=>$request->id_paciente],
-            [
-                'nombres' => $request->nombres,
-                'apellidos' => $request->apellidos,
-                'email' => $request->email,
-                'rut' => $request->rut,
-                'celular' => $request->celular,
-                'direccion' => $request->direccion,
-                'prevension_id' => $request->prevension_id["id_prevension"]
-            ]);
+        $paciente = Paciente::updateOrCreate(['id_paciente'=>$request->id_paciente],
+        [
+            'nombres' => $request->nombres,
+            'apellidos' => $request->apellidos,
+            'email' => $request->email,
+            'rut' => $request->rut,
+            'celular' => $request->celular,
+            'direccion' => $request->direccion,
+            'prevension_id' => $request->prevension_id["id_prevension"]
+        ]);
 
-            // creamos la reserva
+        // creamos la reserva
 
-            if($request->codigo){
-                $codigo = $request->codigo;
-            }else{
+        if($request->codigo){
+            $codigo = $request->codigo;
+        }else{
 
-                $codigo = uniqid();
-            }
-
-            if($request->editservicio){
-
-                $servicio = $request->editservicio["id_servicio"];
-
-            }else{
-
-                $servicio = $request->servicio_id_servicio["id_servicio"];
-            }
-
-            $reserva = Reserva::updateOrCreate(['id_reserva' => $request->id_reserva],[
-                'dia' => $request->dia,
-                'hora_inicio' => $request->hora_inicio,
-                'hora_fin' => $request->hora_fin,
-                'paciente_id'  => $paciente->id_paciente,
-                'profesional_id' => $profesional->id_profesional,
-                'estado_id' => 2,
-                'codigo' => $codigo,
-                'sucursal_id' => $request->id_sucursal,
-                'servicio_id' => $servicio
-            ]);
-
-            return $reserva;
+            $codigo = uniqid();
         }
 
+        if($request->editservicio){
+
+            $servicio = $request->editservicio["id_servicio"];
+
+        }else{
+
+            $servicio = $request->servicio_id_servicio["id_servicio"];
+        }
+
+        $reserva = Reserva::updateOrCreate(['id_reserva' => $request->id_reserva],[
+            'dia' => $request->dia,
+            'hora_inicio' => $request->hora_inicio,
+            'hora_fin' => $request->hora_fin,
+            'paciente_id'  => $paciente->id_paciente,
+            'profesional_id' => $profesional->id_profesional,
+            'estado_id' => 2,
+            'codigo' => $codigo,
+            'sucursal_id' => $request->id_sucursal,
+            'servicio_id' => $servicio
+        ]);
+
+        return $reserva;
+    }
 
     public function validarhora(Request $request)
     {
@@ -192,7 +195,8 @@ class ReservaController extends Controller
 
     }
 
-    public function checkhora($inicio, $fin, $hora){
+    public function checkhora($inicio, $fin, $hora)
+    {
 
         $hora_inicio_reserva = date_format(date_create($inicio),"H:i:s");
         $hora_fin_reserva = date_format(date_create($fin),"H:i:s");
@@ -206,7 +210,6 @@ class ReservaController extends Controller
 
     }
 
-
     public function editar(Request $request)
     {
 
@@ -219,7 +222,6 @@ class ReservaController extends Controller
         ]);
 
     }
-
 
     public function buscarreserva(Request $request)
     {
@@ -235,29 +237,43 @@ class ReservaController extends Controller
     public function traerreservadia(Request $request)
     {
 
-            $reserva = Reserva::where([['sucursal_id',$request->id_sucursal],['estado_id', 2],['dia', $request->fecha]])
+            $reserva = Reserva::where([['sucursal_id',$request->id_sucursal],['dia', $request->fecha]])
+            ->whereIn('estado_id', [2,3])
             ->with('paciente.prevision','profesional','servicio')->get();
 
             return $reserva;
 
     }
-    public function destroy(Reserva $reserva)
+
+    public function confirmarAsistencia($reserva)
+    {   
+        Reserva::updateOrCreate(['id_reserva' => $reserva],['estado_id' => 3]);
+        
+        return $reserva;
+    }
+
+    public function deshacerConfirmarAsistencia($reserva)
     {
-        if($reserva->estado_id == 2){
+        Reserva::updateOrCreate(['id_reserva' => $reserva],['estado_id' => 2]);
+        
+        return $reserva;
+    }
 
-            $res = $reserva->delete();
+    public function destroy(Reserva $reserva)
+    {   
+        
+        $reserva->delete();
+        return "Reserva eliminada exitosamente.";
+    }
 
-            if($res){
-
-                return 1 ;
-
-            }else{
-                return 0;
-            }
+    //METODO NO USARDO
+    public function checkDomain($email)
+    {
+        $domain = explode('@', $email);
+        if (checkdnsrr($domain[1], "MX")){
+            return "hola";
         }else{
-
-            return 0;
+            return "adios";
         }
-
     }
 }

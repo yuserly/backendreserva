@@ -391,21 +391,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="button-items d-flex justify-content-center">
-
-                    <button class="btn btn-danger mt-4" v-if="detalle.estado_id == 4 || detalle.estado_id == 5" @click="accion(6)" type="submit">
-                    <i class="uil-times"></i> Pago Rechazado
-                </button>
-                <button class="btn btn-success mt-4" v-if="detalle.estado_id == 6 || detalle.estado_id == 5" @click="accion(4)"  type="submit">
-                    <i class="uil-usd-circle"></i> Pagada
-                </button>
-                <button class="btn btn-warning mt-4" v-if="detalle.estado_id == 4 || detalle.estado_id == 6 || detalle.estado_id != 5" @click="accion(5)" type="submit">
-                    <i class="uil-clock-ten"></i> Pago Pendiente
-                </button>
-
-                </div>
-
                 
             </b-modal>
 

@@ -200,12 +200,11 @@ export default {
     formSubmit() {
       this.submitted = true;
       // stop here if form is invalid
-      this.$v.$touch();
-      if (!this.$v.$invalid && !this.emailexist) {
+      this.$v.form.$touch();
+      if (!this.$v.form.$invalid && !this.emailexist) {
         this.axios
           .post(`/api/crearsecretaria`, this.form)
           .then((res) => {
-
             if (res.data) {
               if (this.form.id_secretaria == "") {
                 Swal.fire({
@@ -337,7 +336,7 @@ export default {
           });
       }
     },
-
+ 
     successmsg(title, message, type) {
       Swal.fire(title, message, type);
     },

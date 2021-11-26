@@ -39,7 +39,6 @@ class VentaController extends Controller
      */
     public function store(Request $request)
     {
-
         $venta  = Venta::create([
             'reserva_id' => $request->id_reserva ,
             'paciente_id' => $request->id_paciente,
@@ -51,16 +50,16 @@ class VentaController extends Controller
             'total' => $request->total,
             'codigo_boucher' => $request->codigo_boucher,
             'codigo_bono_fonasa' => $request->codigo_bono_fonasa,
-            'boleta_honorario' => $request->boleta_honorario,
+            'boleta_honorario' => $request->picked,
             'n_honorario' => $request->boleta_honorario,
-            'estado_id' => $request->estado["id_estado"],
+            'estado_id' => 4,
             'sucursal_id' => $request->id_sucursal
         ]);
 
         if($venta){
 
             Reserva::where('id_reserva',$request->id_reserva)->update([
-                'estado_id' => 3
+                'estado_id' => 4
             ]);
 
             return 1;

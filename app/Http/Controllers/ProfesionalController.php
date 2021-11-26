@@ -125,7 +125,6 @@ class ProfesionalController extends Controller
     public function servicioprofesional(Request $request){
 
          // insertamos los servicios
-
          $arrayServicio = array();
 
          for ($i=0; $i < count($request->servicios) ; $i++) {
@@ -175,6 +174,8 @@ class ProfesionalController extends Controller
 
         $dia = Dia::where('dia', $request->diasemana)->first();
 
+        $diasDisponibles = HorarioProfesional::where([['profesional_id_profesional','=',$request->id_profesional],['sucursal_id', '=', $request->id_sucursal]])->with('dia')->get();
+
         if($dia){
 
             $id_dia = $dia->id_dia;
@@ -196,7 +197,7 @@ class ProfesionalController extends Controller
         $reserva = Reserva::where([['profesional_id',$request->id_profesional],['sucursal_id','=', $request->id_sucursal]])->get(); 
         $reserva->load('paciente');
 
-        return ["horario" => $horario, "bloqueo" => $bloqueo, "reserva" => $reserva];
+        return ["horario" => $horario, "bloqueo" => $bloqueo, "reserva" => $reserva, 'diasDisponibles' => $diasDisponibles];
 
     }
 

@@ -10012,6 +10012,62 @@ var unmountComponentAtNode = FullCalendarVDom.unmountComponentAtNode;
 
 /***/ }),
 
+/***/ "./node_modules/@fullcalendar/core/locales/es.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/@fullcalendar/core/locales/es.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+var es = {
+  code: 'es',
+  week: {
+    dow: 1, // Monday is the first day of the week.
+    doy: 4, // The week that contains Jan 4th is the first week of the year.
+  },
+  buttonText: {
+    prev: 'Ant',
+    next: 'Sig',
+    today: 'Hoy',
+    month: 'Mes',
+    week: 'Semana',
+    day: 'Día',
+    list: 'Agenda',
+  },
+  buttonHints: {
+    prev: '$0 antes',
+    next: '$0 siguiente',
+    today(buttonText) {
+      return (buttonText === 'Día') ? 'Hoy' :
+        ((buttonText === 'Semana') ? 'Esta' : 'Este') + ' ' + buttonText.toLocaleLowerCase()
+    },
+  },
+  viewHint(buttonText) {
+    return 'Vista ' + (buttonText === 'Semana' ? 'de la' : 'del') + ' ' + buttonText.toLocaleLowerCase()
+  },
+  weekText: 'Sm',
+  weekTextLong: 'Semana',
+  allDayText: 'Todo el día',
+  moreLinkText: 'más',
+  moreLinkHint(eventCnt) {
+    return `Mostrar ${eventCnt} eventos más`
+  },
+  noEventsText: 'No hay eventos para mostrar',
+  navLinkHint: 'Ir al $0',
+  closeHint: 'Cerrar',
+  timeHint: 'La hora',
+  eventHint: 'Evento',
+};
+
+exports["default"] = es;
+
+
+/***/ }),
+
 /***/ "./node_modules/@fullcalendar/core/main.js":
 /*!*************************************************!*\
   !*** ./node_modules/@fullcalendar/core/main.js ***!
@@ -18228,7 +18284,7 @@ var menuItems = [{
     permiso: pacientes
   }, {
     id: 1.2,
-    label: "Reservas",
+    label: "Ingresar Reservas",
     link: "/reservas",
     parentId: 3,
     permiso: reservas
@@ -20028,6 +20084,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     AddformDataServicio: function AddformDataServicio(data) {
+      this.datosModal = [];
       this.id_profesionalservicio = data.id_profesional;
       this.formservicio = {
         servicio_id_servicio: "",
@@ -20041,8 +20098,6 @@ __webpack_require__.r(__webpack_exports__);
     },
     formSubmitServicios: function formSubmitServicios() {
       var _this12 = this;
-
-      console.log(this.formservicio);
 
       if (this.formservicio.servicio_id_servicio == "") {
         sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
@@ -20063,11 +20118,11 @@ __webpack_require__.r(__webpack_exports__);
       this.formrequest.push(this.formservicio);
 
       if (this.formrequest.length > 0) {
-        var form = {
+        var formS = {
           servicios: this.formrequest,
           id_profesional: this.id_profesionalservicio
         };
-        this.axios.post("/api/serviciosprofesional", form).then(function (res) {
+        this.axios.post("/api/serviciosprofesional", formS).then(function (res) {
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
             icon: 'success',
             title: 'Servicio Añadido',
@@ -20079,8 +20134,8 @@ __webpack_require__.r(__webpack_exports__);
           _this12.traerServicio();
 
           _this12.datosModal = [];
+          _this12.formrequest = [];
           _this12.formservicio.servicio_id_servicio = "";
-          console.log(_this12.formservicio);
         })["catch"](function (error) {
           console.log("error", error);
         });
@@ -20164,7 +20219,7 @@ __webpack_require__.r(__webpack_exports__);
         codigo_bono_fonasa: "",
         boleta_honorario: "",
         n_honorario: "",
-        estado: ""
+        picked: 1
       },
       // tabla
       tableData: [],
@@ -20212,6 +20267,10 @@ __webpack_require__.r(__webpack_exports__);
         key: "servicio.nombre",
         sortable: true,
         label: "Servicio"
+      }, {
+        key: "hora_inicio",
+        sortable: true,
+        label: "Hora"
       }, "action"]
     };
   },
@@ -20256,7 +20315,6 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       this.axios.get("/api/obtenermediopago/").then(function (response) {
-        console.log(response);
         _this2.optionsMedioPago = response.data;
       });
     },
@@ -20265,7 +20323,6 @@ __webpack_require__.r(__webpack_exports__);
 
       this.formbuscar.id_sucursal = this.sucursal.id_sucursal;
       this.axios.post("/api/traerreservadia", this.formbuscar).then(function (res) {
-        console.log(res);
         _this3.tableData = res.data;
       })["catch"](function (error) {
         console.log("error", error);
@@ -20280,13 +20337,72 @@ __webpack_require__.r(__webpack_exports__);
       if (!this.$v.formbuscar.$invalid) {
         this.formbuscar.id_sucursal = this.sucursal.id_sucursal;
         this.axios.post("/api/buscarreserva", this.formbuscar).then(function (res) {
+          console.log(res);
           _this4.tableData = res.data;
         })["catch"](function (error) {
           console.log("error", error);
         });
       }
     },
-    confirmar: function confirmar(data) {
+    confirmarAsistencia: function confirmarAsistencia(data) {
+      var _this5 = this;
+
+      sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
+        title: 'Confirmar Reserva',
+        text: '¿Esta seguro que desea confirmar la asistencia a esta reserva?',
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#34c38f",
+        cancelButtonColor: "#f46a6a",
+        confirmButtonText: "Si"
+      }).then(function (result) {
+        if (result.value) {
+          _this5.axios.get("/api/confirmarAsistencia/".concat(data.id_reserva)).then(function (res) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
+              icon: 'success',
+              title: 'Reserva ',
+              text: "Confirmada asistencia exitosamente.",
+              timer: 1500,
+              showConfirmButton: false
+            });
+
+            _this5.TraerReservaDia();
+          })["catch"](function (error) {
+            console.log("error", error);
+          });
+        }
+      });
+    },
+    DeshacerConfirmacion: function DeshacerConfirmacion(data) {
+      var _this6 = this;
+
+      sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
+        title: 'Deshacer Confirmar Reserva',
+        text: '¿Esta seguro que desea deshacer la confirmacion de asistencia a esta reserva?',
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#34c38f",
+        cancelButtonColor: "#f46a6a",
+        confirmButtonText: "Si"
+      }).then(function (result) {
+        if (result.value) {
+          _this6.axios.get("/api/deshacerConfirmarAsistencia/".concat(data.id_reserva)).then(function (res) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
+              icon: 'success',
+              title: 'Reserva ',
+              text: "Confirmacion de asistencia ha sido anulada.",
+              timer: 1500,
+              showConfirmButton: false
+            });
+
+            _this6.TraerReservaDia();
+          })["catch"](function (error) {
+            console.log("error", error);
+          });
+        }
+      });
+    },
+    FinalizarReserva: function FinalizarReserva(data) {
       this.modal = true;
       this.cambiarprevision.id_paciente = data.paciente.id_paciente;
       this.cambiarprevision.id_prevision = data.paciente.prevision;
@@ -20324,7 +20440,7 @@ __webpack_require__.r(__webpack_exports__);
       this.formventa.total = this.formventa.precio_descuento + iva;
     },
     cambiarPrevision: function cambiarPrevision() {
-      var _this5 = this;
+      var _this7 = this;
 
       this.axios.post("/api/cambiarprevisionpaciente", this.cambiarprevision).then(function (res) {
         console.log(res);
@@ -20339,11 +20455,11 @@ __webpack_require__.r(__webpack_exports__);
           icono = "success";
         }
 
-        _this5.sweealerta(icono, titulo);
+        _this7.sweealerta(icono, titulo);
 
-        _this5.calculo();
+        _this7.calculo();
 
-        _this5.cambiarprecio();
+        _this7.cambiarprecio();
       })["catch"](function (error) {
         console.log("error", error);
       });
@@ -20381,18 +20497,43 @@ __webpack_require__.r(__webpack_exports__);
       this.formventa.iva = iva;
       this.formventa.total = this.formventa.precio_descuento + iva;
     },
+    changeBoleta: function changeBoleta() {
+      if (this.formventa.picked == 1) {
+        this.formventa.codigo_boucher = "";
+        this.formventa.codigo_bono_fonasa = "";
+      } else {
+        this.formventa.n_honorario = "";
+      }
+    },
     formSubmit: function formSubmit() {
-      var _this6 = this;
+      var _this8 = this;
 
       this.submittedventa = true;
 
-      if (!this.formventa.mediopago || !this.formventa.estado) {
+      if (!this.formventa.mediopago) {
         return;
+      }
+
+      if (this.formventa.picked == 1 && this.formventa.codigo_boucher.length < 1) {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
+          icon: 'warning',
+          text: "Debes ingresar codigo de boleta electronica",
+          timer: 1500,
+          showConfirmButton: false
+        });
+        return false;
+      } else if (this.formventa.picked == 2 && this.formventa.n_honorario.length < 1) {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
+          icon: 'warning',
+          text: "Debes ingresar numero de boleta de honorario.",
+          timer: 1500,
+          showConfirmButton: false
+        });
+        return false;
       }
 
       this.formventa.id_sucursal = this.sucursal.id_sucursal;
       this.axios.post("/api/confirmarreserva", this.formventa).then(function (res) {
-        console.log(res);
         var titulo = "";
         var icono = "";
 
@@ -20404,10 +20545,10 @@ __webpack_require__.r(__webpack_exports__);
           icono = "error";
         }
 
-        _this6.modal = false, _this6.cambiarprevision = {
+        _this8.modal = false, _this8.cambiarprevision = {
           id_paciente: "",
           id_prevision: ""
-        }, _this6.formventa = {
+        }, _this8.formventa = {
           id_reserva: "",
           mediopago: "",
           subtotal: 0,
@@ -20418,16 +20559,17 @@ __webpack_require__.r(__webpack_exports__);
           codigo_boucher: "",
           codigo_bono_fonasa: "",
           boleta_honorario: "",
-          n_honorario: ""
-        }, _this6.sweealerta(icono, titulo);
+          n_honorario: "",
+          picked: 1
+        }, _this8.sweealerta(icono, titulo);
 
-        _this6.TraerReservaDia();
+        _this8.TraerReservaDia();
       })["catch"](function (error) {
         console.log("error", error);
       });
     },
     eliminar: function eliminar(data) {
-      var _this7 = this;
+      var _this9 = this;
 
       var id_reserva = data.id_reserva;
       sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
@@ -20440,21 +20582,16 @@ __webpack_require__.r(__webpack_exports__);
         confirmButtonText: "Si"
       }).then(function (result) {
         if (result.value) {
-          _this7.axios["delete"]("/api/deletereserva/".concat(id_reserva)).then(function (res) {
-            var titulo = "";
-            var icon = "";
+          _this9.axios["delete"]("/api/deletereserva/".concat(id_reserva)).then(function (res) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
+              icon: 'error',
+              title: 'Reserva',
+              text: "Reserva eliminada exitosamente.",
+              timer: 1500,
+              showConfirmButton: false
+            });
 
-            if (res.data == 1) {
-              titulo = "Reserva eliminada con éxito";
-              icon = "success";
-            } else {
-              titulo = "Error al eliminar la reserva";
-              icon = "error";
-            }
-
-            _this7.sweealerta(icon, titulo);
-
-            _this7.TraerReservaDia();
+            _this9.TraerReservaDia();
           });
         }
       });
@@ -21145,19 +21282,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @fullcalendar/daygrid */ "./node_modules/@fullcalendar/daygrid/main.js");
 /* harmony import */ var _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fullcalendar/timegrid */ "./node_modules/@fullcalendar/timegrid/main.js");
 /* harmony import */ var _fullcalendar_interaction__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fullcalendar/interaction */ "./node_modules/@fullcalendar/interaction/main.js");
-/* harmony import */ var _fullcalendar_bootstrap__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fullcalendar/bootstrap */ "./node_modules/@fullcalendar/bootstrap/main.js");
-/* harmony import */ var _fullcalendar_list__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @fullcalendar/list */ "./node_modules/@fullcalendar/list/main.js");
-/* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue-multiselect */ "./node_modules/vue-multiselect/dist/vue-multiselect.min.js");
-/* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(vue_multiselect__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! vuelidate/lib/validators */ "./node_modules/vuelidate/lib/validators/index.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var _layouts_main__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../layouts/main */ "./resources/js/views/layouts/main.vue");
-/* harmony import */ var _data_calendar__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./data-calendar */ "./resources/js/views/pages/reservas/data-calendar.js");
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var _fullcalendar_core_locales_es__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fullcalendar/core/locales/es */ "./node_modules/@fullcalendar/core/locales/es.js");
+/* harmony import */ var _fullcalendar_bootstrap__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @fullcalendar/bootstrap */ "./node_modules/@fullcalendar/bootstrap/main.js");
+/* harmony import */ var _fullcalendar_list__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @fullcalendar/list */ "./node_modules/@fullcalendar/list/main.js");
+/* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! vue-multiselect */ "./node_modules/vue-multiselect/dist/vue-multiselect.min.js");
+/* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(vue_multiselect__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! vuelidate/lib/validators */ "./node_modules/vuelidate/lib/validators/index.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _layouts_main__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../layouts/main */ "./resources/js/views/layouts/main.vue");
+/* harmony import */ var _data_calendar__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./data-calendar */ "./resources/js/views/pages/reservas/data-calendar.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_12__);
+
 
 
 
@@ -21174,8 +21313,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
     FullCalendar: _fullcalendar_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
-    Layout: _layouts_main__WEBPACK_IMPORTED_MODULE_9__["default"],
-    Multiselect: (vue_multiselect__WEBPACK_IMPORTED_MODULE_6___default())
+    Layout: _layouts_main__WEBPACK_IMPORTED_MODULE_10__["default"],
+    Multiselect: (vue_multiselect__WEBPACK_IMPORTED_MODULE_7___default())
   },
   data: function data() {
     return {
@@ -21193,7 +21332,7 @@ __webpack_require__.r(__webpack_exports__);
           center: "title",
           right: "timeGridWeek,timeGridDay,listWeek"
         },
-        plugins: [_fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_1__["default"], _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_2__["default"], _fullcalendar_interaction__WEBPACK_IMPORTED_MODULE_3__["default"], _fullcalendar_bootstrap__WEBPACK_IMPORTED_MODULE_4__["default"], _fullcalendar_list__WEBPACK_IMPORTED_MODULE_5__["default"]],
+        plugins: [_fullcalendar_daygrid__WEBPACK_IMPORTED_MODULE_1__["default"], _fullcalendar_timegrid__WEBPACK_IMPORTED_MODULE_2__["default"], _fullcalendar_interaction__WEBPACK_IMPORTED_MODULE_3__["default"], _fullcalendar_bootstrap__WEBPACK_IMPORTED_MODULE_5__["default"], _fullcalendar_list__WEBPACK_IMPORTED_MODULE_6__["default"]],
         initialView: "timeGridDay",
         slotDuration: "00:15:00",
         slotMinTime: "12:00:00",
@@ -21201,7 +21340,7 @@ __webpack_require__.r(__webpack_exports__);
         slotLabelInterval: "00:05:00",
         themeSystem: "bootstrap",
         disableResizing: true,
-        events: _data_calendar__WEBPACK_IMPORTED_MODULE_10__.calendarEvents,
+        events: _data_calendar__WEBPACK_IMPORTED_MODULE_11__.calendarEvents,
         editable: true,
         droppable: true,
         eventResizableFromStart: false,
@@ -21209,6 +21348,8 @@ __webpack_require__.r(__webpack_exports__);
         eventClick: this.editEvent,
         eventsSet: this.handleEvents,
         eventLimit: true,
+        hiddenDays: [],
+        locale: _fullcalendar_core_locales_es__WEBPACK_IMPORTED_MODULE_4__["default"],
         view: {
           timeGrid: {
             eventLimit: 1
@@ -21256,7 +21397,7 @@ __webpack_require__.r(__webpack_exports__);
       duracion: "",
       showModal: false,
       eventModal: false,
-      categories: _data_calendar__WEBPACK_IMPORTED_MODULE_10__.categories,
+      categories: _data_calendar__WEBPACK_IMPORTED_MODULE_11__.categories,
       submitted: false,
       submit: false,
       newEventData: {},
@@ -21275,25 +21416,25 @@ __webpack_require__.r(__webpack_exports__);
   validations: {
     form: {
       nombres: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_12__.required
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_13__.required
       },
       rut: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_12__.required
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_13__.required
       },
       apellidos: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_12__.required
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_13__.required
       },
       email: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_12__.required
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_13__.required
       },
       celular: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_12__.required
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_13__.required
       },
       direccion: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_12__.required
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_13__.required
       },
       prevension_id: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_12__.required
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_13__.required
       }
     }
   },
@@ -21346,8 +21487,8 @@ __webpack_require__.r(__webpack_exports__);
 
       if (cuerpo.length < 7) {
         // Si no cumple con el mínimo de digitos ej. (n.nnn.nnn)
-        jquery__WEBPACK_IMPORTED_MODULE_11___default()('.inputRUT').attr('style', 'border-color: red !important');
-        jquery__WEBPACK_IMPORTED_MODULE_11___default()('.btnSubmit').prop('disabled', true);
+        jquery__WEBPACK_IMPORTED_MODULE_12___default()('.inputRUT').attr('style', 'border-color: red !important');
+        jquery__WEBPACK_IMPORTED_MODULE_12___default()('.btnSubmit').prop('disabled', true);
         return false;
       }
 
@@ -21376,8 +21517,8 @@ __webpack_require__.r(__webpack_exports__);
       dv = dv == 0 ? 11 : dv;
 
       if (dvEsperado != dv) {
-        jquery__WEBPACK_IMPORTED_MODULE_11___default()('.inputRUT').attr('style', 'border-color: red !important');
-        jquery__WEBPACK_IMPORTED_MODULE_11___default()('.btnSubmit').prop('disabled', true);
+        jquery__WEBPACK_IMPORTED_MODULE_12___default()('.inputRUT').attr('style', 'border-color: red !important');
+        jquery__WEBPACK_IMPORTED_MODULE_12___default()('.btnSubmit').prop('disabled', true);
         this.form.nombres = "";
         this.form.apellidos = "";
         this.form.id_paciente = "";
@@ -21389,9 +21530,9 @@ __webpack_require__.r(__webpack_exports__);
       } // Validar que el Cuerpo coincide con su Dígito Verificador
 
 
-      jquery__WEBPACK_IMPORTED_MODULE_11___default()('.inputRUT').attr('style', 'border-color: #40A944 !important'); // Si todo sale bien, eliminar errores (decretar que es válido)
+      jquery__WEBPACK_IMPORTED_MODULE_12___default()('.inputRUT').attr('style', 'border-color: #40A944 !important'); // Si todo sale bien, eliminar errores (decretar que es válido)
 
-      jquery__WEBPACK_IMPORTED_MODULE_11___default()('.btnSubmit').prop('disabled', false);
+      jquery__WEBPACK_IMPORTED_MODULE_12___default()('.btnSubmit').prop('disabled', false);
       this.validarRut(this.form.rut);
     },
     // crear reserva
@@ -21399,7 +21540,6 @@ __webpack_require__.r(__webpack_exports__);
       var _this3 = this;
 
       this.submitted = true;
-      console.log(e);
       this.$v.$touch();
 
       if (this.$v.$invalid) {
@@ -21411,45 +21551,42 @@ __webpack_require__.r(__webpack_exports__);
         var fecha_inicio = "";
 
         if (this.form.id_reserva == "") {
-          fecha_fin = moment__WEBPACK_IMPORTED_MODULE_7___default()(this.newEventData.date).add(this.duracion, "m").format("YYYY-MM-DD HH:mm:ss");
-          fecha_inicio = moment__WEBPACK_IMPORTED_MODULE_7___default()(this.newEventData.date).format("YYYY-MM-DD HH:mm:ss"); // fechas que se pasaran a la bd
+          fecha_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(this.newEventData.date).add(this.duracion, "m").format("YYYY-MM-DD HH:mm:ss");
+          fecha_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(this.newEventData.date).format("YYYY-MM-DD HH:mm:ss"); // fechas que se pasaran a la bd
 
-          this.form.dia = moment__WEBPACK_IMPORTED_MODULE_7___default()(this.newEventData.date).format("YYYY-MM-DD");
-          this.form.hora_inicio = moment__WEBPACK_IMPORTED_MODULE_7___default()(fecha_inicio).format("HH:mm:ss");
-          this.form.hora_fin = moment__WEBPACK_IMPORTED_MODULE_7___default()(fecha_fin).format("HH:mm:ss");
+          this.form.dia = moment__WEBPACK_IMPORTED_MODULE_8___default()(this.newEventData.date).format("YYYY-MM-DD");
+          this.form.hora_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(fecha_inicio).format("HH:mm:ss");
+          this.form.hora_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(fecha_fin).format("HH:mm:ss");
         } // mandamos a crear la reserva
 
 
         this.form.id_sucursal = this.sucursal.id_sucursal;
-        console.log(this.form);
         this.axios.post("/api/crearreserva", this.form).then(function (res) {
-          var title = "";
-          var message = "";
-          var type = "";
-
           if (res.data) {
+            _this3.showModal = false;
+
             if (_this3.form.id_reserva == "") {
-              title = "Crear reserva";
-              message = "reserva creada con exito";
-              type = "success";
+              sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
+                position: "center",
+                icon: "success",
+                title: "Reserva creada exitosamente",
+                showConfirmButton: false,
+                timer: 1000
+              });
             } else {
-              title = "Editar reserva";
-              message = "reserva editada con exito";
-              type = "success";
+              sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
+                position: "center",
+                icon: "success",
+                title: "Reserva editada exitosamente",
+                showConfirmButton: false,
+                timer: 1000
+              });
             }
 
             _this3.calendarOptions.events = [{}];
 
-            _this3.traerHoras(); // this.currentEvents = calendarApi.addEvent({
-            //     id: res.data.id_reserva,
-            //     title: titlereserva,
-            //     start: fecha_inicio,
-            //     end: fecha_fin,
-            //     classNames: "bg-info text-white"
-            // });
+            _this3.traerHoras();
 
-
-            _this3.showModal = false;
             _this3.newEventData = {};
 
             _this3.successmsg(title, message, type);
@@ -21476,8 +21613,6 @@ __webpack_require__.r(__webpack_exports__);
 
           _this3.showModal = false;
           _this3.newEventData = {};
-
-          _this3.successmsg(title, message, type);
         });
       }
 
@@ -21490,14 +21625,14 @@ __webpack_require__.r(__webpack_exports__);
 
       var idreserva = info.event._def.extendedProps.idreserva;
       var hora_sinformat = info.event.start;
-      var fecha_fin = moment__WEBPACK_IMPORTED_MODULE_7___default()(hora_sinformat).add(this.duracion, "m").format("YYYY-MM-DD HH:mm:ss");
-      var fecha_inicio = moment__WEBPACK_IMPORTED_MODULE_7___default()(hora_sinformat).format("YYYY-MM-DD HH:mm:ss"); // fechas que se pasaran a la bd
+      var fecha_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(hora_sinformat).add(this.duracion, "m").format("YYYY-MM-DD HH:mm:ss");
+      var fecha_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(hora_sinformat).format("YYYY-MM-DD HH:mm:ss"); // fechas que se pasaran a la bd
 
       var nuevadata = {
         id_reserva: idreserva,
-        dia: moment__WEBPACK_IMPORTED_MODULE_7___default()(hora_sinformat).format("YYYY-MM-DD"),
-        hora_inicio: moment__WEBPACK_IMPORTED_MODULE_7___default()(fecha_inicio).format("HH:mm:ss"),
-        hora_fin: moment__WEBPACK_IMPORTED_MODULE_7___default()(fecha_fin).format("HH:mm:ss")
+        dia: moment__WEBPACK_IMPORTED_MODULE_8___default()(hora_sinformat).format("YYYY-MM-DD"),
+        hora_inicio: moment__WEBPACK_IMPORTED_MODULE_8___default()(fecha_inicio).format("HH:mm:ss"),
+        hora_fin: moment__WEBPACK_IMPORTED_MODULE_8___default()(fecha_fin).format("HH:mm:ss")
       };
       this.axios.post("/api/editarreserva", nuevadata).then(function (res) {
         var title = "Editar Reserva";
@@ -21548,9 +21683,9 @@ __webpack_require__.r(__webpack_exports__);
         if (response.data == 1) {
           _this5.deleteId.el.remove();
 
-          sweetalert2__WEBPACK_IMPORTED_MODULE_8___default().fire("Eliminar Reserva", "Reserva eliminada.", "success");
+          sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire("Eliminar Reserva", "Reserva eliminada.", "success");
         } else {
-          sweetalert2__WEBPACK_IMPORTED_MODULE_8___default().fire("Eliminar Reserva", "Error al elimar la reserva.", "error");
+          sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire("Eliminar Reserva", "Error al elimar la reserva.", "error");
         }
 
         _this5.showModal = false;
@@ -21578,8 +21713,8 @@ __webpack_require__.r(__webpack_exports__);
       var _this6 = this;
 
       var form = {
-        dia: moment__WEBPACK_IMPORTED_MODULE_7___default()(info.date).format("YYYY-MM-DD"),
-        hora: moment__WEBPACK_IMPORTED_MODULE_7___default()(info.date).format("HH:mm:ss"),
+        dia: moment__WEBPACK_IMPORTED_MODULE_8___default()(info.date).format("YYYY-MM-DD"),
+        hora: moment__WEBPACK_IMPORTED_MODULE_8___default()(info.date).format("HH:mm:ss"),
         id_profesional: this.form.id_profesional.profesional.id_profesional,
         id_sucursal: this.sucursal.id_sucursal
       };
@@ -21587,7 +21722,7 @@ __webpack_require__.r(__webpack_exports__);
         console.log(res);
 
         if (res.data == 1) {
-          sweetalert2__WEBPACK_IMPORTED_MODULE_8___default().fire({
+          sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
             position: "center",
             icon: "error",
             title: "Bloque reservado",
@@ -21641,7 +21776,7 @@ __webpack_require__.r(__webpack_exports__);
           _this7.dateClicked(info);
         });
       } else {
-        sweetalert2__WEBPACK_IMPORTED_MODULE_8___default().fire({
+        sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
           position: "center",
           icon: "error",
           title: "No puedes editar un horario no disponible desde el calendario",
@@ -21657,7 +21792,7 @@ __webpack_require__.r(__webpack_exports__);
     confirm: function confirm() {
       var _this8 = this;
 
-      sweetalert2__WEBPACK_IMPORTED_MODULE_8___default().fire({
+      sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
         title: "Eliminar Reserva",
         text: "Está seguro de eliminar esta reserva?",
         icon: "warning",
@@ -21682,15 +21817,7 @@ __webpack_require__.r(__webpack_exports__);
     /**
      * Show successfull Save Dialog
      */
-    successmsg: function successmsg() {
-      sweetalert2__WEBPACK_IMPORTED_MODULE_8___default().fire({
-        position: "center",
-        icon: "success",
-        title: "Event has been saved",
-        showConfirmButton: false,
-        timer: 1000
-      });
-    },
+    successmsg: function successmsg() {},
     // traer especialidad
     traerEspecialidad: function traerEspecialidad() {
       var _this9 = this;
@@ -21704,7 +21831,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this10 = this;
 
       if (!this.sucursal) {
-        sweetalert2__WEBPACK_IMPORTED_MODULE_8___default().fire({
+        sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
           position: "center",
           icon: "error",
           title: "Debes seleccionar una sucursal",
@@ -21750,7 +21877,25 @@ __webpack_require__.r(__webpack_exports__);
         id_sucursal: this.sucursal.id_sucursal
       };
       this.axios.post("/api/traerhorario", form).then(function (res) {
-        console.log(res);
+        var diashabiles = [];
+        var diassemana = [0, 1, 2, 3, 4, 5, 6];
+        res.data.diasDisponibles.forEach(function (element, i) {
+          if (element["dia"]["dia"] == 7) {
+            element["dia"]["dia"] = 0;
+          }
+
+          diashabiles.push(element["dia"]["dia"]);
+        });
+
+        for (var i = 0; i < diassemana.length; i++) {
+          for (var j = 0; j < diassemana.length; j++) {
+            if (diashabiles[i] == diassemana[j]) {
+              diassemana.splice(j, 1);
+            }
+          }
+        }
+
+        _this12.calendarOptions.hiddenDays = diassemana;
 
         if (res.data.horario) {
           _this12.calendarOptions.slotMinTime = res.data.horario.hora_inicio;
@@ -21764,12 +21909,12 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         if (res.data.bloqueo) {
-          for (var i = 0; i < res.data.bloqueo.length; i++) {
-            var dia = res.data.bloqueo[i]["dia"];
-            var fecha_inicio = res.data.bloqueo[i]["hora_inicio"];
-            var fecha_fin = res.data.bloqueo[i]["hora_fin"];
-            var fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_7___default()(dia + " " + fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
-            var fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_7___default()(dia + " " + fecha_fin).format("YYYY-MM-DD HH:mm:ss");
+          for (var _i = 0; _i < res.data.bloqueo.length; _i++) {
+            var dia = res.data.bloqueo[_i]["dia"];
+            var fecha_inicio = res.data.bloqueo[_i]["hora_inicio"];
+            var fecha_fin = res.data.bloqueo[_i]["hora_fin"];
+            var fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(dia + " " + fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
+            var fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(dia + " " + fecha_fin).format("YYYY-MM-DD HH:mm:ss");
 
             _this12.calendarOptions.events.push({
               id: "",
@@ -21783,21 +21928,21 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         if (res.data.reserva) {
-          for (var _i = 0; _i < res.data.reserva.length; _i++) {
-            var _dia = res.data.reserva[_i]["dia"];
-            var _fecha_inicio = res.data.reserva[_i]["hora_inicio"];
-            var _fecha_fin = res.data.reserva[_i]["hora_fin"];
+          for (var _i2 = 0; _i2 < res.data.reserva.length; _i2++) {
+            var _dia = res.data.reserva[_i2]["dia"];
+            var _fecha_inicio = res.data.reserva[_i2]["hora_inicio"];
+            var _fecha_fin = res.data.reserva[_i2]["hora_fin"];
 
-            var _fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_7___default()(_dia + " " + _fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
+            var _fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia + " " + _fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
 
-            var _fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_7___default()(_dia + " " + _fecha_fin).format("YYYY-MM-DD HH:mm:ss");
+            var _fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia + " " + _fecha_fin).format("YYYY-MM-DD HH:mm:ss");
 
-            console.log(res.data.reserva[_i]["paciente"]['nombres']);
+            console.log(res.data.reserva[_i2]["paciente"]['nombres']);
 
             _this12.calendarOptions.events.push({
-              idreserva: res.data.reserva[_i]["id_reserva"],
-              idpaciente: res.data.reserva[_i]["paciente_id"],
-              title: res.data.reserva[_i]["paciente"]['rut'] + ' - ' + res.data.reserva[_i]["paciente"]['nombres'] + ' ' + res.data.reserva[_i]["paciente"]['apellidos'],
+              idreserva: res.data.reserva[_i2]["id_reserva"],
+              idpaciente: res.data.reserva[_i2]["paciente_id"],
+              title: res.data.reserva[_i2]["paciente"]['rut'] + ' - ' + res.data.reserva[_i2]["paciente"]['nombres'] + ' ' + res.data.reserva[_i2]["paciente"]['apellidos'],
               start: _fecha_comple_inicio,
               end: _fecha_comple_fin,
               classNames: "bg-info text-white"
@@ -22019,9 +22164,9 @@ __webpack_require__.r(__webpack_exports__);
 
       this.submitted = true; // stop here if form is invalid
 
-      this.$v.$touch();
+      this.$v.form.$touch();
 
-      if (!this.$v.$invalid && !this.emailexist) {
+      if (!this.$v.form.$invalid && !this.emailexist) {
         this.axios.post("/api/crearsecretaria", this.form).then(function (res) {
           if (res.data) {
             if (_this4.form.id_secretaria == "") {
@@ -22218,15 +22363,41 @@ __webpack_require__.r(__webpack_exports__);
         key: "nombre",
         sortable: true
       }, {
-        label: "Precio",
         key: "precio_particular",
-        sortable: true
+        sortable: true,
+        label: "Precio",
+        formatter: function formatter(precio_particular, key, item) {
+          var formatter = new Intl.NumberFormat("es-CL", {
+            style: "currency",
+            currency: "CLP",
+            minimumFractionDigits: 0
+          });
+          return formatter.format(precio_particular);
+        }
       }, {
         key: "precio_fonasa",
-        sortable: true
+        sortable: true,
+        label: "Precio Fonasa",
+        formatter: function formatter(precio_fonasa, key, item) {
+          var formatter = new Intl.NumberFormat("es-CL", {
+            style: "currency",
+            currency: "CLP",
+            minimumFractionDigits: 0
+          });
+          return formatter.format(precio_fonasa);
+        }
       }, {
         key: "precio_isapre",
-        sortable: true
+        sortable: true,
+        label: "Precio Isapre",
+        formatter: function formatter(precio_isapre, key, item) {
+          var formatter = new Intl.NumberFormat("es-CL", {
+            style: "currency",
+            currency: "CLP",
+            minimumFractionDigits: 0
+          });
+          return formatter.format(precio_isapre);
+        }
       }, {
         key: "especialidad.nombre",
         label: 'Especialidad',
@@ -75269,6 +75440,106 @@ var render = function () {
                         fn: function (data) {
                           return [
                             _c("ul", { staticClass: "list-inline mb-0" }, [
+                              data.item.estado_id == 2
+                                ? _c(
+                                    "li",
+                                    { staticClass: "list-inline-item" },
+                                    [
+                                      _c(
+                                        "a",
+                                        {
+                                          directives: [
+                                            {
+                                              name: "b-modal",
+                                              rawName:
+                                                "v-b-modal.confirarreserva",
+                                              modifiers: {
+                                                confirarreserva: true,
+                                              },
+                                            },
+                                            {
+                                              name: "b-tooltip",
+                                              rawName: "v-b-tooltip.hover",
+                                              modifiers: { hover: true },
+                                            },
+                                          ],
+                                          staticClass: "px-2 text-primary",
+                                          attrs: {
+                                            href: "javascript:void(0);",
+                                            "data-toggle": "modal",
+                                            "data-target":
+                                              ".bs-example-confirarreserva",
+                                            title: "Confirmar Reserva",
+                                          },
+                                          on: {
+                                            click: function ($event) {
+                                              return _vm.confirmarAsistencia(
+                                                data.item
+                                              )
+                                            },
+                                          },
+                                        },
+                                        [
+                                          _c("i", {
+                                            staticClass:
+                                              "\n                                                    uil-check\n                                                    font-size-18\n                                                ",
+                                          }),
+                                        ]
+                                      ),
+                                    ]
+                                  )
+                                : _vm._e(),
+                              _vm._v(" "),
+                              data.item.estado_id != 2
+                                ? _c(
+                                    "li",
+                                    { staticClass: "list-inline-item" },
+                                    [
+                                      _c(
+                                        "a",
+                                        {
+                                          directives: [
+                                            {
+                                              name: "b-modal",
+                                              rawName:
+                                                "v-b-modal.confirarreserva",
+                                              modifiers: {
+                                                confirarreserva: true,
+                                              },
+                                            },
+                                            {
+                                              name: "b-tooltip",
+                                              rawName: "v-b-tooltip.hover",
+                                              modifiers: { hover: true },
+                                            },
+                                          ],
+                                          staticClass: "px-2 text-warning",
+                                          attrs: {
+                                            href: "javascript:void(0);",
+                                            "data-toggle": "modal",
+                                            "data-target":
+                                              ".bs-example-confirarreserva",
+                                            title: "No Confirmada Reserva",
+                                          },
+                                          on: {
+                                            click: function ($event) {
+                                              return _vm.DeshacerConfirmacion(
+                                                data.item
+                                              )
+                                            },
+                                          },
+                                        },
+                                        [
+                                          _c("i", {
+                                            staticClass:
+                                              "\n                                                    uil-times\n                                                    font-size-18\n                                                ",
+                                          }),
+                                        ]
+                                      ),
+                                    ]
+                                  )
+                                : _vm._e(),
+                              _vm._v(" "),
                               _c("li", { staticClass: "list-inline-item" }, [
                                 _c(
                                   "a",
@@ -75285,24 +75556,24 @@ var render = function () {
                                         modifiers: { hover: true },
                                       },
                                     ],
-                                    staticClass: "px-2 text-primary",
+                                    staticClass: "px-2 text-success",
                                     attrs: {
                                       href: "javascript:void(0);",
                                       "data-toggle": "modal",
                                       "data-target":
                                         ".bs-example-confirarreserva",
-                                      title: "Confirmar reserva",
+                                      title: "Finalizar Reserva",
                                     },
                                     on: {
                                       click: function ($event) {
-                                        return _vm.confirmar(data.item)
+                                        return _vm.FinalizarReserva(data.item)
                                       },
                                     },
                                   },
                                   [
                                     _c("i", {
                                       staticClass:
-                                        "\n                                                    uil-check\n                                                    font-size-18\n                                                ",
+                                        "\n                                                    uil-bill\n                                                    font-size-18\n                                                ",
                                     }),
                                   ]
                                 ),
@@ -75333,7 +75604,7 @@ var render = function () {
                                   [
                                     _c("i", {
                                       staticClass:
-                                        "\n                                                    uil-times\n                                                    font-size-18\n                                                ",
+                                        "\n                                                    uil-trash\n                                                    font-size-18\n                                                ",
                                     }),
                                   ]
                                 ),
@@ -75566,53 +75837,27 @@ var render = function () {
                       _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
                         _c("div", { staticClass: "row" }, [
                           _c("div", { staticClass: "col-12 col-md-3" }, [
-                            _c("h6", [_vm._v("Medio de Pago")]),
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
                             _c("h6", [_vm._v("Subtotal")]),
                           ]),
                           _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
+                          _c("div", { staticClass: "col-12 col-md-2" }, [
                             _c("h6", [_vm._v("% Descuento")]),
                           ]),
                           _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
+                          _c("div", { staticClass: "col-12 col-md-2" }, [
                             _c("h6", [_vm._v("Precio con descuento")]),
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "col-12 col-md-2" }, [
+                            _c("h6", [_vm._v("IVA")]),
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "col-12 col-md-3" }, [
+                            _c("h6", [_vm._v("TOTAL")]),
                           ]),
                         ]),
                         _vm._v(" "),
                         _c("div", { staticClass: "row" }, [
-                          _c(
-                            "div",
-                            { staticClass: "col-12 col-md-3" },
-                            [
-                              _c("multiselect", {
-                                attrs: {
-                                  options: _vm.optionsMedioPago,
-                                  "track-by": "id_mediopago",
-                                  label: "nombre",
-                                },
-                                model: {
-                                  value: _vm.formventa.mediopago,
-                                  callback: function ($$v) {
-                                    _vm.$set(_vm.formventa, "mediopago", $$v)
-                                  },
-                                  expression: "formventa.mediopago",
-                                },
-                              }),
-                              _vm._v(" "),
-                              _vm.submittedventa && !_vm.formventa.mediopago
-                                ? _c("span", { staticClass: "text-danger" }, [
-                                    _vm._v(
-                                      "Debe seleccionar un medio de pago."
-                                    ),
-                                  ])
-                                : _vm._e(),
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
                           _c("div", { staticClass: "col-12 col-md-3" }, [
                             _c("input", {
                               directives: [
@@ -75645,7 +75890,7 @@ var render = function () {
                             }),
                           ]),
                           _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
+                          _c("div", { staticClass: "col-12 col-md-2" }, [
                             _c("input", {
                               directives: [
                                 {
@@ -75683,7 +75928,7 @@ var render = function () {
                             }),
                           ]),
                           _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
+                          _c("div", { staticClass: "col-12 col-md-2" }, [
                             _c("input", {
                               directives: [
                                 {
@@ -75716,30 +75961,8 @@ var render = function () {
                               },
                             }),
                           ]),
-                        ]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
-                        _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
-                            _c("h6", [_vm._v("IVA")]),
-                          ]),
                           _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
-                            _c("h6", [_vm._v("Total")]),
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
-                            _c("h6", [_vm._v("Código Boucher")]),
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
-                            _c("h6", [_vm._v("Código Bono Salud")]),
-                          ]),
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
+                          _c("div", { staticClass: "col-12 col-md-2" }, [
                             _c("input", {
                               directives: [
                                 {
@@ -75802,34 +76025,168 @@ var render = function () {
                               },
                             }),
                           ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
+                        _c("div", { staticClass: "row" }, [
+                          _c("div", { staticClass: "col-12 col-md-4" }, [
+                            _c("h6", [_vm._v("Boleta")]),
+                          ]),
+                          _vm._v(" "),
+                          _vm.formventa.picked == 1
+                            ? _c("div", { staticClass: "col-12 col-md-3" }, [
+                                _c("h6", [_vm._v("Codigo Boucher")]),
+                              ])
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _vm.formventa.picked == 2
+                            ? _c("div", { staticClass: "col-12 col-md-2" }, [
+                                _c("h6", [_vm._v("N° Boleta Honorario")]),
+                              ])
+                            : _vm._e(),
                           _vm._v(" "),
                           _c("div", { staticClass: "col-12 col-md-3" }, [
-                            _c("input", {
-                              directives: [
-                                {
-                                  name: "model",
-                                  rawName: "v-model",
-                                  value: _vm.formventa.codigo_boucher,
-                                  expression: "formventa.codigo_boucher",
-                                },
-                              ],
-                              staticClass: "form-control",
-                              attrs: { id: "codigo_boucher", type: "text" },
-                              domProps: { value: _vm.formventa.codigo_boucher },
-                              on: {
-                                input: function ($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(
-                                    _vm.formventa,
-                                    "codigo_boucher",
-                                    $event.target.value
-                                  )
-                                },
-                              },
-                            }),
+                            _c("h6", [_vm._v("Codigo Bono Fonasa")]),
                           ]),
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "row" }, [
+                          _c("div", { staticClass: "col-md-4 row" }, [
+                            _c("div", { staticClass: "col-md-6" }, [
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.formventa.picked,
+                                    expression: "formventa.picked",
+                                  },
+                                ],
+                                attrs: { type: "radio", id: "1", value: "1" },
+                                domProps: {
+                                  checked: _vm._q(_vm.formventa.picked, "1"),
+                                },
+                                on: {
+                                  change: [
+                                    function ($event) {
+                                      return _vm.$set(
+                                        _vm.formventa,
+                                        "picked",
+                                        "1"
+                                      )
+                                    },
+                                    function ($event) {
+                                      return _vm.changeBoleta()
+                                    },
+                                  ],
+                                },
+                              }),
+                              _vm._v(" "),
+                              _c("label", { attrs: { for: "1" } }, [
+                                _vm._v("B. Electronica"),
+                              ]),
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "col-md-6" }, [
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.formventa.picked,
+                                    expression: "formventa.picked",
+                                  },
+                                ],
+                                attrs: { type: "radio", id: "2", value: "2" },
+                                domProps: {
+                                  checked: _vm._q(_vm.formventa.picked, "2"),
+                                },
+                                on: {
+                                  change: [
+                                    function ($event) {
+                                      return _vm.$set(
+                                        _vm.formventa,
+                                        "picked",
+                                        "2"
+                                      )
+                                    },
+                                    function ($event) {
+                                      return _vm.changeBoleta()
+                                    },
+                                  ],
+                                },
+                              }),
+                              _vm._v(" "),
+                              _c("label", { attrs: { for: "2" } }, [
+                                _vm._v("B. Honorario"),
+                              ]),
+                            ]),
+                          ]),
+                          _vm._v(" "),
+                          _vm.formventa.picked == 1
+                            ? _c("div", { staticClass: "col-12 col-md-3" }, [
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.formventa.codigo_boucher,
+                                      expression: "formventa.codigo_boucher",
+                                    },
+                                  ],
+                                  staticClass: "form-control",
+                                  attrs: { id: "codigo_boucher", type: "text" },
+                                  domProps: {
+                                    value: _vm.formventa.codigo_boucher,
+                                  },
+                                  on: {
+                                    input: function ($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.$set(
+                                        _vm.formventa,
+                                        "codigo_boucher",
+                                        $event.target.value
+                                      )
+                                    },
+                                  },
+                                }),
+                              ])
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _vm.formventa.picked == 2
+                            ? _c("div", { staticClass: "col-12 col-md-2" }, [
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.formventa.n_honorario,
+                                      expression: "formventa.n_honorario",
+                                    },
+                                  ],
+                                  staticClass: "form-control",
+                                  attrs: { id: "n_honorario", type: "text" },
+                                  domProps: {
+                                    value: _vm.formventa.n_honorario,
+                                  },
+                                  on: {
+                                    input: function ($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.$set(
+                                        _vm.formventa,
+                                        "n_honorario",
+                                        $event.target.value
+                                      )
+                                    },
+                                  },
+                                }),
+                              ])
+                            : _vm._e(),
                           _vm._v(" "),
                           _c("div", { staticClass: "col-12 col-md-3" }, [
                             _c("input", {
@@ -75865,101 +76222,35 @@ var render = function () {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
                         _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
-                            _c("h6", [_vm._v("Boleta Honorario")]),
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
-                            _c("h6", [_vm._v("N° Boleta")]),
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
-                            _c("h6", [_vm._v("Estado del Pago")]),
+                          _c("div", { staticClass: "col-12 col-md-4" }, [
+                            _c("h6", [_vm._v("Medio de Pago")]),
                           ]),
                         ]),
                         _vm._v(" "),
                         _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
-                            _c("input", {
-                              directives: [
-                                {
-                                  name: "model",
-                                  rawName: "v-model",
-                                  value: _vm.formventa.boleta_honorario,
-                                  expression: "formventa.boleta_honorario",
-                                },
-                              ],
-                              staticClass: "form-control",
-                              attrs: { id: "boleta_honorario", type: "text" },
-                              domProps: {
-                                value: _vm.formventa.boleta_honorario,
-                              },
-                              on: {
-                                input: function ($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(
-                                    _vm.formventa,
-                                    "boleta_honorario",
-                                    $event.target.value
-                                  )
-                                },
-                              },
-                            }),
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-md-3" }, [
-                            _c("input", {
-                              directives: [
-                                {
-                                  name: "model",
-                                  rawName: "v-model",
-                                  value: _vm.formventa.n_honorario,
-                                  expression: "formventa.n_honorario",
-                                },
-                              ],
-                              staticClass: "form-control",
-                              attrs: { id: "n_honorario", type: "text" },
-                              domProps: { value: _vm.formventa.n_honorario },
-                              on: {
-                                input: function ($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(
-                                    _vm.formventa,
-                                    "n_honorario",
-                                    $event.target.value
-                                  )
-                                },
-                              },
-                            }),
-                          ]),
-                          _vm._v(" "),
                           _c(
                             "div",
-                            { staticClass: "col-12 col-md-3" },
+                            { staticClass: "col-12 col-md-4" },
                             [
                               _c("multiselect", {
                                 attrs: {
-                                  options: _vm.optionsPago,
-                                  "track-by": "id_pago",
+                                  options: _vm.optionsMedioPago,
+                                  "track-by": "id_mediopago",
                                   label: "nombre",
                                 },
                                 model: {
-                                  value: _vm.formventa.estado,
+                                  value: _vm.formventa.mediopago,
                                   callback: function ($$v) {
-                                    _vm.$set(_vm.formventa, "estado", $$v)
+                                    _vm.$set(_vm.formventa, "mediopago", $$v)
                                   },
-                                  expression: "formventa.estado",
+                                  expression: "formventa.mediopago",
                                 },
                               }),
                               _vm._v(" "),
-                              _vm.submittedventa && !_vm.formventa.estado
+                              _vm.submittedventa && !_vm.formventa.mediopago
                                 ? _c("span", { staticClass: "text-danger" }, [
                                     _vm._v(
-                                      "Debe seleccionar el estado del pago."
+                                      "Debe seleccionar un medio de pago."
                                     ),
                                   ])
                                 : _vm._e(),
@@ -75973,12 +76264,12 @@ var render = function () {
                     _c(
                       "button",
                       {
-                        staticClass: "btn btn-primary mt-4 float-end",
+                        staticClass: "btn btn-success mt-4 float-end",
                         attrs: { type: "submit" },
                       },
                       [
-                        _c("i", { staticClass: "far fa-save" }),
-                        _vm._v(" Crear\n                "),
+                        _c("i", { staticClass: "far fa-check-circle" }),
+                        _vm._v(" Finalizar Reserva\n                "),
                       ]
                     ),
                   ]
@@ -76856,7 +77147,7 @@ var render = function () {
                       class: {
                         "is-invalid": _vm.submitted && _vm.$v.form.rut.$error,
                       },
-                      attrs: { id: "rut", type: "text" },
+                      attrs: { id: "rut", type: "text", maxlength: "10" },
                       domProps: { value: _vm.form.rut },
                       on: {
                         input: [
@@ -76891,7 +77182,9 @@ var render = function () {
                 _vm._v(" "),
                 _c("div", { staticClass: "col-12 col-lg-6" }, [
                   _c("div", { staticClass: "mb-3" }, [
-                    _c("label", { attrs: { for: "email" } }, [_vm._v("Email")]),
+                    _c("label", { attrs: { for: "email" } }, [
+                      _vm._v("Correo Electronico"),
+                    ]),
                     _vm._v(" "),
                     _c("input", {
                       directives: [
@@ -77036,7 +77329,12 @@ var render = function () {
                         "is-invalid":
                           _vm.submitted && _vm.$v.form.celular.$error,
                       },
-                      attrs: { id: "celular", type: "text" },
+                      attrs: {
+                        id: "celular",
+                        type: "text",
+                        maxlength: "9",
+                        placeholder: "9 12312312",
+                      },
                       domProps: { value: _vm.form.celular },
                       on: {
                         input: function ($event) {
@@ -79733,71 +80031,6 @@ var render = function () {
                     ]),
                   ]),
                 ]),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  { staticClass: "button-items d-flex justify-content-center" },
-                  [
-                    _vm.detalle.estado_id == 4 || _vm.detalle.estado_id == 5
-                      ? _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-danger mt-4",
-                            attrs: { type: "submit" },
-                            on: {
-                              click: function ($event) {
-                                return _vm.accion(6)
-                              },
-                            },
-                          },
-                          [
-                            _c("i", { staticClass: "uil-times" }),
-                            _vm._v(" Pago Rechazado\n            "),
-                          ]
-                        )
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _vm.detalle.estado_id == 6 || _vm.detalle.estado_id == 5
-                      ? _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-success mt-4",
-                            attrs: { type: "submit" },
-                            on: {
-                              click: function ($event) {
-                                return _vm.accion(4)
-                              },
-                            },
-                          },
-                          [
-                            _c("i", { staticClass: "uil-usd-circle" }),
-                            _vm._v(" Pagada\n            "),
-                          ]
-                        )
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _vm.detalle.estado_id == 4 ||
-                    _vm.detalle.estado_id == 6 ||
-                    _vm.detalle.estado_id != 5
-                      ? _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-warning mt-4",
-                            attrs: { type: "submit" },
-                            on: {
-                              click: function ($event) {
-                                return _vm.accion(5)
-                              },
-                            },
-                          },
-                          [
-                            _c("i", { staticClass: "uil-clock-ten" }),
-                            _vm._v(" Pago Pendiente\n            "),
-                          ]
-                        )
-                      : _vm._e(),
-                  ]
-                ),
               ]
             )
           : _vm._e(),

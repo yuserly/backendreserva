@@ -2,6 +2,7 @@ import FullCalendar from "@fullcalendar/vue";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import esLocale from "@fullcalendar/core/locales/es";
 import bootstrapPlugin from "@fullcalendar/bootstrap";
 import listPlugin from "@fullcalendar/list";
 import Multiselect from "vue-multiselect";
@@ -55,6 +56,8 @@ export default {
                 eventClick: this.editEvent,
                 eventsSet: this.handleEvents,
                 eventLimit: true,
+                hiddenDays: [],
+                locale: esLocale,
                 view: {
                     timeGrid: {
                         eventLimit: 1
@@ -234,7 +237,7 @@ export default {
         handleSubmit(e) {
             this.submitted = true;
 
-            console.log(e);
+
 
             this.$v.$touch();
             if (this.$v.$invalid) {
@@ -271,37 +274,33 @@ export default {
 
                 this.form.id_sucursal = this.sucursal.id_sucursal;
 
-                console.log(this.form);
 
                 this.axios
                     .post(`/api/crearreserva`, this.form)
                     .then(res => {
-                        let title = "";
-                        let message = "";
-                        let type = "";
                         if (res.data) {
+                            this.showModal = false;
                             if (this.form.id_reserva == "") {
-                                title = "Crear reserva";
-                                message = "reserva creada con exito";
-                                type = "success";
+                                Swal.fire({
+                                    position: "center",
+                                    icon: "success",
+                                    title: "Reserva creada exitosamente",
+                                    showConfirmButton: false,
+                                    timer: 1000
+                                });
                             } else {
-                                title = "Editar reserva";
-                                message = "reserva editada con exito";
-                                type = "success";
+                                Swal.fire({
+                                    position: "center",
+                                    icon: "success",
+                                    title: "Reserva editada exitosamente",
+                                    showConfirmButton: false,
+                                    timer: 1000
+                                });
                             }
 
                             this.calendarOptions.events = [{}];
                             this.traerHoras();
 
-                            // this.currentEvents = calendarApi.addEvent({
-                            //     id: res.data.id_reserva,
-                            //     title: titlereserva,
-                            //     start: fecha_inicio,
-                            //     end: fecha_fin,
-                            //     classNames: "bg-info text-white"
-                            // });
-
-                            this.showModal = false;
                             this.newEventData = {};
                             this.successmsg(title, message, type);
                             this.$v.form.$reset();
@@ -327,7 +326,6 @@ export default {
                         this.showModal = false;
                         this.newEventData = {};
 
-                        this.successmsg(title, message, type);
                     });
             }
             this.vaciarform();
@@ -558,14 +556,9 @@ export default {
          * Show successfull Save Dialog
          */
         successmsg() {
-            Swal.fire({
-                position: "center",
-                icon: "success",
-                title: "Event has been saved",
-                showConfirmButton: false,
-                timer: 1000
-            });
+            
         },
+
         // traer especialidad
         traerEspecialidad() {
             this.axios.get(`/api/obtenerespecialidad/`).then(response => {
@@ -628,15 +621,35 @@ export default {
 
             var form = {
                 diasemana: diasemana,
-                id_profesional: this.form.id_profesional.profesional
-                    .id_profesional,
+                id_profesional: this.form.id_profesional.profesional.id_profesional,
                 id_sucursal : this.sucursal.id_sucursal
             };
 
             this.axios
                 .post(`/api/traerhorario`, form)
                 .then(res => {
-                    console.log(res);
+
+                    let diashabiles = [];
+                    let diassemana = [0, 1, 2, 3, 4, 5, 6];
+
+                    res.data.diasDisponibles.forEach((element, i) => {
+                        if (element["dia"]["dia"] == 7) {
+                          element["dia"]["dia"] = 0;
+                        }
+                        diashabiles.push(element["dia"]["dia"]);
+                    });
+
+
+                    for (let i = 0; i < diassemana.length; i++) {
+                        for (let j = 0; j < diassemana.length; j++) {
+                            if (diashabiles[i] == diassemana[j]) {
+                                diassemana.splice(j, 1);
+                            }
+                        }
+                    }
+                    
+                    this.calendarOptions.hiddenDays = diassemana;
+
                     if (res.data.horario) {
                         this.calendarOptions.slotMinTime =
                             res.data.horario.hora_inicio;

@@ -13,6 +13,7 @@ use Mail;
 class SecretariaController extends Controller
 {
 
+
     public function validaremail($email)
     {
         $user =  User::where('email', $email)->first();
@@ -67,8 +68,8 @@ class SecretariaController extends Controller
         $secretaria->secretariasucursal()->sync($arraySucursal);
 
         $estado = 1;
-            
-        Mail::to($request->email)->send(new SendMailUser($request->nombres, $request->apellidos, $request->email, $code, $estado));
+                
+        Mail::to($request->email)->send(new SendMailUser($request->nombres, $request->apellidos, $request->email, $request->contrasena, $estado));
 
         return $secretaria;
     }

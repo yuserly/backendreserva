@@ -364,8 +364,9 @@ export default {
       this.form.especialidad = data.especialidad;
     },
 
-    config(data) {
-  
+    config(data) 
+    {
+     
       this.modalhorario = true;
       this.formhorario.id_profesional = data.id_profesional;
 
@@ -674,6 +675,7 @@ export default {
     },
 
     AddformDataServicio(data) {
+      this.datosModal = [];
       this.id_profesionalservicio = data.id_profesional;
       this.formservicio = {
         servicio_id_servicio: "",
@@ -688,7 +690,6 @@ export default {
     },
 
     formSubmitServicios() {
-      console.log(this.formservicio);
       if(this.formservicio.servicio_id_servicio == ""){
         Swal.fire({
           icon: 'warning',
@@ -709,19 +710,18 @@ export default {
 
       if(this.formrequest.length > 0){
 
-        var form = {
+        var formS = {
           servicios: this.formrequest,
           id_profesional: this.id_profesionalservicio
 
       }
-
         this.axios
         .post(
           `/api/serviciosprofesional`,
-          form
+          formS
         )
         .then((res) => {
-          
+      
           Swal.fire({
             icon: 'success',
             title: 'Servicio Añadido',
@@ -731,14 +731,13 @@ export default {
           });
           this.traerServicio();
           this.datosModal = [];
+          this.formrequest = [];
           this.formservicio.servicio_id_servicio = "";
-          console.log(this.formservicio);
         })
         .catch((error) => {
           console.log("error", error);
         });
       }
     },
-
   },
 };

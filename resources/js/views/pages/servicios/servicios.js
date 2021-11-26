@@ -51,18 +51,45 @@ export default {
           key: "nombre",
           sortable: true,
         },
-        { 
-          label: "Precio",
+        {
           key: "precio_particular",
           sortable: true,
+          label: "Precio",
+          formatter: (precio_particular, key, item) => {
+              var formatter = new Intl.NumberFormat("es-CL", {
+                  style: "currency",
+                  currency: "CLP",
+                  minimumFractionDigits: 0
+              });
+              return formatter.format(precio_particular);
+          }
         },
         {
           key: "precio_fonasa",
           sortable: true,
+          label: "Precio Fonasa",
+          formatter: (precio_fonasa, key, item) => {
+              var formatter = new Intl.NumberFormat("es-CL", {
+                  style: "currency",
+                  currency: "CLP",
+                  minimumFractionDigits: 0
+              });
+              return formatter.format(precio_fonasa);
+          }
         },
+
         {
           key: "precio_isapre",
           sortable: true,
+          label: "Precio Isapre",
+          formatter: (precio_isapre, key, item) => {
+              var formatter = new Intl.NumberFormat("es-CL", {
+                  style: "currency",
+                  currency: "CLP",
+                  minimumFractionDigits: 0
+              });
+              return formatter.format(precio_isapre);
+          }
         },
         {
             key: "especialidad.nombre",

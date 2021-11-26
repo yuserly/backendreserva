@@ -2689,7 +2689,7 @@ var menuItems = [{
     permiso: pacientes
   }, {
     id: 1.2,
-    label: "Reservas",
+    label: "Ingresar Reservas",
     link: "/reservas",
     parentId: 3,
     permiso: reservas
