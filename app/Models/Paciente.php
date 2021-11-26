@@ -24,4 +24,5 @@ class Paciente extends Model
     {
         return $this->belongsTo(Reserva::class,'paciente_id','id_paciente');
     }
+
 }
