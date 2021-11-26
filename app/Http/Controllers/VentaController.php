@@ -82,6 +82,104 @@ class VentaController extends Controller
 
     }
 
+
+    public function buscarinformediario(Request $request)
+    {
+
+        if($request->especialidad_id){
+
+
+            $ventas = Venta::select('*','pacientes.nombres as nombres_paciente', 'pacientes.apellidos as apellidos_paciente',
+                                    'pacientes.rut as rut_paciente','pacientes.email as email_paciente','profesionals.nombres as nombres_profesional', 'profesionals.apellidos as apellidos_profesional',
+                                    'profesionals.rut as rut_profesional', 'ventas.estado_id as estado_venta', 'servicios.nombre as nombre_servicio',
+                                    'ventas.created_at as fecha_venta','prevensions.nombre as prevension_nombre', 'medio_pagos.nombre as mediopago')
+                            ->join('reservas','reservas.id_reserva','=','ventas.reserva_id')
+                            ->join('pacientes','pacientes.id_paciente','=','reservas.paciente_id')
+                            ->join('prevensions','prevensions.id_prevension','=','pacientes.prevension_id')
+                            ->join('profesionals','profesionals.id_profesional','=','reservas.profesional_id')
+                            ->join('servicios','servicios.id_servicio','=','reservas.servicio_id')
+                            ->join('estados','estados.id_estado','=','ventas.estado_id')
+                            ->join('medio_pagos','medio_pagos.id_mediopago','=','ventas.mediopago_id')
+                            ->where('ventas.sucursal_id','=',$request->id_sucursal)
+                            ->where('servicios.especialidad_id','=',$request->especialidad_id["id_especialidad"])
+                            ->where('ventas.estado_id','=',4)
+                            ->whereDate('ventas.created_at', '=', $request->fecha)
+                            ->get();
+
+        }else{
+            $ventas = Venta::select('*','pacientes.nombres as nombres_paciente', 'pacientes.apellidos as apellidos_paciente',
+                                    'pacientes.rut as rut_paciente','pacientes.email as email_paciente','profesionals.nombres as nombres_profesional', 'profesionals.apellidos as apellidos_profesional',
+                                    'profesionals.rut as rut_profesional', 'ventas.estado_id as estado_venta', 'servicios.nombre as nombre_servicio',
+                                    'ventas.created_at as fecha_venta','prevensions.nombre as prevension_nombre', 'medio_pagos.nombre as mediopago')
+                            ->join('reservas','reservas.id_reserva','=','ventas.reserva_id')
+                            ->join('pacientes','pacientes.id_paciente','=','reservas.paciente_id')
+                            ->join('prevensions','prevensions.id_prevension','=','pacientes.prevension_id')
+                            ->join('profesionals','profesionals.id_profesional','=','reservas.profesional_id')
+                            ->join('servicios','servicios.id_servicio','=','reservas.servicio_id')
+                            ->join('estados','estados.id_estado','=','ventas.estado_id')
+                            ->join('medio_pagos','medio_pagos.id_mediopago','=','ventas.mediopago_id')
+                            ->where('ventas.sucursal_id','=',$request->id_sucursal)
+                            ->where('ventas.estado_id','=',4)
+                            ->whereDate('ventas.created_at', '=', $request->fecha)
+                            ->get();
+
+        }
+
+        return $ventas;
+
+    }
+
+
+
+    public function buscarinformemensual(Request $request)
+    {
+
+        if($request->especialidad_id){
+
+
+            $ventas = Venta::select('*','pacientes.nombres as nombres_paciente', 'pacientes.apellidos as apellidos_paciente',
+                                    'pacientes.rut as rut_paciente','pacientes.email as email_paciente','profesionals.nombres as nombres_profesional', 'profesionals.apellidos as apellidos_profesional',
+                                    'profesionals.rut as rut_profesional', 'ventas.estado_id as estado_venta', 'servicios.nombre as nombre_servicio',
+                                    'ventas.created_at as fecha_venta','prevensions.nombre as prevension_nombre', 'medio_pagos.nombre as mediopago')
+                            ->join('reservas','reservas.id_reserva','=','ventas.reserva_id')
+                            ->join('pacientes','pacientes.id_paciente','=','reservas.paciente_id')
+                            ->join('prevensions','prevensions.id_prevension','=','pacientes.prevension_id')
+                            ->join('profesionals','profesionals.id_profesional','=','reservas.profesional_id')
+                            ->join('servicios','servicios.id_servicio','=','reservas.servicio_id')
+                            ->join('estados','estados.id_estado','=','ventas.estado_id')
+                            ->join('medio_pagos','medio_pagos.id_mediopago','=','ventas.mediopago_id')
+                            ->where('ventas.sucursal_id','=',$request->id_sucursal)
+                            ->where('servicios.especialidad_id','=',$request->especialidad_id["id_especialidad"])
+                            ->where('ventas.estado_id','=',4)
+                            ->whereBetween('ventas.created_at', [$request->fecha_inicio." 00:00:00", $request->fecha_fin." 23:59:59"])
+                            ->get();
+
+        }else{
+            $ventas = Venta::select('*','pacientes.nombres as nombres_paciente', 'pacientes.apellidos as apellidos_paciente',
+                                    'pacientes.rut as rut_paciente','pacientes.email as email_paciente','profesionals.nombres as nombres_profesional', 'profesionals.apellidos as apellidos_profesional',
+                                    'profesionals.rut as rut_profesional', 'ventas.estado_id as estado_venta', 'servicios.nombre as nombre_servicio',
+                                    'ventas.created_at as fecha_venta','prevensions.nombre as prevension_nombre', 'medio_pagos.nombre as mediopago')
+                            ->join('reservas','reservas.id_reserva','=','ventas.reserva_id')
+                            ->join('pacientes','pacientes.id_paciente','=','reservas.paciente_id')
+                            ->join('prevensions','prevensions.id_prevension','=','pacientes.prevension_id')
+                            ->join('profesionals','profesionals.id_profesional','=','reservas.profesional_id')
+                            ->join('servicios','servicios.id_servicio','=','reservas.servicio_id')
+                            ->join('estados','estados.id_estado','=','ventas.estado_id')
+                            ->join('medio_pagos','medio_pagos.id_mediopago','=','ventas.mediopago_id')
+                            ->where('ventas.sucursal_id','=',$request->id_sucursal)
+                            ->where('ventas.estado_id','=',4)
+                            ->whereBetween('ventas.created_at', [$request->fecha_inicio." 00:00:00", $request->fecha_fin." 23:59:59"])
+                            ->get();
+
+        }
+
+        return $ventas;
+
+    }
+
+
+
+
     public function cambiarestadoventa(Request $request)
     {
        $venta =  Venta::where('id_venta',$request->id_venta)->update([
@@ -101,7 +199,7 @@ class VentaController extends Controller
                 ]);
             }
 
-            return 1; 
+            return 1;
 
         }else{
 
@@ -121,5 +219,5 @@ class VentaController extends Controller
        return "Venta a sido anulada exitosamente";
 
     }
-    
+
 }

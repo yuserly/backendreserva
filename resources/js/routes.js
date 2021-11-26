@@ -124,6 +124,24 @@ const routes = [
             ),
     },
     {
+        path: "/informe-diario",
+        name: "informe-diario",
+        meta: { requiresAuth: true },
+        component: () =>
+            import(
+                /* webpackChunkName: "home" */ "./views/pages/informes/informediario.vue"
+            ),
+    },
+    {
+        path: "/informe-mensual",
+        name: "informe-mensual",
+        meta: { requiresAuth: true },
+        component: () =>
+            import(
+                /* webpackChunkName: "home" */ "./views/pages/informes/informemensual.vue"
+            ),
+    },
+    {
         path: "/login",
         name: "login",
         meta: { requiresAuth: false },
@@ -301,6 +319,20 @@ function hasAccess(name) {
 
         case "login":
             return true;
+
+        case "informe-diario":
+            if (perfil == 1 || perfil == "1") {
+                return true;
+            } else {
+                return false;
+            }
+
+        case "informe-mensual":
+            if (perfil == 1 || perfil == "1") {
+                return true;
+            } else {
+                return false;
+            }
 
         default:
             return false;

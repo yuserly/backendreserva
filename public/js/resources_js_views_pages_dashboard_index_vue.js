@@ -2587,6 +2587,7 @@ var misreservas = false;
 var ventas = false;
 var confirmarreserva = false;
 var administraciónReserva = false;
+var informediario = false;
 
 if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$administrador) {
   administración = true;
@@ -2602,6 +2603,7 @@ if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$administrador) {
   reservas = true;
   ventas = true;
   confirmarreserva = true;
+  informediario = true;
 } else if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$secretaria) {
   administraciónReserva = true;
   pacientes = true;
@@ -2708,6 +2710,24 @@ var menuItems = [{
   icon: "uil-usd-square",
   link: "/ventas",
   permiso: ventas
+}, {
+  id: 5,
+  label: "Informes",
+  icon: "uil-arrow-growth",
+  permiso: informediario,
+  subItems: [{
+    id: 5.1,
+    label: "Informe diario",
+    link: "/informe-diario",
+    parentId: 5,
+    permiso: informediario
+  }, {
+    id: 5.2,
+    label: "Informe Mensual",
+    link: "/informe-mensual",
+    parentId: 5,
+    permiso: reservas
+  }]
 }];
 
 /***/ }),
