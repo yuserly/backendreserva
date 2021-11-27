@@ -22432,6 +22432,11 @@ __webpack_require__.r(__webpack_exports__);
     traerEspecialidad: function traerEspecialidad() {
       var _this10 = this;
 
+      this.calendarOptions.hiddenDays = [];
+      var calendarApi = this.$refs.fullCalendar.getApi();
+      var date = moment__WEBPACK_IMPORTED_MODULE_8___default()().format('YYYY-MM-DD');
+      console.log(date);
+      calendarApi.gotoDate(date);
       this.axios.get("/api/obtenerespecialidad/").then(function (response) {
         _this10.options = response.data;
       });
@@ -22444,8 +22449,6 @@ __webpack_require__.r(__webpack_exports__);
       var calendarApi = this.$refs.fullCalendar.getApi();
       var date = moment__WEBPACK_IMPORTED_MODULE_8___default()().format('YYYY-MM-DD');
       calendarApi.gotoDate(date);
-      calendarApi.destroy();
-      calendarApi.render();
 
       if (!this.sucursal) {
         sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
@@ -22470,6 +22473,10 @@ __webpack_require__.r(__webpack_exports__);
     traerProfesional: function traerProfesional() {
       var _this12 = this;
 
+      this.calendarOptions.hiddenDays = [];
+      var calendarApi = this.$refs.fullCalendar.getApi();
+      var date = moment__WEBPACK_IMPORTED_MODULE_8___default()().format('YYYY-MM-DD');
+      calendarApi.gotoDate(date);
       this.form.id_profesional = "";
       this.calendarOptions.events = [{}];
       var id_servicio = this.form.servicio_id_servicio.id_servicio;
@@ -22511,6 +22518,8 @@ __webpack_require__.r(__webpack_exports__);
             }
           }
         }
+
+        _this13.calendarOptions.hiddenDays = diassemana;
 
         if (res.data.horario) {
           _this13.calendarOptions.slotMinTime = res.data.horario.hora_inicio;
@@ -22562,8 +22571,6 @@ __webpack_require__.r(__webpack_exports__);
             });
           }
         }
-
-        _this13.calendarOptions.hiddenDays = diassemana;
       })["catch"](function (error) {
         console.log("error", error);
       });
@@ -22595,9 +22602,8 @@ __webpack_require__.r(__webpack_exports__);
               diassemana.splice(j, 1);
             }
           }
-        }
+        } //this.calendarOptions.hiddenDays = diassemana;
 
-        _this14.calendarOptions.hiddenDays = diassemana;
 
         if (res.data.horario) {
           _this14.calendarOptions.slotMinTime = res.data.horario.hora_inicio;

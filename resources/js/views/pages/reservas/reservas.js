@@ -589,6 +589,11 @@ export default {
         },
 
         traerEspecialidad() {
+            this.calendarOptions.hiddenDays =[];
+            let calendarApi = this.$refs.fullCalendar.getApi();
+            let date = moment().format('YYYY-MM-DD');
+            console.log(date)
+            calendarApi.gotoDate(date);
             this.axios.get(`/api/obtenerespecialidad/`).then(response => {
                 this.options = response.data;
             });
@@ -596,14 +601,10 @@ export default {
 
         // traer servicios
         traerServicio() {
-            this.calendarOptions.hiddenDays = [];
+            this.calendarOptions.hiddenDays =[];
             let calendarApi = this.$refs.fullCalendar.getApi();
             let date = moment().format('YYYY-MM-DD');
             calendarApi.gotoDate(date);
-            calendarApi.destroy();
-            calendarApi.render();
-            
-
             if (!this.sucursal) {
                 Swal.fire({
                     position: "center",
@@ -630,7 +631,10 @@ export default {
         },
 
         traerProfesional() {
-            
+            this.calendarOptions.hiddenDays =[];
+            let calendarApi = this.$refs.fullCalendar.getApi();
+            let date = moment().format('YYYY-MM-DD');
+            calendarApi.gotoDate(date);
             this.form.id_profesional = "";
             this.calendarOptions.events = [{}];
             var id_servicio = this.form.servicio_id_servicio.id_servicio;
@@ -687,7 +691,7 @@ export default {
                     }
 
 
-                    
+                    this.calendarOptions.hiddenDays = diassemana;
 
 
                     if (res.data.horario) {
@@ -758,8 +762,6 @@ export default {
                         }
                     }
 
-                    this.calendarOptions.hiddenDays = diassemana;
-
                 })
                 .catch(error => {
                     console.log("error", error);
@@ -801,7 +803,7 @@ export default {
                         }
                     }
 
-                    this.calendarOptions.hiddenDays = diassemana;
+                    //this.calendarOptions.hiddenDays = diassemana;
 
                     if (res.data.horario) {
                         this.calendarOptions.slotMinTime =
