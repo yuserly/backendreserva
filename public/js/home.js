@@ -22431,6 +22431,11 @@ __webpack_require__.r(__webpack_exports__);
     traerEspecialidad: function traerEspecialidad() {
       var _this10 = this;
 
+      this.calendarOptions.hiddenDays = [];
+      var calendarApi = this.$refs.fullCalendar.getApi();
+      var date = moment__WEBPACK_IMPORTED_MODULE_8___default()().format('YYYY-MM-DD');
+      console.log(date);
+      calendarApi.gotoDate(date);
       this.axios.get("/api/obtenerespecialidad/").then(function (response) {
         _this10.options = response.data;
       });
@@ -22438,6 +22443,11 @@ __webpack_require__.r(__webpack_exports__);
     // traer servicios
     traerServicio: function traerServicio() {
       var _this11 = this;
+
+      this.calendarOptions.hiddenDays = [];
+      var calendarApi = this.$refs.fullCalendar.getApi();
+      var date = moment__WEBPACK_IMPORTED_MODULE_8___default()().format('YYYY-MM-DD');
+      calendarApi.gotoDate(date);
 
       if (!this.sucursal) {
         sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
@@ -22462,6 +22472,10 @@ __webpack_require__.r(__webpack_exports__);
     traerProfesional: function traerProfesional() {
       var _this12 = this;
 
+      this.calendarOptions.hiddenDays = [];
+      var calendarApi = this.$refs.fullCalendar.getApi();
+      var date = moment__WEBPACK_IMPORTED_MODULE_8___default()().format('YYYY-MM-DD');
+      calendarApi.gotoDate(date);
       this.form.id_profesional = "";
       this.calendarOptions.events = [{}];
       var id_servicio = this.form.servicio_id_servicio.id_servicio;
@@ -22473,12 +22487,6 @@ __webpack_require__.r(__webpack_exports__);
     traerHoras: function traerHoras() {
       var _this13 = this;
 
-      var calendarApi = this.$refs.fullCalendar.getApi();
-      var res = calendarApi.currentDataManager.data.currentDate;
-      console.log(calendarApi);
-      res.setDate(res.getDate());
-      var dia = res.getDay();
-      console.log(dia);
       this.calendarOptions.events = [{}];
       var date = new Date(); // obtemos el dia de la semana
 
@@ -22489,8 +22497,8 @@ __webpack_require__.r(__webpack_exports__);
         id_sucursal: this.sucursal.id_sucursal
       };
       this.axios.post("/api/traerhorario", form).then(function (res) {
-        // console.log(res);
-        // return false;
+        console.log(res); // return false;
+
         var diashabiles = [];
         var diassemana = [0, 1, 2, 3, 4, 5, 6];
         res.data.diasDisponibles.forEach(function (element, i) {
@@ -22500,6 +22508,7 @@ __webpack_require__.r(__webpack_exports__);
 
           diashabiles.push(element["dia"]["dia"]);
         });
+        diashabiles.sort();
 
         for (var i = 0; i < diassemana.length; i++) {
           for (var j = 0; j < diassemana.length; j++) {
@@ -22507,9 +22516,9 @@ __webpack_require__.r(__webpack_exports__);
               diassemana.splice(j, 1);
             }
           }
-        } //this.calendarOptions.hiddenDays = diassemana;
-        //calendarApi.gotoDate(new Date());
+        }
 
+        _this13.calendarOptions.hiddenDays = diassemana;
 
         if (res.data.horario) {
           _this13.calendarOptions.slotMinTime = res.data.horario.hora_inicio;
@@ -22524,11 +22533,11 @@ __webpack_require__.r(__webpack_exports__);
 
         if (res.data.bloqueo) {
           for (var _i = 0; _i < res.data.bloqueo.length; _i++) {
-            var _dia = res.data.bloqueo[_i]["dia"];
+            var dia = res.data.bloqueo[_i]["dia"];
             var fecha_inicio = res.data.bloqueo[_i]["hora_inicio"];
             var fecha_fin = res.data.bloqueo[_i]["hora_fin"];
-            var fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia + " " + fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
-            var fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia + " " + fecha_fin).format("YYYY-MM-DD HH:mm:ss");
+            var fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(dia + " " + fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
+            var fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(dia + " " + fecha_fin).format("YYYY-MM-DD HH:mm:ss");
 
             _this13.calendarOptions.events.push({
               id: "",
@@ -22543,13 +22552,13 @@ __webpack_require__.r(__webpack_exports__);
 
         if (res.data.reserva) {
           for (var _i2 = 0; _i2 < res.data.reserva.length; _i2++) {
-            var _dia2 = res.data.reserva[_i2]["dia"];
+            var _dia = res.data.reserva[_i2]["dia"];
             var _fecha_inicio = res.data.reserva[_i2]["hora_inicio"];
             var _fecha_fin = res.data.reserva[_i2]["hora_fin"];
 
-            var _fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia2 + " " + _fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
+            var _fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia + " " + _fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
 
-            var _fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia2 + " " + _fecha_fin).format("YYYY-MM-DD HH:mm:ss");
+            var _fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia + " " + _fecha_fin).format("YYYY-MM-DD HH:mm:ss");
 
             _this13.calendarOptions.events.push({
               idreserva: res.data.reserva[_i2]["id_reserva"],
@@ -22627,13 +22636,13 @@ __webpack_require__.r(__webpack_exports__);
 
         if (res.data.reserva) {
           for (var _i4 = 0; _i4 < res.data.reserva.length; _i4++) {
-            var _dia3 = res.data.reserva[_i4]["dia"];
+            var _dia2 = res.data.reserva[_i4]["dia"];
             var _fecha_inicio2 = res.data.reserva[_i4]["hora_inicio"];
             var _fecha_fin2 = res.data.reserva[_i4]["hora_fin"];
 
-            var _fecha_comple_inicio2 = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia3 + " " + _fecha_inicio2).format("YYYY-MM-DD HH:mm:ss");
+            var _fecha_comple_inicio2 = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia2 + " " + _fecha_inicio2).format("YYYY-MM-DD HH:mm:ss");
 
-            var _fecha_comple_fin2 = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia3 + " " + _fecha_fin2).format("YYYY-MM-DD HH:mm:ss");
+            var _fecha_comple_fin2 = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia2 + " " + _fecha_fin2).format("YYYY-MM-DD HH:mm:ss");
 
             _this14.calendarOptions.events.push({
               idreserva: res.data.reserva[_i4]["id_reserva"],

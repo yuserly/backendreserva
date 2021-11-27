@@ -72,11 +72,11 @@ export default {
                 selectable: false,
                 selectMirror: false,
                 dayMaxEvents: true,
-                customButtons: { 
+                customButtons: {
                     prev: { // this overrides the prev button
-                      text: "PREV", 
-                      click: () => {           
-                        
+                      text: "PREV",
+                      click: () => {
+
                         let calendarApi = this.$refs.fullCalendar.getApi();
                         calendarApi.prev();
                         // console.log(calendarApi.currentDataManager.data.currentDate);
@@ -90,7 +90,7 @@ export default {
                     next: { // this overrides the next button
                       text: "NEXT",
                       click: () => {
-                         
+
                          let calendarApi = this.$refs.fullCalendar.getApi();
                          calendarApi.next();
                         //  console.log(calendarApi.currentDataManager.data.currentDate);
@@ -99,11 +99,11 @@ export default {
                         res.setDate(res.getDate());
                         var dia = res.getDay()+1;
                         this.traerHorasCalendario(dia);
-                         
+
                       }
                     }
                 }
-                
+
             },
             urlbackend: this.$urlBackend,
             sucursal: JSON.parse(localStorage.getItem("sucursalselect")),
@@ -197,7 +197,7 @@ export default {
 
         customButtons()
         {
-           
+
         },
 
         validarRut($event) {
@@ -228,16 +228,16 @@ export default {
             var cuerpo = valor.slice(0,-1);// Aislar Cuerpo y Dígito Verificador
             var dv = valor.slice(-1).toUpperCase();
             this.form.rut = cuerpo + '-'+ dv// Formatear RUN
-      
+
             if(cuerpo.length < 7) {// Si no cumple con el mínimo de digitos ej. (n.nnn.nnn)
                 $('.inputRUT').attr('style', 'border-color: red !important');
                 $('.btnSubmit').prop('disabled',  true);
                 return false;
             }
-      
+
             var suma = 0; // Calcular Dígito Verificador
             var multiplo = 2;
-      
+
             for(var i=1;i<=cuerpo.length;i++) // Para cada dígito del Cuerpo
             {
                 var index = multiplo * valor.charAt(cuerpo.length - i); // Obtener su Producto con el Múltiplo Correspondiente
@@ -248,11 +248,11 @@ export default {
                     multiplo = 2;
                 } // Consolidar Múltiplo dentro del rango [2,7]
             }
-      
+
             var dvEsperado = 11 - (suma % 11); // Calcular Dígito Verificador en base al Módulo 11
             dv = (dv == 'K')?10:dv; // Casos Especiales (0 y K)
             dv = (dv == 0)?11:dv;
-      
+
             if(dvEsperado != dv) {
                 $('.inputRUT').attr('style', 'border-color: red !important');
                 $('.btnSubmit').prop('disabled',  true);
@@ -265,7 +265,7 @@ export default {
                 this.form.prevension_id = "";
                 return false;
             } // Validar que el Cuerpo coincide con su Dígito Verificador
-      
+
             $('.inputRUT').attr('style', 'border-color: #40A944 !important');  // Si todo sale bien, eliminar errores (decretar que es válido)
             $('.btnSubmit').prop('disabled',  false);
             this.validarRut(this.form.rut);
@@ -590,6 +590,11 @@ export default {
 
 
         traerEspecialidad() {
+            this.calendarOptions.hiddenDays =[];
+            let calendarApi = this.$refs.fullCalendar.getApi();
+            let date = moment().format('YYYY-MM-DD');
+            console.log(date)
+            calendarApi.gotoDate(date);
             this.axios.get(`/api/obtenerespecialidad/`).then(response => {
                 this.options = response.data;
             });
@@ -597,6 +602,10 @@ export default {
 
         // traer servicios
         traerServicio() {
+            this.calendarOptions.hiddenDays =[];
+            let calendarApi = this.$refs.fullCalendar.getApi();
+            let date = moment().format('YYYY-MM-DD');
+            calendarApi.gotoDate(date);
             if (!this.sucursal) {
                 Swal.fire({
                     position: "center",
@@ -623,6 +632,10 @@ export default {
         },
 
         traerProfesional() {
+            this.calendarOptions.hiddenDays =[];
+            let calendarApi = this.$refs.fullCalendar.getApi();
+            let date = moment().format('YYYY-MM-DD');
+            calendarApi.gotoDate(date);
             this.form.id_profesional = "";
             this.calendarOptions.events = [{}];
             var id_servicio = this.form.servicio_id_servicio.id_servicio;
@@ -635,13 +648,7 @@ export default {
         },
 
         traerHoras() {
-            let calendarApi = this.$refs.fullCalendar.getApi();
-                    
-                        var res = (calendarApi.currentDataManager.data.currentDate);
-                        console.log(calendarApi)
-                        res.setDate(res.getDate());
-                        var dia = res.getDay();
-                        console.log(dia);
+
             this.calendarOptions.events = [{}];
 
             var date = new Date();
@@ -659,10 +666,10 @@ export default {
             this.axios
                 .post(`/api/traerhorario`, form)
                 .then(res => {
-                    // console.log(res);
+                    console.log(res);
                     // return false;
-                    
-                   
+
+
                     let diashabiles = [];
                     let diassemana = [0, 1, 2, 3, 4, 5, 6];
 
@@ -673,6 +680,9 @@ export default {
                         diashabiles.push(element["dia"]["dia"]);
                     });
 
+                    diashabiles.sort();
+
+
                     for (let i = 0; i < diassemana.length; i++) {
                         for (let j = 0; j < diassemana.length; j++) {
                             if (diashabiles[i] == diassemana[j]) {
@@ -680,12 +690,10 @@ export default {
                             }
                         }
                     }
-                    
-                    //this.calendarOptions.hiddenDays = diassemana;
 
-                        
 
-                        //calendarApi.gotoDate(new Date());
+                    this.calendarOptions.hiddenDays = diassemana;
+
 
                     if (res.data.horario) {
                         this.calendarOptions.slotMinTime =
@@ -754,6 +762,7 @@ export default {
                             });
                         }
                     }
+
                 })
                 .catch(error => {
                     console.log("error", error);
@@ -794,7 +803,7 @@ export default {
                             }
                         }
                     }
-                    
+
                     //this.calendarOptions.hiddenDays = diassemana;
 
                     if (res.data.horario) {
