@@ -143,12 +143,14 @@ export default {
             }
         }
     },
+    
     mounted() {
         this.traerEspecialidad();
         this.traerPrevision();
     },
+
     methods: {
-        // label optionsProfesional
+
         customLabel({ profesional }) {
             return `${profesional.nombres} ${profesional.apellidos} `;
         },

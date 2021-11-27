@@ -348,7 +348,7 @@ export default {
         }
       });
     },
-
+ 
     editar(data) {
       this.titlemodal = "Editar Profesional";
       this.form.rut = data.rut;
@@ -366,7 +366,8 @@ export default {
 
     config(data) 
     {
-     
+      this.fieldsH = [];
+      this.formhorario.sucursal = "",
       this.modalhorario = true;
       this.formhorario.id_profesional = data.id_profesional;
 

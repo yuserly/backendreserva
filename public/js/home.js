@@ -20369,7 +20369,8 @@ __webpack_require__.r(__webpack_exports__);
       this.form.especialidad = data.especialidad;
     },
     config: function config(data) {
-      this.modalhorario = true;
+      this.fieldsH = [];
+      this.formhorario.sucursal = "", this.modalhorario = true;
       this.formhorario.id_profesional = data.id_profesional;
     },
     getHorarioProfesional: function getHorarioProfesional() {
@@ -21418,7 +21419,6 @@ __webpack_require__.r(__webpack_exports__);
     this.traerPrevision();
   },
   methods: {
-    // label optionsProfesional
     customLabel: function customLabel(_ref) {
       var profesional = _ref.profesional;
       return "".concat(profesional.nombres, " ").concat(profesional.apellidos, " ");
