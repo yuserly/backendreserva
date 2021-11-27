@@ -5,17 +5,20 @@ import interactionPlugin from "@fullcalendar/interaction";
 import bootstrapPlugin from "@fullcalendar/bootstrap";
 import listPlugin from "@fullcalendar/list";
 import Multiselect from "vue-multiselect";
+import esLocale from "@fullcalendar/core/locales/es";
 import moment from "moment";
 import { required } from "vuelidate/lib/validators";
 import Swal from "sweetalert2";
 import Layout from "../../layouts/main";
 import { calendarEvents, categories } from "./data-calendar";
+import $ from 'jquery'
 
 export default {
     components: { FullCalendar, Layout, Multiselect },
     data() {
         return {
             title: "Reserva",
+            credentialsPerson: localStorage.getItem('credentialsPerson'),
             items: [
                 {
                     text: "Minible"
@@ -54,6 +57,9 @@ export default {
                 eventClick: this.editEvent,
                 eventsSet: this.handleEvents,
                 eventLimit: true,
+                locale: esLocale,
+                eventColor: '#93117ed1',
+                hiddenDays: [],
                 view: {
                     timeGrid: {
                         eventLimit: 1
@@ -67,7 +73,38 @@ export default {
                 weekends: true,
                 selectable: false,
                 selectMirror: false,
-                dayMaxEvents: true
+                dayMaxEvents: true,
+                customButtons: {
+                    prev: { // this overrides the prev button
+                      text: "PREV",
+                      click: () => {
+
+                        let calendarApi = this.$refs.fullCalendar.getApi();
+                        calendarApi.prev();
+                        // console.log(calendarApi.currentDataManager.data.currentDate);
+                        // return false;
+                        var res = (calendarApi.currentDataManager.data.currentDate);
+                        res.setDate(res.getDate());
+                        var dia = res.getDay()+1;
+                        this.traerHorasCalendario(dia);
+                      }
+                    },
+                    next: { // this overrides the next button
+                      text: "NEXT",
+                      click: () => {
+
+                         let calendarApi = this.$refs.fullCalendar.getApi();
+                         calendarApi.next();
+                        //  console.log(calendarApi.currentDataManager.data.currentDate);
+                        //  return false;
+                         var res = (calendarApi.currentDataManager.data.currentDate);
+                        res.setDate(res.getDate());
+                        var dia = res.getDay()+1;
+                        this.traerHorasCalendario(dia);
+
+                      }
+                    }
+                }
             },
             urlbackend: this.$urlBackend,
             sucursal: JSON.parse(localStorage.getItem("sucursalselect")),
@@ -161,9 +198,9 @@ export default {
             });
         },
         validarRut($event) {
-            if ($event.target.value.length > 4) {
+            if ($event.length > 4) {
                 this.axios
-                    .get(`/api/validarrutpaciente/${$event.target.value}`)
+                    .get(`/api/validarrutpaciente/${$event}`)
                     .then(response => {
                         if (response.data != 0) {
                             this.form.nombres = response.data.nombres;
@@ -180,6 +217,60 @@ export default {
                     });
             }
         },
+
+        customButtons()
+        {
+        },
+
+        checkRut() {
+
+            var valor = this.form.rut.replace('.','');  // Quita Punto
+            valor = valor.replace('-','');// Quita Guión
+            var cuerpo = valor.slice(0,-1);// Aislar Cuerpo y Dígito Verificador
+            var dv = valor.slice(-1).toUpperCase();
+            this.form.rut = cuerpo + '-'+ dv// Formatear RUN
+
+            if(cuerpo.length < 7) {// Si no cumple con el mínimo de digitos ej. (n.nnn.nnn)
+                $('.inputRUT').attr('style', 'border-color: red !important');
+                $('.btnSubmit').prop('disabled',  true);
+                return false;
+            }
+
+            var suma = 0; // Calcular Dígito Verificador
+            var multiplo = 2;
+
+            for(var i=1;i<=cuerpo.length;i++) // Para cada dígito del Cuerpo
+            {
+                var index = multiplo * valor.charAt(cuerpo.length - i); // Obtener su Producto con el Múltiplo Correspondiente
+                suma = suma + index; // Sumar al Contador General
+                if(multiplo < 7) {
+                    multiplo = multiplo + 1;
+                }else{
+                    multiplo = 2;
+                } // Consolidar Múltiplo dentro del rango [2,7]
+            }
+
+            var dvEsperado = 11 - (suma % 11); // Calcular Dígito Verificador en base al Módulo 11
+            dv = (dv == 'K')?10:dv; // Casos Especiales (0 y K)
+            dv = (dv == 0)?11:dv;
+
+            if(dvEsperado != dv) {
+                $('.inputRUT').attr('style', 'border-color: red !important');
+                $('.btnSubmit').prop('disabled',  true);
+                this.form.nombres = ""
+                this.form.apellidos = ""
+                this.form.id_paciente = ""
+                this.form.email = "";
+                this.form.direccion = "";
+                this.form.celular = "";
+                this.form.prevension_id = "";
+                return false;
+            } // Validar que el Cuerpo coincide con su Dígito Verificador
+
+            $('.inputRUT').attr('style', 'border-color: #40A944 !important');  // Si todo sale bien, eliminar errores (decretar que es válido)
+            $('.btnSubmit').prop('disabled',  false);
+            this.validarRut(this.form.rut);
+          },
 
         // crear reserva
         handleSubmit(e) {
@@ -227,30 +318,27 @@ export default {
                 this.axios
                     .post(`/api/crearreservaprofesional`, this.form)
                     .then(res => {
-                        let title = "";
-                        let message = "";
-                        let type = "";
                         if (res.data) {
                             if (this.form.id_reserva == "") {
-                                title = "Crear reserva";
-                                message = "reserva creada con exito";
-                                type = "success";
+                                Swal.fire({
+                                    position: "center",
+                                    icon: "success",
+                                    title: "Reserva creada exitosamente",
+                                    showConfirmButton: false,
+                                    timer: 1000
+                                });
                             } else {
-                                title = "Editar reserva";
-                                message = "reserva editada con exito";
-                                type = "success";
+                                Swal.fire({
+                                    position: "center",
+                                    icon: "success",
+                                    title: "Reserva editada exitosamente",
+                                    showConfirmButton: false,
+                                    timer: 1000
+                                });
                             }
 
-                            this.currentEvents = calendarApi.addEvent({
-                                id: res.data.id_reserva,
-                                title: titlereserva,
-                                start: fecha_inicio,
-                                end: fecha_fin,
-                                classNames: "bg-info text-white"
-                            });
+                            this.traerHoras();
                             this.showModal = false;
-                            this.newEventData = {};
-                            this.successmsg(title, message, type);
                             this.$v.form.$reset();
                         }
                     })
@@ -281,6 +369,7 @@ export default {
             this.submitted = false;
             this.event = {};
         },
+
         move(info) {
             let idreserva = info.event._def.extendedProps.idreserva;
 
@@ -322,16 +411,13 @@ export default {
                     this.successmsg(title, message, type);
                 });
         },
-        // eslint-disable-next-line no-unused-vars
+
         hideModal(e) {
             this.submitted = false;
             this.showModal = false;
             this.event = {};
         },
-        /**
-         * Edit event modal submit
-         */
-        // eslint-disable-next-line no-unused-vars
+
         editSubmit(e) {
             console.log("aqui");
             this.submit = true;
@@ -344,9 +430,6 @@ export default {
             this.eventModal = false;
         },
 
-        /**
-         * Delete event
-         */
         deleteEvent() {
             this.axios
                 .delete(`/api/deletereserva/${this.form.id_reserva}`)
@@ -421,9 +504,7 @@ export default {
                     console.log("error", error);
                 });
         },
-        /**
-         * Modal open for edit event
-         */
+    
         editEvent(info) {
             // Evaluamos si es una reserva o un horario no disponible
             if (info.event.title != "NO DISPONIBLE") {
@@ -435,7 +516,6 @@ export default {
                 this.axios
                     .get(`/api/traerreserva/${idreserva}`)
                     .then(response => {
-                        console.log(response);
                         this.form.id_reserva = response.data.id_reserva;
                         this.form.nombres = response.data.paciente.nombres;
                         this.form.apellidos = response.data.paciente.apellidos;
@@ -491,16 +571,10 @@ export default {
             });
         },
 
-        /**
-         * Show list of events
-         */
         handleEvents(events) {
             this.currentEvents = events;
         },
 
-        /**
-         * Show successfull Save Dialog
-         */
         successmsg() {
             Swal.fire({
                 position: "center",
@@ -510,15 +584,18 @@ export default {
                 timer: 1000
             });
         },
-        // traer especialidad
+    
         traerEspecialidad() {
-            this.axios.get(`/api/obtenerespecialidad/`).then(response => {
-                this.options = response.data;
+            this.axios.get(`/api/obtenerespecialidadMisReserva/${this.credentialsPerson}`).then(response => {
+                this.options.push(response.data.profesional[0].especialidad);
             });
         },
 
-        // traer servicios
         traerServicio() {
+            this.calendarOptions.hiddenDays =[];
+            let calendarApi = this.$refs.fullCalendar.getApi();
+            let date = moment().format('YYYY-MM-DD');
+            calendarApi.gotoDate(date);
             if (!this.sucursal) {
                 Swal.fire({
                     position: "center",
@@ -539,7 +616,6 @@ export default {
             this.axios
                 .get(`/api/obtenerserviciosprofesional/${id_especialidad}/${id_sucursal}`)
                 .then(response => {
-                    console.log(response)
                     this.form.id_profesional = response.data[0].profesional_id_profesional
                     this.optionsServicio = response.data;
                     this.duracion = this.form.especialidad_id.intervalo;
@@ -547,6 +623,7 @@ export default {
         },
 
         traerHoras() {
+
             this.calendarOptions.events = [{}];
             var date = new Date();
 
@@ -555,15 +632,39 @@ export default {
             var diasemana = date.getDay();
 
             var form = {
-                diasemana: diasemana
+                diasemana: diasemana,
+                id_sucursal : this.sucursal.id_sucursal
             };
-
-            console.log(form)
 
             this.axios
                 .post(`/api/traerhorariounico`, form)
                 .then(res => {
                     console.log(res);
+                    // return false;
+                    let diashabiles = [];
+                    let diassemana = [0, 1, 2, 3, 4, 5, 6];
+
+                    res.data.diasDisponibles.forEach((element, i) => {
+                        if (element["dia"]["dia"] == 7) {
+                          element["dia"]["dia"] = 0;
+                        }
+                        diashabiles.push(element["dia"]["dia"]);
+                    });
+
+                    diashabiles.sort();
+
+
+                    for (let i = 0; i < diassemana.length; i++) {
+                        for (let j = 0; j < diassemana.length; j++) {
+                            if (diashabiles[i] == diassemana[j]) {
+                                diassemana.splice(j, 1);
+                            }
+                        }
+                    }
+
+
+                    this.calendarOptions.hiddenDays = diassemana;
+
                     if (res.data.horario) {
                         this.calendarOptions.slotMinTime =
                             res.data.horario.hora_inicio;
@@ -628,7 +729,121 @@ export default {
                                 title: "RESERVADO",
                                 start: fecha_comple_inicio,
                                 end: fecha_comple_fin,
-                                classNames: "bg-info text-white"
+                                classNames: "text-white",
+                            });
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.log("error", error);
+                });
+        },
+
+        traerHorasCalendario(day) {
+
+            this.calendarOptions.events = [{}];
+
+            var diasemana = day;
+
+            var form = {
+                diasemana: diasemana,
+                id_sucursal : this.sucursal.id_sucursal
+            };
+
+            this.axios
+                .post(`/api/traerhorariounico`, form)
+                .then(res => {
+                    console.log(res);
+                    // return false;
+                    let diashabiles = [];
+                    let diassemana = [0, 1, 2, 3, 4, 5, 6];
+
+                    res.data.diasDisponibles.forEach((element, i) => {
+                        if (element["dia"]["dia"] == 7) {
+                          element["dia"]["dia"] = 0;
+                        }
+                        diashabiles.push(element["dia"]["dia"]);
+                    });
+
+                    diashabiles.sort();
+
+
+                    for (let i = 0; i < diassemana.length; i++) {
+                        for (let j = 0; j < diassemana.length; j++) {
+                            if (diashabiles[i] == diassemana[j]) {
+                                diassemana.splice(j, 1);
+                            }
+                        }
+                    }
+
+
+                    this.calendarOptions.hiddenDays = diassemana;
+
+                    if (res.data.horario) {
+                        this.calendarOptions.slotMinTime =
+                            res.data.horario.hora_inicio;
+                        this.calendarOptions.slotMaxTime =
+                            res.data.horario.hora_fin;
+                        this.calendarOptions.slotDuration = this.duracion;
+                        this.calendarOptions.dateClick = this.dateClicked;
+                    } else {
+                        this.calendarOptions.slotMinTime = "00:00:00";
+                        this.calendarOptions.slotMaxTime = "00:00:00";
+                        this.calendarOptions.dateClick = false;
+                    }
+
+                    if (res.data.bloqueo) {
+                        for (let i = 0; i < res.data.bloqueo.length; i++) {
+                            let dia = res.data.bloqueo[i]["dia"];
+
+                            let fecha_inicio =
+                                res.data.bloqueo[i]["hora_inicio"];
+
+                            let fecha_fin = res.data.bloqueo[i]["hora_fin"];
+
+                            let fecha_comple_inicio = moment(
+                                dia + " " + fecha_inicio
+                            ).format("YYYY-MM-DD HH:mm:ss");
+
+                            let fecha_comple_fin = moment(
+                                dia + " " + fecha_fin
+                            ).format("YYYY-MM-DD HH:mm:ss");
+
+                            this.calendarOptions.events.push({
+                                id: "",
+                                title: "NO DISPONIBLE",
+                                start: fecha_comple_inicio,
+                                end: fecha_comple_fin,
+                                classNames: "bg-danger text-white",
+                                editable: false
+                            });
+                        }
+                    }
+
+                    if (res.data.reserva) {
+                        for (let i = 0; i < res.data.reserva.length; i++) {
+                            let dia = res.data.reserva[i]["dia"];
+
+                            let fecha_inicio =
+                                res.data.reserva[i]["hora_inicio"];
+
+                            let fecha_fin = res.data.reserva[i]["hora_fin"];
+
+                            let fecha_comple_inicio = moment(
+                                dia + " " + fecha_inicio
+                            ).format("YYYY-MM-DD HH:mm:ss");
+
+                            let fecha_comple_fin = moment(
+                                dia + " " + fecha_fin
+                            ).format("YYYY-MM-DD HH:mm:ss");
+
+                            this.calendarOptions.events.push({
+                                idreserva: res.data.reserva[i]["id_reserva"],
+                                idpaciente: res.data.reserva[i]["paciente_id"],
+                                title: "RESERVADO",
+                                start: fecha_comple_inicio,
+                                end: fecha_comple_fin,
+                                classNames: "text-white",
                             });
                         }
                     }

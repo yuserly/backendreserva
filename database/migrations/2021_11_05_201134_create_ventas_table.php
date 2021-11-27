@@ -22,6 +22,7 @@ class CreateVentasTable extends Migration
             $table->integer('precio_desc')->nullable();
             $table->integer('iva');
             $table->integer('total');
+            $table->integer('retencion');
             $table->string('codigo_boucher')->nullable();
             $table->string('codigo_bono_fonasa')->nullable();
             $table->boolean('boleta_honorario')->nullable();

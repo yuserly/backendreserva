@@ -13,7 +13,7 @@
                             <form
                                 class="
                                     needs-validation
-                                    row row-cols-lg-6
+                                    row row-cols-lg-5
                                     gx-4
                                     gy-2
                                     align-items-center
@@ -305,36 +305,37 @@
                         </div>
                     </div>
                     <div class="col-12 mb-2">
-                        <div class="row">
+                        <div class="row text-center">
                             <div class="col-12 col-md-3">
-                                <h6>Nombres Apellidos</h6>
+                                <h6><b><u> NOMBRE COMPLETO </u></b></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>RUT</h6>
+                                <h6><b><u> RUT </u></b></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>Email</h6>
+                                <h6><b><u> CORREO </u></b></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>Prevision</h6>
+                                <h6><b><u> PREVISIÓN </u></b></h6>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row text-center">
                             <div class="col-12 col-md-3">
-                                <h6>{{ detalle.nombrepaciente }}</h6>
+                                <h6><small> {{ detalle.nombrepaciente }} </small></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>{{ detalle.rutpaciente }}</h6>
+                                <h6><small> {{ detalle.rutpaciente }} </small></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>{{ detalle.emailpaciente }}</h6>
+                                <h6><small> {{ detalle.emailpaciente }} </small></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>{{ detalle.servicioprevision }}</h6>
+                                <h6><small> {{ detalle.servicioprevision }} </small></h6>
                             </div>
                         </div>
                     </div>
                 </div>
+                <hr>
                 <div class="row">
                     <div class="col-12 mb-2">
                         <div class="mb-3">
@@ -351,38 +352,38 @@
                         </div>
                     </div>
                     <div class="col-12 mb-2">
-                        <div class="row">
+                        <div class="row text-center">
                             <div class="col-12 col-md-3">
-                                <h6>Profesional</h6>
+                                <h6><b><u> ESPECIALISTA </u></b></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>Servicio</h6>
+                                <h6><b><u> SERVICIO </u></b></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>Previsión</h6>
+                                <h6><b><u> PREVISIÓN </u></b></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>Precio</h6>
+                                <h6><b><u> PRECIO </u></b></h6>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row text-center">
                             <div class="col-12 col-md-3">
-                                <h6>{{ detalle.nombreeprofesional }}</h6>
+                                <h6> <small> {{ detalle.nombreeprofesional }} </small> </h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>{{ detalle.nombreservicio }}</h6>
+                                <h6><small> {{ detalle.nombreservicio }} </small></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>{{ detalle.servicioprevision }}</h6>
+                                <h6><small> {{ detalle.servicioprevision }} </small></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>
-                                    {{ detalle.precioservicio | toCurrency }}
-                                </h6>
+                                <h6><small> {{ detalle.precioservicio | toCurrency }} </small></h6>
                             </div>
                         </div>
                     </div>
                 </div>
+                <hr>
+
                 <div class="row">
                     <div class="col-12 mt-3 mb-2">
                         <div class="mb-3">
@@ -399,89 +400,75 @@
                         </div>
                     </div>
                     <div class="col-12 mt-2 mb-2">
-                        <div class="row">
+                        <div class="row text-center">
                             <div class="col-12 col-md-3">
-                                <h6>Medio de Pago</h6>
+                                <h6><b><u> MEDIO DE PAGO </u></b></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>Subtotal</h6>
+                                <h6><b><u> TIPO COMPROBANTE </u></b></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>% Descuento</h6>
+                                <h6><b><u> N° COMPROBANTE </u></b></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>Precio con descuento</h6>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12 col-md-3">
-                                <h6>{{ detalle.mediopago }}</h6>
-                            </div>
-                            <div class="col-12 col-md-3">
-                                <h6>{{ detalle.subtotal | toCurrency }}</h6>
-                            </div>
-                            <div class="col-12 col-md-3">
-                                <h6>{{ detalle.porcentajedescuento }} %</h6>
-                            </div>
-                            <div class="col-12 col-md-3">
-                                <h6>
-                                    {{ detalle.precio_descuento | toCurrency }}
-                                </h6>
+                                <h6><b><u> CODIGO FONASA </u></b></h6>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-12 mt-2 mb-2">
-                        <div class="row">
+                        <div class="row text-center">
                             <div class="col-12 col-md-3">
-                                <h6>IVA</h6>
+                                <h6><small> {{ detalle.mediopago }} </small></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>Total</h6>
+                                <h6 v-if="detalle.boleta_honorario == 1"><small> Boleta Electronica </small></h6>
+                                <h6 v-else><small> Boleta Honorarios </small></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>Código Boucher</h6>
+                                <h6 v-if="detalle.boleta_honorario == 1"><small> {{detalle.codigo_boucher}} </small></h6>
+                                <h6 v-else><small> {{detalle.n_honorario}} </small></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>Código Bono Salud</h6>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12 col-md-3">
-                                <h6>{{ detalle.iva | toCurrency }}</h6>
-                            </div>
-                            <div class="col-12 col-md-3">
-                                <h6>{{ detalle.total | toCurrency }}</h6>
-                            </div>
-                            <div class="col-12 col-md-3">
-                                <h6>{{ detalle.codigo_boucher }}</h6>
-                            </div>
-                            <div class="col-12 col-md-3">
-                                <h6>{{ detalle.codigo_bono_fonasa }}</h6>
+                                <h6 v-if="detalle.codigo_bono_fonasa != null" ><small> {{ detalle.codigo_bono_fonasa }}  </small></h6>
+                                <h6 v-else ><small> -  </small></h6>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 mt-2 mb-2">
-                        <div class="row">
+                        <div class="row text-center">
                             <div class="col-12 col-md-3">
-                                <h6>Boleta Honorario</h6>
+                                <h6><b><u> SUBTOTAL </u></b></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>N° Boleta</h6>
+                                <h6><b><u> DESCUENTO. </u></b></h6>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <h6><b><u> PRECIO DESCUENTO </u></b></h6>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <h6><b><u> TOTAL PAGADO </u></b></h6>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row text-center">
                             <div class="col-12 col-md-3">
-                                <h6>{{ detalle.boleta_honorario }}</h6>
+                                <h6><small> {{ detalle.subtotal | toCurrency }} </small></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6>{{ detalle.n_honorario }}</h6>
+                                <h6><small> {{ detalle.porcentajedescuento }} % </small></h6>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <h6><small> {{ detalle.precio_descuento | toCurrency}} </small></h6>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <h6><small> {{ detalle.total | toCurrency}} </small></h6>
                             </div>
                         </div>
                     </div>
+                    
                 </div>
+                
             </b-modal>
 
             <!-- modal -->
+
         </div>
     </Layout>
 </template>

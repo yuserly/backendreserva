@@ -68,8 +68,11 @@ class SecretariaController extends Controller
         $secretaria->secretariasucursal()->sync($arraySucursal);
 
         $estado = 1;
-                
-        Mail::to($request->email)->send(new SendMailUser($request->nombres, $request->apellidos, $request->email, $request->contrasena, $estado));
+        
+        $domain = explode('@', $request->email);
+        if (checkdnsrr($domain[1], "MX")){
+            Mail::to($request->email)->send(new SendMailUser($request->nombres, $request->apellidos, $request->email, $request->contrasena, $estado));
+        }
 
         return $secretaria;
     }
@@ -89,7 +92,11 @@ class SecretariaController extends Controller
 
         $estado = 2;
             
-        Mail::to($request->secretaria['user']['email'])->send(new SendMailUser($request->secretaria['nombres'], $request->secretaria['apellidos'], $request->secretaria['user']['email'], $request->contrasena, $estado));
+        
+        $domain = explode('@', $request->email);
+        if (checkdnsrr($domain[1], "MX")){
+            Mail::to($request->secretaria['user']['email'])->send(new SendMailUser($request->secretaria['nombres'], $request->secretaria['apellidos'], $request->secretaria['user']['email'], $request->contrasena, $estado));
+        }
 
         return "Contraseña actualizada exitosamente.";
     }

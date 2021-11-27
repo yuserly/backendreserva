@@ -138,7 +138,7 @@ class ReservaController extends Controller
         if($request->editservicio){
             $servicio = $request->editservicio["id_servicio"];
         }else{
-            // aqui falta algo
+            $servicio = $request->servicio_id_servicio["id_servicio"];
         }
 
         $reserva = Reserva::updateOrCreate(['id_reserva' => $request->id_reserva],[

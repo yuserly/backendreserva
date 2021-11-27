@@ -2572,7 +2572,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
 
-var dashboard = true;
+var dashboard = false;
 var administración = false;
 var especialidades = false;
 var servicios = false;
@@ -2590,6 +2590,7 @@ var administraciónReserva = false;
 var informediario = false;
 
 if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$administrador) {
+  dashboard = true;
   administración = true;
   administraciónReserva = true;
   especialidades = true;
@@ -2605,13 +2606,14 @@ if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$administrador) {
   confirmarreserva = true;
   informediario = true;
 } else if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$secretaria) {
+  dashboard = true;
   administraciónReserva = true;
   pacientes = true;
   reservas = true;
   ventas = true;
   confirmarreserva = true;
 } else {
-  pacientes = true;
+  administraciónReserva = true;
   misreservas = true;
 }
 
@@ -24041,13 +24043,13 @@ var render = function () {
             [
               _c("span", { staticClass: "logo-sm" }, [
                 _c("img", {
-                  attrs: { src: "images/isotipo.png", width: "100%" },
+                  attrs: { src: "images/isotipo.png", width: "85%" },
                 }),
               ]),
               _vm._v(" "),
               _c("span", { staticClass: "logo-lg" }, [
                 _c("img", {
-                  attrs: { src: "images/reservas.png", width: "100%" },
+                  attrs: { src: "images/reservas.png", width: "85%" },
                 }),
               ]),
             ]

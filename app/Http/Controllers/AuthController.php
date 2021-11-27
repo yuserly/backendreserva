@@ -47,7 +47,8 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'name' => $user->name,
                 'perfil' => $user->perfil_id,
-                'sucursales' => $sucursales
+                'sucursales' => $sucursales,
+                'credentialsPerson' => $user->id
             ];
             return $response;
         }else{

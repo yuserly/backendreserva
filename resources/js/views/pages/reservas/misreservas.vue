@@ -72,11 +72,11 @@
                   id="rut"
                   v-model="form.rut"
                   type="text"
-                  class="form-control"
+                  class="form-control inputRUT"
                   :class="{
                     'is-invalid': submitted && $v.form.rut.$error,
                   }"
-                  @input="validarRut($event)"
+                  v-on:input="checkRut(this)"
                 />
 
                 <div

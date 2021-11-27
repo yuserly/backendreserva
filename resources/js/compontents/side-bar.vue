@@ -208,10 +208,10 @@ export default {
     <div class="navbar-brand-box" style="padding-left: 4px;padding-right:4px;">
       <router-link to="/" class="logo logo-dark">
         <span class="logo-sm">
-          <img src="images/isotipo.png" width="100%" />
+          <img src="images/isotipo.png" width="85%" />
         </span>
         <span class="logo-lg">
-          <img src="images/reservas.png" width="100%" />
+          <img src="images/reservas.png" width="85%" />
         </span>
       </router-link>
 

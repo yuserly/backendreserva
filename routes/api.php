@@ -36,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function(){
     // especialidades
 
     Route::get('obtenerespecialidad',[EspecialidadController::class,'show']);
+    Route::get('obtenerespecialidadMisReserva/{id}',[EspecialidadController::class,'showMisEspecialidades']);
     Route::get('validarnombreespecialidad/{nombre}',[EspecialidadController::class,'validarnombre']);
     Route::post('crearespecialidad',[EspecialidadController::class,'store']);
     Route::delete('eliminarespecialidad/{especialidad}',[EspecialidadController::class,'destroy']);

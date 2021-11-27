@@ -17750,11 +17750,13 @@ __webpack_require__.r(__webpack_exports__);
             var token = res.data.token;
             var perfil = res.data.perfil;
             var name = res.data.name;
+            var credentialsPerson = res.data.credentialsPerson;
             var sucursales = JSON.stringify(res.data.sucursales);
             localStorage.setItem("token", token);
             localStorage.setItem("perfil", perfil);
             localStorage.setItem("usuarioName", name);
             localStorage.setItem('sucursales', sucursales);
+            localStorage.setItem('credentialsPerson', credentialsPerson);
 
             if (perfil == 1 || perfil == '1') {
               vue__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.$administrador = true;
@@ -17762,14 +17764,7 @@ __webpack_require__.r(__webpack_exports__);
               vue__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.$secretaria = true;
             } else if (perfil == 3 || perfil == '3') {
               vue__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.$profesional = true;
-            } // if (res.data.data.rol[0] === "Estudiante") {
-            //   this.$router.push("/empresa");
-            // } else if (res.data.data.rol[0] === "Administrador") {
-            //   this.$router.push("/niveles");
-            // } else if (res.data.data.rol[0] === "Docente") {
-            //   this.$router.push("/solicitud-empresa");
-            // }
-
+            }
 
             _this.$router.push("/");
           } else {
@@ -18168,7 +18163,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
 
-var dashboard = true;
+var dashboard = false;
 var administración = false;
 var especialidades = false;
 var servicios = false;
@@ -18186,6 +18181,7 @@ var administraciónReserva = false;
 var informediario = false;
 
 if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$administrador) {
+  dashboard = true;
   administración = true;
   administraciónReserva = true;
   especialidades = true;
@@ -18201,13 +18197,14 @@ if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$administrador) {
   confirmarreserva = true;
   informediario = true;
 } else if (vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.$secretaria) {
+  dashboard = true;
   administraciónReserva = true;
   pacientes = true;
   reservas = true;
   ventas = true;
   confirmarreserva = true;
 } else {
-  pacientes = true;
+  administraciónReserva = true;
   misreservas = true;
 }
 
@@ -21269,13 +21266,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _fullcalendar_list__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @fullcalendar/list */ "./node_modules/@fullcalendar/list/main.js");
 /* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue-multiselect */ "./node_modules/vue-multiselect/dist/vue-multiselect.min.js");
 /* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(vue_multiselect__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! vuelidate/lib/validators */ "./node_modules/vuelidate/lib/validators/index.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var _layouts_main__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../layouts/main */ "./resources/js/views/layouts/main.vue");
-/* harmony import */ var _data_calendar__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./data-calendar */ "./resources/js/views/pages/reservas/data-calendar.js");
+/* harmony import */ var _fullcalendar_core_locales_es__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @fullcalendar/core/locales/es */ "./node_modules/@fullcalendar/core/locales/es.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! vuelidate/lib/validators */ "./node_modules/vuelidate/lib/validators/index.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _layouts_main__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../layouts/main */ "./resources/js/views/layouts/main.vue");
+/* harmony import */ var _data_calendar__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./data-calendar */ "./resources/js/views/pages/reservas/data-calendar.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_12__);
+
+
 
 
 
@@ -21291,12 +21293,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
     FullCalendar: _fullcalendar_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
-    Layout: _layouts_main__WEBPACK_IMPORTED_MODULE_9__["default"],
+    Layout: _layouts_main__WEBPACK_IMPORTED_MODULE_10__["default"],
     Multiselect: (vue_multiselect__WEBPACK_IMPORTED_MODULE_6___default())
   },
   data: function data() {
+    var _this = this;
+
     return {
       title: "Reserva",
+      credentialsPerson: localStorage.getItem('credentialsPerson'),
       items: [{
         text: "Minible"
       }, {
@@ -21318,7 +21323,7 @@ __webpack_require__.r(__webpack_exports__);
         slotLabelInterval: "00:05:00",
         themeSystem: "bootstrap",
         disableResizing: true,
-        events: _data_calendar__WEBPACK_IMPORTED_MODULE_10__.calendarEvents,
+        events: _data_calendar__WEBPACK_IMPORTED_MODULE_11__.calendarEvents,
         editable: true,
         droppable: true,
         eventResizableFromStart: false,
@@ -21326,6 +21331,9 @@ __webpack_require__.r(__webpack_exports__);
         eventClick: this.editEvent,
         eventsSet: this.handleEvents,
         eventLimit: true,
+        locale: _fullcalendar_core_locales_es__WEBPACK_IMPORTED_MODULE_7__["default"],
+        eventColor: '#93117ed1',
+        hiddenDays: [],
         view: {
           timeGrid: {
             eventLimit: 1
@@ -21339,7 +21347,41 @@ __webpack_require__.r(__webpack_exports__);
         weekends: true,
         selectable: false,
         selectMirror: false,
-        dayMaxEvents: true
+        dayMaxEvents: true,
+        customButtons: {
+          prev: {
+            // this overrides the prev button
+            text: "PREV",
+            click: function click() {
+              var calendarApi = _this.$refs.fullCalendar.getApi();
+
+              calendarApi.prev(); // console.log(calendarApi.currentDataManager.data.currentDate);
+              // return false;
+
+              var res = calendarApi.currentDataManager.data.currentDate;
+              res.setDate(res.getDate());
+              var dia = res.getDay() + 1;
+
+              _this.traerHorasCalendario(dia);
+            }
+          },
+          next: {
+            // this overrides the next button
+            text: "NEXT",
+            click: function click() {
+              var calendarApi = _this.$refs.fullCalendar.getApi();
+
+              calendarApi.next(); //  console.log(calendarApi.currentDataManager.data.currentDate);
+              //  return false;
+
+              var res = calendarApi.currentDataManager.data.currentDate;
+              res.setDate(res.getDate());
+              var dia = res.getDay() + 1;
+
+              _this.traerHorasCalendario(dia);
+            }
+          }
+        }
       },
       urlbackend: this.$urlBackend,
       sucursal: JSON.parse(localStorage.getItem("sucursalselect")),
@@ -21373,7 +21415,7 @@ __webpack_require__.r(__webpack_exports__);
       duracion: "",
       showModal: false,
       eventModal: false,
-      categories: _data_calendar__WEBPACK_IMPORTED_MODULE_10__.categories,
+      categories: _data_calendar__WEBPACK_IMPORTED_MODULE_11__.categories,
       submitted: false,
       submit: false,
       newEventData: {},
@@ -21392,25 +21434,25 @@ __webpack_require__.r(__webpack_exports__);
   validations: {
     form: {
       nombres: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_11__.required
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_13__.required
       },
       rut: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_11__.required
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_13__.required
       },
       apellidos: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_11__.required
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_13__.required
       },
       email: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_11__.required
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_13__.required
       },
       celular: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_11__.required
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_13__.required
       },
       direccion: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_11__.required
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_13__.required
       },
       prevension_id: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_11__.required
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_13__.required
       }
     }
   },
@@ -21424,35 +21466,96 @@ __webpack_require__.r(__webpack_exports__);
       return "".concat(profesional.nombres, " ").concat(profesional.apellidos, " ");
     },
     traerPrevision: function traerPrevision() {
-      var _this = this;
+      var _this2 = this;
 
       this.axios.get("/api/obtenerprevision/").then(function (response) {
-        _this.optionsPrevension = response.data;
+        _this2.optionsPrevension = response.data;
       });
     },
     validarRut: function validarRut($event) {
-      var _this2 = this;
+      var _this3 = this;
 
-      if ($event.target.value.length > 4) {
-        this.axios.get("/api/validarrutpaciente/".concat($event.target.value)).then(function (response) {
+      if ($event.length > 4) {
+        this.axios.get("/api/validarrutpaciente/".concat($event)).then(function (response) {
           if (response.data != 0) {
-            _this2.form.nombres = response.data.nombres;
-            _this2.form.apellidos = response.data.apellidos;
-            _this2.form.id_paciente = response.data.id_paciente;
-            _this2.form.rut = response.data.rut;
-            _this2.form.email = response.data.email;
-            _this2.form.direccion = response.data.direccion;
-            _this2.form.celular = response.data.celular;
-            _this2.form.prevension_id = response.data.prevision;
+            _this3.form.nombres = response.data.nombres;
+            _this3.form.apellidos = response.data.apellidos;
+            _this3.form.id_paciente = response.data.id_paciente;
+            _this3.form.rut = response.data.rut;
+            _this3.form.email = response.data.email;
+            _this3.form.direccion = response.data.direccion;
+            _this3.form.celular = response.data.celular;
+            _this3.form.prevension_id = response.data.prevision;
           } else {
-            _this2.rutexist = false;
+            _this3.rutexist = false;
           }
         });
       }
     },
+    customButtons: function customButtons() {},
+    checkRut: function checkRut() {
+      var valor = this.form.rut.replace('.', ''); // Quita Punto
+
+      valor = valor.replace('-', ''); // Quita Guión
+
+      var cuerpo = valor.slice(0, -1); // Aislar Cuerpo y Dígito Verificador
+
+      var dv = valor.slice(-1).toUpperCase();
+      this.form.rut = cuerpo + '-' + dv; // Formatear RUN
+
+      if (cuerpo.length < 7) {
+        // Si no cumple con el mínimo de digitos ej. (n.nnn.nnn)
+        jquery__WEBPACK_IMPORTED_MODULE_12___default()('.inputRUT').attr('style', 'border-color: red !important');
+        jquery__WEBPACK_IMPORTED_MODULE_12___default()('.btnSubmit').prop('disabled', true);
+        return false;
+      }
+
+      var suma = 0; // Calcular Dígito Verificador
+
+      var multiplo = 2;
+
+      for (var i = 1; i <= cuerpo.length; i++) // Para cada dígito del Cuerpo
+      {
+        var index = multiplo * valor.charAt(cuerpo.length - i); // Obtener su Producto con el Múltiplo Correspondiente
+
+        suma = suma + index; // Sumar al Contador General
+
+        if (multiplo < 7) {
+          multiplo = multiplo + 1;
+        } else {
+          multiplo = 2;
+        } // Consolidar Múltiplo dentro del rango [2,7]
+
+      }
+
+      var dvEsperado = 11 - suma % 11; // Calcular Dígito Verificador en base al Módulo 11
+
+      dv = dv == 'K' ? 10 : dv; // Casos Especiales (0 y K)
+
+      dv = dv == 0 ? 11 : dv;
+
+      if (dvEsperado != dv) {
+        jquery__WEBPACK_IMPORTED_MODULE_12___default()('.inputRUT').attr('style', 'border-color: red !important');
+        jquery__WEBPACK_IMPORTED_MODULE_12___default()('.btnSubmit').prop('disabled', true);
+        this.form.nombres = "";
+        this.form.apellidos = "";
+        this.form.id_paciente = "";
+        this.form.email = "";
+        this.form.direccion = "";
+        this.form.celular = "";
+        this.form.prevension_id = "";
+        return false;
+      } // Validar que el Cuerpo coincide con su Dígito Verificador
+
+
+      jquery__WEBPACK_IMPORTED_MODULE_12___default()('.inputRUT').attr('style', 'border-color: #40A944 !important'); // Si todo sale bien, eliminar errores (decretar que es válido)
+
+      jquery__WEBPACK_IMPORTED_MODULE_12___default()('.btnSubmit').prop('disabled', false);
+      this.validarRut(this.form.rut);
+    },
     // crear reserva
     handleSubmit: function handleSubmit(e) {
-      var _this3 = this;
+      var _this4 = this;
 
       this.submitted = true;
       console.log(e);
@@ -21467,46 +21570,42 @@ __webpack_require__.r(__webpack_exports__);
         var fecha_inicio = "";
 
         if (this.form.id_reserva == "") {
-          fecha_fin = moment__WEBPACK_IMPORTED_MODULE_7___default()(this.newEventData.date).add(this.duracion, "m").format("YYYY-MM-DD HH:mm:ss");
-          fecha_inicio = moment__WEBPACK_IMPORTED_MODULE_7___default()(this.newEventData.date).format("YYYY-MM-DD HH:mm:ss"); // fechas que se pasaran a la bd
+          fecha_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(this.newEventData.date).add(this.duracion, "m").format("YYYY-MM-DD HH:mm:ss");
+          fecha_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(this.newEventData.date).format("YYYY-MM-DD HH:mm:ss"); // fechas que se pasaran a la bd
 
-          this.form.dia = moment__WEBPACK_IMPORTED_MODULE_7___default()(this.newEventData.date).format("YYYY-MM-DD");
-          this.form.hora_inicio = moment__WEBPACK_IMPORTED_MODULE_7___default()(fecha_inicio).format("HH:mm:ss");
-          this.form.hora_fin = moment__WEBPACK_IMPORTED_MODULE_7___default()(fecha_fin).format("HH:mm:ss");
+          this.form.dia = moment__WEBPACK_IMPORTED_MODULE_8___default()(this.newEventData.date).format("YYYY-MM-DD");
+          this.form.hora_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(fecha_inicio).format("HH:mm:ss");
+          this.form.hora_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(fecha_fin).format("HH:mm:ss");
         } // mandamos a crear la reserva
 
 
         this.form.id_sucursal = this.sucursal.id_sucursal;
         console.log(this.form);
         this.axios.post("/api/crearreservaprofesional", this.form).then(function (res) {
-          var title = "";
-          var message = "";
-          var type = "";
-
           if (res.data) {
-            if (_this3.form.id_reserva == "") {
-              title = "Crear reserva";
-              message = "reserva creada con exito";
-              type = "success";
+            if (_this4.form.id_reserva == "") {
+              sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
+                position: "center",
+                icon: "success",
+                title: "Reserva creada exitosamente",
+                showConfirmButton: false,
+                timer: 1000
+              });
             } else {
-              title = "Editar reserva";
-              message = "reserva editada con exito";
-              type = "success";
+              sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
+                position: "center",
+                icon: "success",
+                title: "Reserva editada exitosamente",
+                showConfirmButton: false,
+                timer: 1000
+              });
             }
 
-            _this3.currentEvents = calendarApi.addEvent({
-              id: res.data.id_reserva,
-              title: titlereserva,
-              start: fecha_inicio,
-              end: fecha_fin,
-              classNames: "bg-info text-white"
-            });
-            _this3.showModal = false;
-            _this3.newEventData = {};
+            _this4.traerHoras();
 
-            _this3.successmsg(title, message, type);
+            _this4.showModal = false;
 
-            _this3.$v.form.$reset();
+            _this4.$v.form.$reset();
           }
         })["catch"](function (error) {
           console.log("error", error);
@@ -21514,7 +21613,7 @@ __webpack_require__.r(__webpack_exports__);
           var message = "";
           var type = "";
 
-          if (_this3.form.id_reserva) {
+          if (_this4.form.id_reserva) {
             title = "Crear Reserva";
             message = "Reserva  creada con exito";
             type = "error";
@@ -21524,12 +21623,12 @@ __webpack_require__.r(__webpack_exports__);
             type = "error";
           }
 
-          _this3.$v.form.$reset();
+          _this4.$v.form.$reset();
 
-          _this3.showModal = false;
-          _this3.newEventData = {};
+          _this4.showModal = false;
+          _this4.newEventData = {};
 
-          _this3.successmsg(title, message, type);
+          _this4.successmsg(title, message, type);
         });
       }
 
@@ -21538,18 +21637,18 @@ __webpack_require__.r(__webpack_exports__);
       this.event = {};
     },
     move: function move(info) {
-      var _this4 = this;
+      var _this5 = this;
 
       var idreserva = info.event._def.extendedProps.idreserva;
       var hora_sinformat = info.event.start;
-      var fecha_fin = moment__WEBPACK_IMPORTED_MODULE_7___default()(hora_sinformat).add(this.duracion, "m").format("YYYY-MM-DD HH:mm:ss");
-      var fecha_inicio = moment__WEBPACK_IMPORTED_MODULE_7___default()(hora_sinformat).format("YYYY-MM-DD HH:mm:ss"); // fechas que se pasaran a la bd
+      var fecha_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(hora_sinformat).add(this.duracion, "m").format("YYYY-MM-DD HH:mm:ss");
+      var fecha_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(hora_sinformat).format("YYYY-MM-DD HH:mm:ss"); // fechas que se pasaran a la bd
 
       var nuevadata = {
         id_reserva: idreserva,
-        dia: moment__WEBPACK_IMPORTED_MODULE_7___default()(hora_sinformat).format("YYYY-MM-DD"),
-        hora_inicio: moment__WEBPACK_IMPORTED_MODULE_7___default()(fecha_inicio).format("HH:mm:ss"),
-        hora_fin: moment__WEBPACK_IMPORTED_MODULE_7___default()(fecha_fin).format("HH:mm:ss")
+        dia: moment__WEBPACK_IMPORTED_MODULE_8___default()(hora_sinformat).format("YYYY-MM-DD"),
+        hora_inicio: moment__WEBPACK_IMPORTED_MODULE_8___default()(fecha_inicio).format("HH:mm:ss"),
+        hora_fin: moment__WEBPACK_IMPORTED_MODULE_8___default()(fecha_fin).format("HH:mm:ss")
       };
       this.axios.post("/api/editarreserva", nuevadata).then(function (res) {
         var title = "Editar Reserva";
@@ -21557,7 +21656,7 @@ __webpack_require__.r(__webpack_exports__);
         var type = "Success";
 
         if (res.data) {
-          _this4.successmsg(title, message, type);
+          _this5.successmsg(title, message, type);
         }
       })["catch"](function (error) {
         console.log("error", error);
@@ -21565,20 +21664,14 @@ __webpack_require__.r(__webpack_exports__);
         var message = "Error al editar la reserva";
         var type = "error";
 
-        _this4.successmsg(title, message, type);
+        _this5.successmsg(title, message, type);
       });
     },
-    // eslint-disable-next-line no-unused-vars
     hideModal: function hideModal(e) {
       this.submitted = false;
       this.showModal = false;
       this.event = {};
     },
-
-    /**
-     * Edit event modal submit
-     */
-    // eslint-disable-next-line no-unused-vars
     editSubmit: function editSubmit(e) {
       console.log("aqui");
       this.submit = true;
@@ -21589,23 +21682,19 @@ __webpack_require__.r(__webpack_exports__);
       this.successmsg();
       this.eventModal = false;
     },
-
-    /**
-     * Delete event
-     */
     deleteEvent: function deleteEvent() {
-      var _this5 = this;
+      var _this6 = this;
 
       this.axios["delete"]("/api/deletereserva/".concat(this.form.id_reserva)).then(function (response) {
         if (response.data == 1) {
-          _this5.deleteId.el.remove();
+          _this6.deleteId.el.remove();
 
-          sweetalert2__WEBPACK_IMPORTED_MODULE_8___default().fire("Eliminar Reserva", "Reserva eliminada.", "success");
+          sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire("Eliminar Reserva", "Reserva eliminada.", "success");
         } else {
-          sweetalert2__WEBPACK_IMPORTED_MODULE_8___default().fire("Eliminar Reserva", "Error al elimar la reserva.", "error");
+          sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire("Eliminar Reserva", "Error al elimar la reserva.", "error");
         }
 
-        _this5.showModal = false;
+        _this6.showModal = false;
       });
     },
     vaciarform: function vaciarform() {
@@ -21627,18 +21716,18 @@ __webpack_require__.r(__webpack_exports__);
       this.form.editespecialidad = "";
     },
     dateClicked: function dateClicked(info) {
-      var _this6 = this;
+      var _this7 = this;
 
       var form = {
-        dia: moment__WEBPACK_IMPORTED_MODULE_7___default()(info.date).format("YYYY-MM-DD"),
-        hora: moment__WEBPACK_IMPORTED_MODULE_7___default()(info.date).format("HH:mm:ss"),
+        dia: moment__WEBPACK_IMPORTED_MODULE_8___default()(info.date).format("YYYY-MM-DD"),
+        hora: moment__WEBPACK_IMPORTED_MODULE_8___default()(info.date).format("HH:mm:ss"),
         id_sucursal: this.sucursal.id_sucursal
       };
       this.axios.post("/api/validarhoraprofesional", form).then(function (res) {
         console.log(res);
 
         if (res.data == 1) {
-          sweetalert2__WEBPACK_IMPORTED_MODULE_8___default().fire({
+          sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
             position: "center",
             icon: "error",
             title: "Bloque reservado",
@@ -21646,24 +21735,20 @@ __webpack_require__.r(__webpack_exports__);
             timer: 2000
           });
         } else {
-          _this6.newEventData = info;
+          _this7.newEventData = info;
 
-          if (_this6.form.id_reserva == "") {
-            _this6.vaciarform();
+          if (_this7.form.id_reserva == "") {
+            _this7.vaciarform();
           }
 
-          _this6.showModal = true;
+          _this7.showModal = true;
         }
       })["catch"](function (error) {
         console.log("error", error);
       });
     },
-
-    /**
-     * Modal open for edit event
-     */
     editEvent: function editEvent(info) {
-      var _this7 = this;
+      var _this8 = this;
 
       // Evaluamos si es una reserva o un horario no disponible
       if (info.event.title != "NO DISPONIBLE") {
@@ -21671,28 +21756,27 @@ __webpack_require__.r(__webpack_exports__);
 
         var idreserva = info.event._def.extendedProps.idreserva;
         this.axios.get("/api/traerreserva/".concat(idreserva)).then(function (response) {
-          console.log(response);
-          _this7.form.id_reserva = response.data.id_reserva;
-          _this7.form.nombres = response.data.paciente.nombres;
-          _this7.form.apellidos = response.data.paciente.apellidos;
-          _this7.form.id_paciente = response.data.paciente.id_paciente;
-          _this7.form.email = response.data.paciente.email;
-          _this7.form.celular = response.data.paciente.celular;
-          _this7.form.direccion = response.data.paciente.direccion;
-          _this7.form.rut = response.data.paciente.rut;
-          _this7.form.prevension_id = response.data.paciente.prevision;
-          _this7.form.codigo = response.data.codigo;
-          _this7.form.dia = response.data.dia;
-          _this7.form.hora_inicio = response.data.hora_inicio;
-          _this7.form.hora_fin = response.data.hora_fin; // para no modificar los select
+          _this8.form.id_reserva = response.data.id_reserva;
+          _this8.form.nombres = response.data.paciente.nombres;
+          _this8.form.apellidos = response.data.paciente.apellidos;
+          _this8.form.id_paciente = response.data.paciente.id_paciente;
+          _this8.form.email = response.data.paciente.email;
+          _this8.form.celular = response.data.paciente.celular;
+          _this8.form.direccion = response.data.paciente.direccion;
+          _this8.form.rut = response.data.paciente.rut;
+          _this8.form.prevension_id = response.data.paciente.prevision;
+          _this8.form.codigo = response.data.codigo;
+          _this8.form.dia = response.data.dia;
+          _this8.form.hora_inicio = response.data.hora_inicio;
+          _this8.form.hora_fin = response.data.hora_fin; // para no modificar los select
 
-          _this7.form.editservicio = response.data.servicio;
-          _this7.form.editespecialidad = response.data.servicio.especialidad;
+          _this8.form.editservicio = response.data.servicio;
+          _this8.form.editespecialidad = response.data.servicio.especialidad;
 
-          _this7.dateClicked(info);
+          _this8.dateClicked(info);
         });
       } else {
-        sweetalert2__WEBPACK_IMPORTED_MODULE_8___default().fire({
+        sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
           position: "center",
           icon: "error",
           title: "No puedes editar un horario no disponible desde el calendario",
@@ -21706,9 +21790,9 @@ __webpack_require__.r(__webpack_exports__);
       this.vaciarform();
     },
     confirm: function confirm() {
-      var _this8 = this;
+      var _this9 = this;
 
-      sweetalert2__WEBPACK_IMPORTED_MODULE_8___default().fire({
+      sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
         title: "Eliminar Reserva",
         text: "Está seguro de eliminar esta reserva?",
         icon: "warning",
@@ -21718,23 +21802,15 @@ __webpack_require__.r(__webpack_exports__);
         confirmButtonText: "Si eliminar"
       }).then(function (result) {
         if (result.value) {
-          _this8.deleteEvent();
+          _this9.deleteEvent();
         }
       });
     },
-
-    /**
-     * Show list of events
-     */
     handleEvents: function handleEvents(events) {
       this.currentEvents = events;
     },
-
-    /**
-     * Show successfull Save Dialog
-     */
     successmsg: function successmsg() {
-      sweetalert2__WEBPACK_IMPORTED_MODULE_8___default().fire({
+      sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
         position: "center",
         icon: "success",
         title: "Event has been saved",
@@ -21742,20 +21818,23 @@ __webpack_require__.r(__webpack_exports__);
         timer: 1000
       });
     },
-    // traer especialidad
     traerEspecialidad: function traerEspecialidad() {
-      var _this9 = this;
-
-      this.axios.get("/api/obtenerespecialidad/").then(function (response) {
-        _this9.options = response.data;
-      });
-    },
-    // traer servicios
-    traerServicio: function traerServicio() {
       var _this10 = this;
 
+      this.axios.get("/api/obtenerespecialidadMisReserva/".concat(this.credentialsPerson)).then(function (response) {
+        _this10.options.push(response.data.profesional[0].especialidad);
+      });
+    },
+    traerServicio: function traerServicio() {
+      var _this11 = this;
+
+      this.calendarOptions.hiddenDays = [];
+      var calendarApi = this.$refs.fullCalendar.getApi();
+      var date = moment__WEBPACK_IMPORTED_MODULE_8___default()().format('YYYY-MM-DD');
+      calendarApi.gotoDate(date);
+
       if (!this.sucursal) {
-        sweetalert2__WEBPACK_IMPORTED_MODULE_8___default().fire({
+        sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
           position: "center",
           icon: "error",
           title: "Debes seleccionar una sucursal",
@@ -21770,46 +21849,66 @@ __webpack_require__.r(__webpack_exports__);
       var id_especialidad = this.form.especialidad_id.id_especialidad;
       var id_sucursal = this.sucursal.id_sucursal;
       this.axios.get("/api/obtenerserviciosprofesional/".concat(id_especialidad, "/").concat(id_sucursal)).then(function (response) {
-        console.log(response);
-        _this10.form.id_profesional = response.data[0].profesional_id_profesional;
-        _this10.optionsServicio = response.data;
-        _this10.duracion = _this10.form.especialidad_id.intervalo;
+        _this11.form.id_profesional = response.data[0].profesional_id_profesional;
+        _this11.optionsServicio = response.data;
+        _this11.duracion = _this11.form.especialidad_id.intervalo;
       });
     },
     traerHoras: function traerHoras() {
-      var _this11 = this;
+      var _this12 = this;
 
       this.calendarOptions.events = [{}];
       var date = new Date(); // obtemos el dia de la semana
 
       var diasemana = date.getDay();
       var form = {
-        diasemana: diasemana
+        diasemana: diasemana,
+        id_sucursal: this.sucursal.id_sucursal
       };
-      console.log(form);
       this.axios.post("/api/traerhorariounico", form).then(function (res) {
-        console.log(res);
+        console.log(res); // return false;
+
+        var diashabiles = [];
+        var diassemana = [0, 1, 2, 3, 4, 5, 6];
+        res.data.diasDisponibles.forEach(function (element, i) {
+          if (element["dia"]["dia"] == 7) {
+            element["dia"]["dia"] = 0;
+          }
+
+          diashabiles.push(element["dia"]["dia"]);
+        });
+        diashabiles.sort();
+
+        for (var i = 0; i < diassemana.length; i++) {
+          for (var j = 0; j < diassemana.length; j++) {
+            if (diashabiles[i] == diassemana[j]) {
+              diassemana.splice(j, 1);
+            }
+          }
+        }
+
+        _this12.calendarOptions.hiddenDays = diassemana;
 
         if (res.data.horario) {
-          _this11.calendarOptions.slotMinTime = res.data.horario.hora_inicio;
-          _this11.calendarOptions.slotMaxTime = res.data.horario.hora_fin;
-          _this11.calendarOptions.slotDuration = _this11.duracion;
-          _this11.calendarOptions.dateClick = _this11.dateClicked;
+          _this12.calendarOptions.slotMinTime = res.data.horario.hora_inicio;
+          _this12.calendarOptions.slotMaxTime = res.data.horario.hora_fin;
+          _this12.calendarOptions.slotDuration = _this12.duracion;
+          _this12.calendarOptions.dateClick = _this12.dateClicked;
         } else {
-          _this11.calendarOptions.slotMinTime = "00:00:00";
-          _this11.calendarOptions.slotMaxTime = "00:00:00";
-          _this11.calendarOptions.dateClick = false;
+          _this12.calendarOptions.slotMinTime = "00:00:00";
+          _this12.calendarOptions.slotMaxTime = "00:00:00";
+          _this12.calendarOptions.dateClick = false;
         }
 
         if (res.data.bloqueo) {
-          for (var i = 0; i < res.data.bloqueo.length; i++) {
-            var dia = res.data.bloqueo[i]["dia"];
-            var fecha_inicio = res.data.bloqueo[i]["hora_inicio"];
-            var fecha_fin = res.data.bloqueo[i]["hora_fin"];
-            var fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_7___default()(dia + " " + fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
-            var fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_7___default()(dia + " " + fecha_fin).format("YYYY-MM-DD HH:mm:ss");
+          for (var _i = 0; _i < res.data.bloqueo.length; _i++) {
+            var dia = res.data.bloqueo[_i]["dia"];
+            var fecha_inicio = res.data.bloqueo[_i]["hora_inicio"];
+            var fecha_fin = res.data.bloqueo[_i]["hora_fin"];
+            var fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(dia + " " + fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
+            var fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(dia + " " + fecha_fin).format("YYYY-MM-DD HH:mm:ss");
 
-            _this11.calendarOptions.events.push({
+            _this12.calendarOptions.events.push({
               id: "",
               title: "NO DISPONIBLE",
               start: fecha_comple_inicio,
@@ -21821,22 +21920,109 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         if (res.data.reserva) {
-          for (var _i = 0; _i < res.data.reserva.length; _i++) {
-            var _dia = res.data.reserva[_i]["dia"];
-            var _fecha_inicio = res.data.reserva[_i]["hora_inicio"];
-            var _fecha_fin = res.data.reserva[_i]["hora_fin"];
+          for (var _i2 = 0; _i2 < res.data.reserva.length; _i2++) {
+            var _dia = res.data.reserva[_i2]["dia"];
+            var _fecha_inicio = res.data.reserva[_i2]["hora_inicio"];
+            var _fecha_fin = res.data.reserva[_i2]["hora_fin"];
 
-            var _fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_7___default()(_dia + " " + _fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
+            var _fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia + " " + _fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
 
-            var _fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_7___default()(_dia + " " + _fecha_fin).format("YYYY-MM-DD HH:mm:ss");
+            var _fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia + " " + _fecha_fin).format("YYYY-MM-DD HH:mm:ss");
 
-            _this11.calendarOptions.events.push({
-              idreserva: res.data.reserva[_i]["id_reserva"],
-              idpaciente: res.data.reserva[_i]["paciente_id"],
+            _this12.calendarOptions.events.push({
+              idreserva: res.data.reserva[_i2]["id_reserva"],
+              idpaciente: res.data.reserva[_i2]["paciente_id"],
               title: "RESERVADO",
               start: _fecha_comple_inicio,
               end: _fecha_comple_fin,
-              classNames: "bg-info text-white"
+              classNames: "text-white"
+            });
+          }
+        }
+      })["catch"](function (error) {
+        console.log("error", error);
+      });
+    },
+    traerHorasCalendario: function traerHorasCalendario(day) {
+      var _this13 = this;
+
+      this.calendarOptions.events = [{}];
+      var diasemana = day;
+      var form = {
+        diasemana: diasemana,
+        id_sucursal: this.sucursal.id_sucursal
+      };
+      this.axios.post("/api/traerhorariounico", form).then(function (res) {
+        console.log(res); // return false;
+
+        var diashabiles = [];
+        var diassemana = [0, 1, 2, 3, 4, 5, 6];
+        res.data.diasDisponibles.forEach(function (element, i) {
+          if (element["dia"]["dia"] == 7) {
+            element["dia"]["dia"] = 0;
+          }
+
+          diashabiles.push(element["dia"]["dia"]);
+        });
+        diashabiles.sort();
+
+        for (var i = 0; i < diassemana.length; i++) {
+          for (var j = 0; j < diassemana.length; j++) {
+            if (diashabiles[i] == diassemana[j]) {
+              diassemana.splice(j, 1);
+            }
+          }
+        }
+
+        _this13.calendarOptions.hiddenDays = diassemana;
+
+        if (res.data.horario) {
+          _this13.calendarOptions.slotMinTime = res.data.horario.hora_inicio;
+          _this13.calendarOptions.slotMaxTime = res.data.horario.hora_fin;
+          _this13.calendarOptions.slotDuration = _this13.duracion;
+          _this13.calendarOptions.dateClick = _this13.dateClicked;
+        } else {
+          _this13.calendarOptions.slotMinTime = "00:00:00";
+          _this13.calendarOptions.slotMaxTime = "00:00:00";
+          _this13.calendarOptions.dateClick = false;
+        }
+
+        if (res.data.bloqueo) {
+          for (var _i3 = 0; _i3 < res.data.bloqueo.length; _i3++) {
+            var dia = res.data.bloqueo[_i3]["dia"];
+            var fecha_inicio = res.data.bloqueo[_i3]["hora_inicio"];
+            var fecha_fin = res.data.bloqueo[_i3]["hora_fin"];
+            var fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(dia + " " + fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
+            var fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(dia + " " + fecha_fin).format("YYYY-MM-DD HH:mm:ss");
+
+            _this13.calendarOptions.events.push({
+              id: "",
+              title: "NO DISPONIBLE",
+              start: fecha_comple_inicio,
+              end: fecha_comple_fin,
+              classNames: "bg-danger text-white",
+              editable: false
+            });
+          }
+        }
+
+        if (res.data.reserva) {
+          for (var _i4 = 0; _i4 < res.data.reserva.length; _i4++) {
+            var _dia2 = res.data.reserva[_i4]["dia"];
+            var _fecha_inicio2 = res.data.reserva[_i4]["hora_inicio"];
+            var _fecha_fin2 = res.data.reserva[_i4]["hora_fin"];
+
+            var _fecha_comple_inicio2 = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia2 + " " + _fecha_inicio2).format("YYYY-MM-DD HH:mm:ss");
+
+            var _fecha_comple_fin2 = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia2 + " " + _fecha_fin2).format("YYYY-MM-DD HH:mm:ss");
+
+            _this13.calendarOptions.events.push({
+              idreserva: res.data.reserva[_i4]["id_reserva"],
+              idpaciente: res.data.reserva[_i4]["paciente_id"],
+              title: "RESERVADO",
+              start: _fecha_comple_inicio2,
+              end: _fecha_comple_fin2,
+              classNames: "text-white"
             });
           }
         }
@@ -21912,7 +22098,7 @@ __webpack_require__.r(__webpack_exports__);
       calendarEvents: [],
       calendarOptions: {
         headerToolbar: {
-          left: "prev,next today",
+          left: "prev,next",
           center: "title",
           right: "timeGridWeek,timeGridDay,listWeek"
         },
@@ -21935,6 +22121,7 @@ __webpack_require__.r(__webpack_exports__);
         hiddenDays: [],
         initialDate: new Date(),
         locale: _fullcalendar_core_locales_es__WEBPACK_IMPORTED_MODULE_4__["default"],
+        eventColor: '#612180e0',
         view: {
           timeGrid: {
             eventLimit: 1
@@ -22155,7 +22342,7 @@ __webpack_require__.r(__webpack_exports__);
       jquery__WEBPACK_IMPORTED_MODULE_12___default()('.btnSubmit').prop('disabled', false);
       this.validarRut(this.form.rut);
     },
-    // crear reserva
+    //crear Reserva
     handleSubmit: function handleSubmit(e) {
       var _this4 = this;
 
@@ -22208,8 +22395,6 @@ __webpack_require__.r(__webpack_exports__);
             _this4.traerHoras();
 
             _this4.newEventData = {};
-
-            _this4.successmsg(title, message, type);
 
             _this4.$v.form.$reset();
           }
@@ -22271,17 +22456,11 @@ __webpack_require__.r(__webpack_exports__);
         _this5.successmsg(title, message, type);
       });
     },
-    // eslint-disable-next-line no-unused-vars
     hideModal: function hideModal(e) {
       this.submitted = false;
       this.showModal = false;
       this.event = {};
     },
-
-    /**
-     * Edit event modal submit
-     */
-    // eslint-disable-next-line no-unused-vars
     editSubmit: function editSubmit(e) {
       console.log("aqui");
       this.submit = true;
@@ -22292,10 +22471,6 @@ __webpack_require__.r(__webpack_exports__);
       this.successmsg();
       this.eventModal = false;
     },
-
-    /**
-     * Delete event
-     */
     deleteEvent: function deleteEvent() {
       var _this6 = this;
 
@@ -22362,10 +22537,6 @@ __webpack_require__.r(__webpack_exports__);
         console.log("error", error);
       });
     },
-
-    /**
-     * Modal open for edit event
-     */
     editEvent: function editEvent(info) {
       var _this8 = this;
 
@@ -22545,7 +22716,7 @@ __webpack_require__.r(__webpack_exports__);
               title: "NO DISPONIBLE",
               start: fecha_comple_inicio,
               end: fecha_comple_fin,
-              classNames: "bg-danger text-white",
+              classNames: "text-white",
               editable: false
             });
           }
@@ -22567,7 +22738,7 @@ __webpack_require__.r(__webpack_exports__);
               title: res.data.reserva[_i2]["paciente"]['rut'] + ' - ' + res.data.reserva[_i2]["paciente"]['nombres'] + ' ' + res.data.reserva[_i2]["paciente"]['apellidos'],
               start: _fecha_comple_inicio,
               end: _fecha_comple_fin,
-              classNames: "bg-info text-white"
+              classNames: "text-white"
             });
           }
         }
@@ -22651,7 +22822,7 @@ __webpack_require__.r(__webpack_exports__);
               title: res.data.reserva[_i4]["paciente"]['rut'] + ' - ' + res.data.reserva[_i4]["paciente"]['nombres'] + ' ' + res.data.reserva[_i4]["paciente"]['apellidos'],
               start: _fecha_comple_inicio2,
               end: _fecha_comple_fin2,
-              classNames: "bg-info text-white"
+              classNames: "text-white"
             });
           }
         }
@@ -72441,13 +72612,13 @@ var render = function () {
             [
               _c("span", { staticClass: "logo-sm" }, [
                 _c("img", {
-                  attrs: { src: "images/isotipo.png", width: "100%" },
+                  attrs: { src: "images/isotipo.png", width: "85%" },
                 }),
               ]),
               _vm._v(" "),
               _c("span", { staticClass: "logo-lg" }, [
                 _c("img", {
-                  attrs: { src: "images/reservas.png", width: "100%" },
+                  attrs: { src: "images/reservas.png", width: "85%" },
                 }),
               ]),
             ]
@@ -74094,7 +74265,7 @@ var render = function () {
                   "form",
                   {
                     staticClass:
-                      "\n                                needs-validation\n                                row row-cols-lg-6\n                                gx-4\n                                gy-2\n                                align-items-center\n                            ",
+                      "\n                                needs-validation\n                                row row-cols-lg-5\n                                gx-4\n                                gy-2\n                                align-items-center\n                            ",
                     on: {
                       submit: function ($event) {
                         $event.preventDefault()
@@ -74543,45 +74714,69 @@ var render = function () {
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-12 mb-2" }, [
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Nombres Apellidos")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" NOMBRE COMPLETO ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("RUT")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" RUT ")])])]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Email")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" CORREO ")])])]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Prevision")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" PREVISIÓN ")])])]),
                       ]),
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.nombrepaciente))]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.rutpaciente))]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.emailpaciente))]),
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.nombrepaciente) + " "
+                            ),
+                          ]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(_vm._s(_vm.detalle.servicioprevision)),
+                          _c("small", [
+                            _vm._v(" " + _vm._s(_vm.detalle.rutpaciente) + " "),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.emailpaciente) + " "
+                            ),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.servicioprevision) + " "
+                            ),
+                          ]),
                         ]),
                       ]),
                     ]),
                   ]),
                 ]),
+                _vm._v(" "),
+                _c("hr"),
                 _vm._v(" "),
                 _c("div", { staticClass: "row" }, [
                   _c("div", { staticClass: "col-12 mb-2" }, [
@@ -74599,55 +74794,77 @@ var render = function () {
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-12 mb-2" }, [
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Profesional")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" ESPECIALISTA ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Servicio")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" SERVICIO ")])])]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Previsión")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" PREVISIÓN ")])])]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Precio")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" PRECIO ")])])]),
                       ]),
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(_vm._s(_vm.detalle.nombreeprofesional)),
-                        ]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.nombreservicio))]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [
-                          _vm._v(_vm._s(_vm.detalle.servicioprevision)),
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.nombreeprofesional) + " "
+                            ),
+                          ]),
                         ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(
-                            "\n                                " +
-                              _vm._s(
-                                _vm._f("toCurrency")(_vm.detalle.precioservicio)
-                              ) +
-                              "\n                            "
-                          ),
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.nombreservicio) + " "
+                            ),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.servicioprevision) + " "
+                            ),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " +
+                                _vm._s(
+                                  _vm._f("toCurrency")(
+                                    _vm.detalle.precioservicio
+                                  )
+                                ) +
+                                " "
+                            ),
+                          ]),
                         ]),
                       ]),
                     ]),
                   ]),
                 ]),
+                _vm._v(" "),
+                _c("hr"),
                 _vm._v(" "),
                 _c("div", { staticClass: "row" }, [
                   _c("div", { staticClass: "col-12 mt-3 mb-2" }, [
@@ -74665,127 +74882,165 @@ var render = function () {
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Medio de Pago")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" MEDIO DE PAGO ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Subtotal")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" TIPO COMPROBANTE ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("% Descuento")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" N° COMPROBANTE ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Precio con descuento")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" CODIGO FONASA ")])]),
+                        ]),
                       ]),
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "row" }, [
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.mediopago))]),
-                      ]),
-                      _vm._v(" "),
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(
-                            _vm._s(_vm._f("toCurrency")(_vm.detalle.subtotal))
-                          ),
+                          _c("small", [
+                            _vm._v(" " + _vm._s(_vm.detalle.mediopago) + " "),
+                          ]),
                         ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [
-                          _vm._v(
-                            _vm._s(_vm.detalle.porcentajedescuento) + " %"
-                          ),
-                        ]),
+                        _vm.detalle.boleta_honorario == 1
+                          ? _c("h6", [
+                              _c("small", [_vm._v(" Boleta Electronica ")]),
+                            ])
+                          : _c("h6", [
+                              _c("small", [_vm._v(" Boleta Honorarios ")]),
+                            ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [
-                          _vm._v(
-                            "\n                                " +
-                              _vm._s(
-                                _vm._f("toCurrency")(
-                                  _vm.detalle.precio_descuento
-                                )
-                              ) +
-                              "\n                            "
-                          ),
-                        ]),
+                        _vm.detalle.boleta_honorario == 1
+                          ? _c("h6", [
+                              _c("small", [
+                                _vm._v(
+                                  " " + _vm._s(_vm.detalle.codigo_boucher) + " "
+                                ),
+                              ]),
+                            ])
+                          : _c("h6", [
+                              _c("small", [
+                                _vm._v(
+                                  " " + _vm._s(_vm.detalle.n_honorario) + " "
+                                ),
+                              ]),
+                            ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _vm.detalle.codigo_bono_fonasa != null
+                          ? _c("h6", [
+                              _c("small", [
+                                _vm._v(
+                                  " " +
+                                    _vm._s(_vm.detalle.codigo_bono_fonasa) +
+                                    "  "
+                                ),
+                              ]),
+                            ])
+                          : _c("h6", [_c("small", [_vm._v(" -  ")])]),
                       ]),
                     ]),
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("IVA")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" SUBTOTAL ")])])]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Total")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" DESCUENTO. ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Código Boucher")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" PRECIO DESCUENTO ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Código Bono Salud")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" TOTAL PAGADO ")])]),
+                        ]),
                       ]),
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(_vm._s(_vm._f("toCurrency")(_vm.detalle.iva))),
+                          _c("small", [
+                            _vm._v(
+                              " " +
+                                _vm._s(
+                                  _vm._f("toCurrency")(_vm.detalle.subtotal)
+                                ) +
+                                " "
+                            ),
+                          ]),
                         ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(
-                            _vm._s(_vm._f("toCurrency")(_vm.detalle.total))
-                          ),
+                          _c("small", [
+                            _vm._v(
+                              " " +
+                                _vm._s(_vm.detalle.porcentajedescuento) +
+                                " % "
+                            ),
+                          ]),
                         ]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.codigo_boucher))]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(_vm._s(_vm.detalle.codigo_bono_fonasa)),
+                          _c("small", [
+                            _vm._v(
+                              " " +
+                                _vm._s(
+                                  _vm._f("toCurrency")(
+                                    _vm.detalle.precio_descuento
+                                  )
+                                ) +
+                                " "
+                            ),
+                          ]),
                         ]),
                       ]),
-                    ]),
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
-                    _c("div", { staticClass: "row" }, [
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Boleta Honorario")]),
-                      ]),
                       _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("N° Boleta")]),
-                      ]),
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "row" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(_vm._s(_vm.detalle.boleta_honorario)),
+                          _c("small", [
+                            _vm._v(
+                              " " +
+                                _vm._s(
+                                  _vm._f("toCurrency")(_vm.detalle.total)
+                                ) +
+                                " "
+                            ),
+                          ]),
                         ]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.n_honorario))]),
                       ]),
                     ]),
                   ]),
@@ -74838,7 +75093,7 @@ var render = function () {
                   "form",
                   {
                     staticClass:
-                      "\n                                needs-validation\n                                row row-cols-lg-6\n                                gx-4\n                                gy-2\n                                align-items-center\n                            ",
+                      "\n                                needs-validation\n                                row row-cols-lg-5\n                                gx-4\n                                gy-2\n                                align-items-center\n                            ",
                     on: {
                       submit: function ($event) {
                         $event.preventDefault()
@@ -75282,45 +75537,69 @@ var render = function () {
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-12 mb-2" }, [
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Nombres Apellidos")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" NOMBRE COMPLETO ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("RUT")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" RUT ")])])]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Email")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" CORREO ")])])]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Prevision")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" PREVISIÓN ")])])]),
                       ]),
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.nombrepaciente))]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.rutpaciente))]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.emailpaciente))]),
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.nombrepaciente) + " "
+                            ),
+                          ]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(_vm._s(_vm.detalle.servicioprevision)),
+                          _c("small", [
+                            _vm._v(" " + _vm._s(_vm.detalle.rutpaciente) + " "),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.emailpaciente) + " "
+                            ),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.servicioprevision) + " "
+                            ),
+                          ]),
                         ]),
                       ]),
                     ]),
                   ]),
                 ]),
+                _vm._v(" "),
+                _c("hr"),
                 _vm._v(" "),
                 _c("div", { staticClass: "row" }, [
                   _c("div", { staticClass: "col-12 mb-2" }, [
@@ -75338,55 +75617,77 @@ var render = function () {
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-12 mb-2" }, [
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Profesional")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" ESPECIALISTA ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Servicio")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" SERVICIO ")])])]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Previsión")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" PREVISIÓN ")])])]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Precio")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" PRECIO ")])])]),
                       ]),
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(_vm._s(_vm.detalle.nombreeprofesional)),
-                        ]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.nombreservicio))]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [
-                          _vm._v(_vm._s(_vm.detalle.servicioprevision)),
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.nombreeprofesional) + " "
+                            ),
+                          ]),
                         ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(
-                            "\n                                " +
-                              _vm._s(
-                                _vm._f("toCurrency")(_vm.detalle.precioservicio)
-                              ) +
-                              "\n                            "
-                          ),
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.nombreservicio) + " "
+                            ),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " + _vm._s(_vm.detalle.servicioprevision) + " "
+                            ),
+                          ]),
+                        ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _c("h6", [
+                          _c("small", [
+                            _vm._v(
+                              " " +
+                                _vm._s(
+                                  _vm._f("toCurrency")(
+                                    _vm.detalle.precioservicio
+                                  )
+                                ) +
+                                " "
+                            ),
+                          ]),
                         ]),
                       ]),
                     ]),
                   ]),
                 ]),
+                _vm._v(" "),
+                _c("hr"),
                 _vm._v(" "),
                 _c("div", { staticClass: "row" }, [
                   _c("div", { staticClass: "col-12 mt-3 mb-2" }, [
@@ -75404,127 +75705,165 @@ var render = function () {
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Medio de Pago")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" MEDIO DE PAGO ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Subtotal")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" TIPO COMPROBANTE ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("% Descuento")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" N° COMPROBANTE ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Precio con descuento")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" CODIGO FONASA ")])]),
+                        ]),
                       ]),
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "row" }, [
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.mediopago))]),
-                      ]),
-                      _vm._v(" "),
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(
-                            _vm._s(_vm._f("toCurrency")(_vm.detalle.subtotal))
-                          ),
+                          _c("small", [
+                            _vm._v(" " + _vm._s(_vm.detalle.mediopago) + " "),
+                          ]),
                         ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [
-                          _vm._v(
-                            _vm._s(_vm.detalle.porcentajedescuento) + " %"
-                          ),
-                        ]),
+                        _vm.detalle.boleta_honorario == 1
+                          ? _c("h6", [
+                              _c("small", [_vm._v(" Boleta Electronica ")]),
+                            ])
+                          : _c("h6", [
+                              _c("small", [_vm._v(" Boleta Honorarios ")]),
+                            ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [
-                          _vm._v(
-                            "\n                                " +
-                              _vm._s(
-                                _vm._f("toCurrency")(
-                                  _vm.detalle.precio_descuento
-                                )
-                              ) +
-                              "\n                            "
-                          ),
-                        ]),
+                        _vm.detalle.boleta_honorario == 1
+                          ? _c("h6", [
+                              _c("small", [
+                                _vm._v(
+                                  " " + _vm._s(_vm.detalle.codigo_boucher) + " "
+                                ),
+                              ]),
+                            ])
+                          : _c("h6", [
+                              _c("small", [
+                                _vm._v(
+                                  " " + _vm._s(_vm.detalle.n_honorario) + " "
+                                ),
+                              ]),
+                            ]),
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-md-3" }, [
+                        _vm.detalle.codigo_bono_fonasa != null
+                          ? _c("h6", [
+                              _c("small", [
+                                _vm._v(
+                                  " " +
+                                    _vm._s(_vm.detalle.codigo_bono_fonasa) +
+                                    "  "
+                                ),
+                              ]),
+                            ])
+                          : _c("h6", [_c("small", [_vm._v(" -  ")])]),
                       ]),
                     ]),
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("IVA")]),
+                        _c("h6", [_c("b", [_c("u", [_vm._v(" SUBTOTAL ")])])]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Total")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" DESCUENTO. ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Código Boucher")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" PRECIO DESCUENTO ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Código Bono Salud")]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" TOTAL PAGADO ")])]),
+                        ]),
                       ]),
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "row text-center" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(_vm._s(_vm._f("toCurrency")(_vm.detalle.iva))),
+                          _c("small", [
+                            _vm._v(
+                              " " +
+                                _vm._s(
+                                  _vm._f("toCurrency")(_vm.detalle.subtotal)
+                                ) +
+                                " "
+                            ),
+                          ]),
                         ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(
-                            _vm._s(_vm._f("toCurrency")(_vm.detalle.total))
-                          ),
+                          _c("small", [
+                            _vm._v(
+                              " " +
+                                _vm._s(_vm.detalle.porcentajedescuento) +
+                                " % "
+                            ),
+                          ]),
                         ]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.codigo_boucher))]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(_vm._s(_vm.detalle.codigo_bono_fonasa)),
+                          _c("small", [
+                            _vm._v(
+                              " " +
+                                _vm._s(
+                                  _vm._f("toCurrency")(
+                                    _vm.detalle.precio_descuento
+                                  )
+                                ) +
+                                " "
+                            ),
+                          ]),
                         ]),
                       ]),
-                    ]),
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-12 mt-2 mb-2" }, [
-                    _c("div", { staticClass: "row" }, [
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("Boleta Honorario")]),
-                      ]),
                       _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v("N° Boleta")]),
-                      ]),
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "row" }, [
                       _c("div", { staticClass: "col-12 col-md-3" }, [
                         _c("h6", [
-                          _vm._v(_vm._s(_vm.detalle.boleta_honorario)),
+                          _c("small", [
+                            _vm._v(
+                              " " +
+                                _vm._s(
+                                  _vm._f("toCurrency")(_vm.detalle.total)
+                                ) +
+                                " "
+                            ),
+                          ]),
                         ]),
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_vm._v(_vm._s(_vm.detalle.n_honorario))]),
                       ]),
                     ]),
                   ]),
@@ -79558,7 +79897,7 @@ var render = function () {
                           expression: "form.rut",
                         },
                       ],
-                      staticClass: "form-control",
+                      staticClass: "form-control inputRUT",
                       class: {
                         "is-invalid": _vm.submitted && _vm.$v.form.rut.$error,
                       },
@@ -79573,7 +79912,7 @@ var render = function () {
                             _vm.$set(_vm.form, "rut", $event.target.value)
                           },
                           function ($event) {
-                            return _vm.validarRut($event)
+                            return _vm.checkRut(this)
                           },
                         ],
                       },

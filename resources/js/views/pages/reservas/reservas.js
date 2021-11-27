@@ -30,7 +30,7 @@ export default {
             calendarEvents: [],
             calendarOptions: {
                 headerToolbar: {
-                    left: "prev,next today",
+                    left: "prev,next",
                     center: "title",
                     right: "timeGridWeek,timeGridDay,listWeek"
                 },
@@ -59,6 +59,7 @@ export default {
                 hiddenDays: [],
                 initialDate: new Date(),
                 locale: esLocale,
+                eventColor: '#612180e0',
                 view: {
                     timeGrid: {
                         eventLimit: 1
@@ -198,7 +199,6 @@ export default {
 
         customButtons()
         {
-
         },
 
         validarRut($event) {
@@ -271,8 +271,8 @@ export default {
             $('.btnSubmit').prop('disabled',  false);
             this.validarRut(this.form.rut);
           },
-
-        // crear reserva
+        
+          //crear Reserva
         handleSubmit(e) {
             this.submitted = true;
 
@@ -341,7 +341,6 @@ export default {
                             this.traerHoras();
 
                             this.newEventData = {};
-                            this.successmsg(title, message, type);
                             this.$v.form.$reset();
                         }
                     })
@@ -413,16 +412,13 @@ export default {
                     this.successmsg(title, message, type);
                 });
         },
-        // eslint-disable-next-line no-unused-vars
+   
         hideModal(e) {
             this.submitted = false;
             this.showModal = false;
             this.event = {};
         },
-        /**
-         * Edit event modal submit
-         */
-        // eslint-disable-next-line no-unused-vars
+
         editSubmit(e) {
             console.log("aqui");
             this.submit = true;
@@ -435,9 +431,6 @@ export default {
             this.eventModal = false;
         },
 
-        /**
-         * Delete event
-         */
         deleteEvent() {
             this.axios
                 .delete(`/api/deletereserva/${this.form.id_reserva}`)
@@ -514,9 +507,7 @@ export default {
                     console.log("error", error);
                 });
         },
-        /**
-         * Modal open for edit event
-         */
+    
         editEvent(info) {
             // Evaluamos si es una reserva o un horario no disponible
             if (info.event.title != "NO DISPONIBLE") {
@@ -689,7 +680,7 @@ export default {
                             }
                         }
                     }
-
+ 
 
                     this.calendarOptions.hiddenDays = diassemana;
 
@@ -729,7 +720,7 @@ export default {
                                 title: "NO DISPONIBLE",
                                 start: fecha_comple_inicio,
                                 end: fecha_comple_fin,
-                                classNames: "bg-danger text-white",
+                                classNames: "text-white",
                                 editable: false
                             });
                         }
@@ -757,7 +748,7 @@ export default {
                                 title: res.data.reserva[i]["paciente"]['rut']+' - '+res.data.reserva[i]["paciente"]['nombres']+' '+res.data.reserva[i]["paciente"]['apellidos'],
                                 start: fecha_comple_inicio,
                                 end: fecha_comple_fin,
-                                classNames: "bg-info text-white"
+                                classNames: "text-white",
                             });
                         }
                     }
@@ -868,7 +859,7 @@ export default {
                                 title: res.data.reserva[i]["paciente"]['rut']+' - '+res.data.reserva[i]["paciente"]['nombres']+' '+res.data.reserva[i]["paciente"]['apellidos'],
                                 start: fecha_comple_inicio,
                                 end: fecha_comple_fin,
-                                classNames: "bg-info text-white"
+                                classNames: "text-white"
                             });
                         }
                     }

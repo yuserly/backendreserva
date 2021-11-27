@@ -43,6 +43,7 @@ export default {
               const token = res.data.token;
               const perfil = res.data.perfil;
               const name = res.data.name;
+              const credentialsPerson = res.data.credentialsPerson;
 
               const sucursales = JSON.stringify(res.data.sucursales);
 
@@ -50,6 +51,7 @@ export default {
               localStorage.setItem("perfil", perfil);
               localStorage.setItem("usuarioName", name );
               localStorage.setItem('sucursales', sucursales);
+              localStorage.setItem('credentialsPerson', credentialsPerson);
               if (perfil == 1 || perfil == '1') {
                 Vue.prototype.$administrador = true;
               } else if (perfil == 2 || perfil == '2') {
@@ -58,15 +60,8 @@ export default {
                 Vue.prototype.$profesional = true;
               }
 
-              // if (res.data.data.rol[0] === "Estudiante") {
-              //   this.$router.push("/empresa");
-              // } else if (res.data.data.rol[0] === "Administrador") {
-              //   this.$router.push("/niveles");
-              // } else if (res.data.data.rol[0] === "Docente") {
-              //   this.$router.push("/solicitud-empresa");
-              // }
-
               this.$router.push("/");
+
             } else {
               const title = "Login";
               const message = "Revisa el usuario o contraseña ingresada";
@@ -97,20 +92,6 @@ export default {
         <div class="row">
           <div class="col-lg-12">
             <div class="text-center">
-              <!-- <router-link to="/login" class="mb-5 d-block auth-logo">
-                <img
-                  src="images/reservas.png"
-                  alt=""
-                  height="150"
-                  class="logo logo-dark"
-                />
-                <img
-                  src="images/reservas.png"
-                  alt=""
-                  height="100"
-                  class="logo logo-light"
-                />
-              </router-link> -->
             </div>
           </div>
         </div>

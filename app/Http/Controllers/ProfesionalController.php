@@ -240,18 +240,55 @@ class ProfesionalController extends Controller
     public function traerhorariounico(Request $request){
 
         // consultar el numero del dia ya que 0 es domingo y tenemos guardado es el id_dia
-
-        $dia = Dia::where('dia', $request->diasemana)->first();
+        
 
         $user = Auth::user();
 
-        $profesional = Profesional::where('user_id',$user->id)->with('sucursal')->first();
+        $diasHabiles = array();
+        $diasDisponibles = HorarioProfesional::where([['profesional_id_profesional','=',$user->profesional[0]->id_profesional],['sucursal_id', '=', $request->id_sucursal]])->with('dia')->get();
+        
+        
+
+        foreach ($diasDisponibles as $key => $value) {
+            if($value->dia->dia == 7){
+                array_push($diasHabiles, 0);
+            }else{
+                array_push($diasHabiles, $value->dia->dia);
+            }
+        }
+
+        sort($diasHabiles);
+
+        if(in_array($request->diasemana,$diasHabiles)){
+            
+            $dia = Dia::where('dia', $request->diasemana)->first();
+        }else{
+            
+            $num = $request->diasemana;
+
+            do {
+                if($num == 6){
+                    $num = 0;
+                }else{
+                    $num++;
+                }
+
+                if(in_array($num, $diasHabiles) == 1){
+                    $resultado = true;
+                }else{
+                    $resultado = false;
+                }
+
+            } while ($resultado != true);
+
+            $dia = Dia::where('dia', $num)->first();
+        }
 
         if($dia){
 
             $id_dia = $dia->id_dia;
 
-            $horario = HorarioProfesional::where([['dia_id','=', $id_dia],['profesional_id_profesional','=',$profesional->id_profesional]])->first();
+            $horario = HorarioProfesional::where([['dia_id','=', $id_dia],['profesional_id_profesional','=',$user->profesional[0]->id_profesional]])->first();
 
         }else{
 
@@ -259,15 +296,19 @@ class ProfesionalController extends Controller
 
         }
 
+        
         // horas bloqueadas
 
-        $bloqueo = BloqueoHora::where('profesional_id_profesional',$profesional->id_profesional)->get();
+        $bloqueo = BloqueoHora::where('profesional_id_profesional', $user->profesional[0]->id_profesional)->get();
+
+      
 
         // traer reservas
 
-        $reserva = Reserva::where('profesional_id',$profesional->id_profesional)->get();
+        $reserva = Reserva::where([['profesional_id', $user->profesional[0]->id_profesional] ,['sucursal_id','=', $request->id_sucursal]])->get();
 
-        return ["horario" => $horario, "bloqueo" => $bloqueo, "reserva" => $reserva];
+
+        return ["horario" => $horario, "bloqueo" => $bloqueo, "reserva" => $reserva, 'diasDisponibles' => $diasDisponibles];
 
     }
 

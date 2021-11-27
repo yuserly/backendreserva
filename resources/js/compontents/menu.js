@@ -1,5 +1,5 @@
 import Vue from "vue";
-let dashboard = true;
+let dashboard = false;
 let administración = false;
 let especialidades = false;
 let servicios = false;
@@ -18,6 +18,7 @@ let informediario = false;
 
 if (Vue.prototype.$administrador) {
 
+    dashboard = true;
     administración = true;
     administraciónReserva = true;
     especialidades = true;
@@ -34,6 +35,7 @@ if (Vue.prototype.$administrador) {
     informediario = true;
 } else if(Vue.prototype.$secretaria){
 
+    dashboard = true;
     administraciónReserva = true;
     pacientes = true;
     reservas = true;
@@ -41,7 +43,7 @@ if (Vue.prototype.$administrador) {
     confirmarreserva = true;
 
 }else {
-    pacientes = true;
+    administraciónReserva = true;
     misreservas = true;
 }
 

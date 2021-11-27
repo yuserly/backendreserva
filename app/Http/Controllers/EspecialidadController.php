@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Especialidad;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class EspecialidadController extends Controller
@@ -19,13 +20,6 @@ class EspecialidadController extends Controller
             return 0;
         }
     }
-
-
-    public function create()
-    {
-        //
-    }
-
 
     public function store(Request $request)
     {
@@ -45,6 +39,13 @@ class EspecialidadController extends Controller
         return Especialidad::all();
     }
 
+    public function showMisEspecialidades($id)
+    {   
+        $especialidad = User::find($id);
+        $especialidad->load('profesional.especialidad');
+
+        return $especialidad;
+    }
 
     public function edit(Especialidad $especialidad)
     {
