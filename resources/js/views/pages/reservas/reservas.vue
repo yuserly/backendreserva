@@ -53,6 +53,7 @@
               <FullCalendar
                 ref="fullCalendar"
                 :options="calendarOptions"
+                :custom-buttons="customButtons"
               ></FullCalendar>
             </div>
           </div>

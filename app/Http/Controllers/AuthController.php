@@ -37,8 +37,8 @@ class AuthController extends Controller
             }else{
 
                 $profesional = Profesional::where('user_id',$user->id)->with('sucursal')->first();
-
-                $sucursales = $profesional->sucursal;
+                
+                $sucursales = $profesional->sucursal->unique();
 
             }
 

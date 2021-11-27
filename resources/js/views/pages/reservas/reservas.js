@@ -71,7 +71,39 @@ export default {
                 weekends: true,
                 selectable: false,
                 selectMirror: false,
-                dayMaxEvents: true
+                dayMaxEvents: true,
+                customButtons: { 
+                    prev: { // this overrides the prev button
+                      text: "PREV", 
+                      click: () => {           
+                        
+                        let calendarApi = this.$refs.fullCalendar.getApi();
+                        calendarApi.prev();
+                        // console.log(calendarApi.currentDataManager.data.currentDate);
+                        // return false;
+                        var res = (calendarApi.currentDataManager.data.currentDate);
+                        res.setDate(res.getDate());
+                        var dia = res.getDay()+1;
+                        this.traerHorasCalendario(dia);
+                      }
+                    },
+                    next: { // this overrides the next button
+                      text: "NEXT",
+                      click: () => {
+                         
+                         let calendarApi = this.$refs.fullCalendar.getApi();
+                         calendarApi.next();
+                        //  console.log(calendarApi.currentDataManager.data.currentDate);
+                        //  return false;
+                         var res = (calendarApi.currentDataManager.data.currentDate);
+                        res.setDate(res.getDate());
+                        var dia = res.getDay()+1;
+                        this.traerHorasCalendario(dia);
+                         
+                      }
+                    }
+                }
+                
             },
             urlbackend: this.$urlBackend,
             sucursal: JSON.parse(localStorage.getItem("sucursalselect")),
@@ -162,6 +194,12 @@ export default {
                 this.optionsPrevension = response.data;
             });
         },
+
+        customButtons()
+        {
+           
+        },
+
         validarRut($event) {
             if ($event.length > 4) {
                 this.axios
@@ -545,21 +583,12 @@ export default {
             });
         },
 
-        /**
-         * Show list of events
-         */
+
         handleEvents(events) {
             this.currentEvents = events;
         },
 
-        /**
-         * Show successfull Save Dialog
-         */
-        successmsg() {
-            
-        },
 
-        // traer especialidad
         traerEspecialidad() {
             this.axios.get(`/api/obtenerespecialidad/`).then(response => {
                 this.options = response.data;
@@ -606,13 +635,15 @@ export default {
         },
 
         traerHoras() {
-
+            let calendarApi = this.$refs.fullCalendar.getApi();
+                    
+                        var res = (calendarApi.currentDataManager.data.currentDate);
+                        console.log(calendarApi)
+                        res.setDate(res.getDate());
+                        var dia = res.getDay();
+                        console.log(dia);
             this.calendarOptions.events = [{}];
 
-            // this.calendarOptions.events.forEach((element, i) => {
-            //     this.calendarOptions.events.splice(element, 1); 
-            // });
-            
             var date = new Date();
 
             // obtemos el dia de la semana
@@ -628,7 +659,10 @@ export default {
             this.axios
                 .post(`/api/traerhorario`, form)
                 .then(res => {
-
+                    // console.log(res);
+                    // return false;
+                    
+                   
                     let diashabiles = [];
                     let diassemana = [0, 1, 2, 3, 4, 5, 6];
 
@@ -639,7 +673,6 @@ export default {
                         diashabiles.push(element["dia"]["dia"]);
                     });
 
-
                     for (let i = 0; i < diassemana.length; i++) {
                         for (let j = 0; j < diassemana.length; j++) {
                             if (diashabiles[i] == diassemana[j]) {
@@ -648,7 +681,11 @@ export default {
                         }
                     }
                     
-                    this.calendarOptions.hiddenDays = diassemana;
+                    //this.calendarOptions.hiddenDays = diassemana;
+
+                        
+
+                        //calendarApi.gotoDate(new Date());
 
                     if (res.data.horario) {
                         this.calendarOptions.slotMinTime =
@@ -707,7 +744,116 @@ export default {
                             let fecha_comple_fin = moment(
                                 dia + " " + fecha_fin
                             ).format("YYYY-MM-DD HH:mm:ss");
-                                console.log(res.data.reserva[i]["paciente"]['nombres']);
+                            this.calendarOptions.events.push({
+                                idreserva: res.data.reserva[i]["id_reserva"],
+                                idpaciente: res.data.reserva[i]["paciente_id"],
+                                title: res.data.reserva[i]["paciente"]['rut']+' - '+res.data.reserva[i]["paciente"]['nombres']+' '+res.data.reserva[i]["paciente"]['apellidos'],
+                                start: fecha_comple_inicio,
+                                end: fecha_comple_fin,
+                                classNames: "bg-info text-white"
+                            });
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.log("error", error);
+                });
+        },
+
+        traerHorasCalendario(day) {
+
+            this.calendarOptions.events = [{}];
+
+            var diasemana = day;
+
+            var form = {
+                diasemana: diasemana,
+                id_profesional: this.form.id_profesional.profesional.id_profesional,
+                id_sucursal : this.sucursal.id_sucursal
+            };
+
+            this.axios
+                .post(`/api/traerhorario`, form)
+                .then(res => {
+
+                    let diashabiles = [];
+                    let diassemana = [0, 1, 2, 3, 4, 5, 6];
+
+                    res.data.diasDisponibles.forEach((element, i) => {
+                        if (element["dia"]["dia"] == 7) {
+                          element["dia"]["dia"] = 0;
+                        }
+                        diashabiles.push(element["dia"]["dia"]);
+                    });
+
+
+                    for (let i = 0; i < diassemana.length; i++) {
+                        for (let j = 0; j < diassemana.length; j++) {
+                            if (diashabiles[i] == diassemana[j]) {
+                                diassemana.splice(j, 1);
+                            }
+                        }
+                    }
+                    
+                    //this.calendarOptions.hiddenDays = diassemana;
+
+                    if (res.data.horario) {
+                        this.calendarOptions.slotMinTime =
+                            res.data.horario.hora_inicio;
+                        this.calendarOptions.slotMaxTime =
+                            res.data.horario.hora_fin;
+                        this.calendarOptions.slotDuration = this.duracion;
+                        this.calendarOptions.dateClick = this.dateClicked;
+                    } else {
+                        this.calendarOptions.slotMinTime = "00:00:00";
+                        this.calendarOptions.slotMaxTime = "00:00:00";
+                        this.calendarOptions.dateClick = false;
+                    }
+
+                    if (res.data.bloqueo) {
+                        for (let i = 0; i < res.data.bloqueo.length; i++) {
+                            let dia = res.data.bloqueo[i]["dia"];
+
+                            let fecha_inicio =
+                                res.data.bloqueo[i]["hora_inicio"];
+
+                            let fecha_fin = res.data.bloqueo[i]["hora_fin"];
+
+                            let fecha_comple_inicio = moment(
+                                dia + " " + fecha_inicio
+                            ).format("YYYY-MM-DD HH:mm:ss");
+
+                            let fecha_comple_fin = moment(
+                                dia + " " + fecha_fin
+                            ).format("YYYY-MM-DD HH:mm:ss");
+
+                            this.calendarOptions.events.push({
+                                id: "",
+                                title: "NO DISPONIBLE",
+                                start: fecha_comple_inicio,
+                                end: fecha_comple_fin,
+                                classNames: "bg-danger text-white",
+                                editable: false
+                            });
+                        }
+                    }
+
+                    if (res.data.reserva) {
+                        for (let i = 0; i < res.data.reserva.length; i++) {
+                            let dia = res.data.reserva[i]["dia"];
+
+                            let fecha_inicio =
+                                res.data.reserva[i]["hora_inicio"];
+
+                            let fecha_fin = res.data.reserva[i]["hora_fin"];
+
+                            let fecha_comple_inicio = moment(
+                                dia + " " + fecha_inicio
+                            ).format("YYYY-MM-DD HH:mm:ss");
+
+                            let fecha_comple_fin = moment(
+                                dia + " " + fecha_fin
+                            ).format("YYYY-MM-DD HH:mm:ss");
                             this.calendarOptions.events.push({
                                 idreserva: res.data.reserva[i]["id_reserva"],
                                 idpaciente: res.data.reserva[i]["paciente_id"],

@@ -168,13 +168,49 @@ class ProfesionalController extends Controller
 
     }
 
+    
     public function traerhorario(Request $request){
 
         // consultar el numero del dia ya que 0 es domingo y tenemos guardado es el id_dia
 
-        $dia = Dia::where('dia', $request->diasemana)->first();
-
+        $diasHabiles = array();
         $diasDisponibles = HorarioProfesional::where([['profesional_id_profesional','=',$request->id_profesional],['sucursal_id', '=', $request->id_sucursal]])->with('dia')->get();
+        
+        foreach ($diasDisponibles as $key => $value) {
+            if($value->dia->dia == 7){
+                array_push($diasHabiles, 0);
+            }else{
+                array_push($diasHabiles, $value->dia->dia);
+            }
+        }
+
+        sort($diasHabiles);
+
+        if(in_array($request->diasemana,$diasHabiles)){
+            
+            $dia = Dia::where('dia', $request->diasemana)->first();
+        }else{
+            
+            $num = $request->diasemana;
+
+            do {
+                if($num == 6){
+                    $num = 0;
+                }else{
+                    $num++;
+                }
+
+                if(in_array($num, $diasHabiles) == 1){
+                    $resultado = true;
+                }else{
+                    $resultado = false;
+                }
+
+            } while ($resultado != true);
+
+            $dia = Dia::where('dia', $num)->first();
+        }
+        
 
         if($dia){
 

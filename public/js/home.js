@@ -21899,6 +21899,8 @@ __webpack_require__.r(__webpack_exports__);
     Multiselect: (vue_multiselect__WEBPACK_IMPORTED_MODULE_7___default())
   },
   data: function data() {
+    var _this = this;
+
     return {
       title: "Reserva",
       items: [{
@@ -21945,7 +21947,41 @@ __webpack_require__.r(__webpack_exports__);
         weekends: true,
         selectable: false,
         selectMirror: false,
-        dayMaxEvents: true
+        dayMaxEvents: true,
+        customButtons: {
+          prev: {
+            // this overrides the prev button
+            text: "PREV",
+            click: function click() {
+              var calendarApi = _this.$refs.fullCalendar.getApi();
+
+              calendarApi.prev(); // console.log(calendarApi.currentDataManager.data.currentDate);
+              // return false;
+
+              var res = calendarApi.currentDataManager.data.currentDate;
+              res.setDate(res.getDate());
+              var dia = res.getDay() + 1;
+
+              _this.traerHorasCalendario(dia);
+            }
+          },
+          next: {
+            // this overrides the next button
+            text: "NEXT",
+            click: function click() {
+              var calendarApi = _this.$refs.fullCalendar.getApi();
+
+              calendarApi.next(); //  console.log(calendarApi.currentDataManager.data.currentDate);
+              //  return false;
+
+              var res = calendarApi.currentDataManager.data.currentDate;
+              res.setDate(res.getDate());
+              var dia = res.getDay() + 1;
+
+              _this.traerHorasCalendario(dia);
+            }
+          }
+        }
       },
       urlbackend: this.$urlBackend,
       sucursal: JSON.parse(localStorage.getItem("sucursalselect")),
@@ -22031,28 +22067,29 @@ __webpack_require__.r(__webpack_exports__);
       return "".concat(profesional.nombres, " ").concat(profesional.apellidos, " ");
     },
     traerPrevision: function traerPrevision() {
-      var _this = this;
+      var _this2 = this;
 
       this.axios.get("/api/obtenerprevision/").then(function (response) {
-        _this.optionsPrevension = response.data;
+        _this2.optionsPrevension = response.data;
       });
     },
+    customButtons: function customButtons() {},
     validarRut: function validarRut($event) {
-      var _this2 = this;
+      var _this3 = this;
 
       if ($event.length > 4) {
         this.axios.get("/api/validarrutpaciente/".concat($event)).then(function (response) {
           if (response.data != 0) {
-            _this2.form.nombres = response.data.nombres;
-            _this2.form.apellidos = response.data.apellidos;
-            _this2.form.id_paciente = response.data.id_paciente;
-            _this2.form.rut = response.data.rut;
-            _this2.form.email = response.data.email;
-            _this2.form.direccion = response.data.direccion;
-            _this2.form.celular = response.data.celular;
-            _this2.form.prevension_id = response.data.prevision;
+            _this3.form.nombres = response.data.nombres;
+            _this3.form.apellidos = response.data.apellidos;
+            _this3.form.id_paciente = response.data.id_paciente;
+            _this3.form.rut = response.data.rut;
+            _this3.form.email = response.data.email;
+            _this3.form.direccion = response.data.direccion;
+            _this3.form.celular = response.data.celular;
+            _this3.form.prevension_id = response.data.prevision;
           } else {
-            _this2.rutexist = false;
+            _this3.rutexist = false;
           }
         });
       }
@@ -22119,7 +22156,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     // crear reserva
     handleSubmit: function handleSubmit(e) {
-      var _this3 = this;
+      var _this4 = this;
 
       this.submitted = true;
       this.$v.$touch();
@@ -22145,9 +22182,9 @@ __webpack_require__.r(__webpack_exports__);
         this.form.id_sucursal = this.sucursal.id_sucursal;
         this.axios.post("/api/crearreserva", this.form).then(function (res) {
           if (res.data) {
-            _this3.showModal = false;
+            _this4.showModal = false;
 
-            if (_this3.form.id_reserva == "") {
+            if (_this4.form.id_reserva == "") {
               sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
                 position: "center",
                 icon: "success",
@@ -22165,15 +22202,15 @@ __webpack_require__.r(__webpack_exports__);
               });
             }
 
-            _this3.calendarOptions.events = [{}];
+            _this4.calendarOptions.events = [{}];
 
-            _this3.traerHoras();
+            _this4.traerHoras();
 
-            _this3.newEventData = {};
+            _this4.newEventData = {};
 
-            _this3.successmsg(title, message, type);
+            _this4.successmsg(title, message, type);
 
-            _this3.$v.form.$reset();
+            _this4.$v.form.$reset();
           }
         })["catch"](function (error) {
           console.log("error", error);
@@ -22181,7 +22218,7 @@ __webpack_require__.r(__webpack_exports__);
           var message = "";
           var type = "";
 
-          if (_this3.form.id_reserva) {
+          if (_this4.form.id_reserva) {
             title = "Crear Reserva";
             message = "Reserva  creada con exito";
             type = "error";
@@ -22191,10 +22228,10 @@ __webpack_require__.r(__webpack_exports__);
             type = "error";
           }
 
-          _this3.$v.form.$reset();
+          _this4.$v.form.$reset();
 
-          _this3.showModal = false;
-          _this3.newEventData = {};
+          _this4.showModal = false;
+          _this4.newEventData = {};
         });
       }
 
@@ -22203,7 +22240,7 @@ __webpack_require__.r(__webpack_exports__);
       this.event = {};
     },
     move: function move(info) {
-      var _this4 = this;
+      var _this5 = this;
 
       var idreserva = info.event._def.extendedProps.idreserva;
       var hora_sinformat = info.event.start;
@@ -22222,7 +22259,7 @@ __webpack_require__.r(__webpack_exports__);
         var type = "Success";
 
         if (res.data) {
-          _this4.successmsg(title, message, type);
+          _this5.successmsg(title, message, type);
         }
       })["catch"](function (error) {
         console.log("error", error);
@@ -22230,7 +22267,7 @@ __webpack_require__.r(__webpack_exports__);
         var message = "Error al editar la reserva";
         var type = "error";
 
-        _this4.successmsg(title, message, type);
+        _this5.successmsg(title, message, type);
       });
     },
     // eslint-disable-next-line no-unused-vars
@@ -22259,18 +22296,18 @@ __webpack_require__.r(__webpack_exports__);
      * Delete event
      */
     deleteEvent: function deleteEvent() {
-      var _this5 = this;
+      var _this6 = this;
 
       this.axios["delete"]("/api/deletereserva/".concat(this.form.id_reserva)).then(function (response) {
         if (response.data == 1) {
-          _this5.deleteId.el.remove();
+          _this6.deleteId.el.remove();
 
           sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire("Eliminar Reserva", "Reserva eliminada.", "success");
         } else {
           sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire("Eliminar Reserva", "Error al elimar la reserva.", "error");
         }
 
-        _this5.showModal = false;
+        _this6.showModal = false;
       });
     },
     vaciarform: function vaciarform() {
@@ -22292,7 +22329,7 @@ __webpack_require__.r(__webpack_exports__);
       this.form.editespecialidad = "";
     },
     dateClicked: function dateClicked(info) {
-      var _this6 = this;
+      var _this7 = this;
 
       var form = {
         dia: moment__WEBPACK_IMPORTED_MODULE_8___default()(info.date).format("YYYY-MM-DD"),
@@ -22312,13 +22349,13 @@ __webpack_require__.r(__webpack_exports__);
             timer: 2000
           });
         } else {
-          _this6.newEventData = info;
+          _this7.newEventData = info;
 
-          if (_this6.form.id_reserva == "") {
-            _this6.vaciarform();
+          if (_this7.form.id_reserva == "") {
+            _this7.vaciarform();
           }
 
-          _this6.showModal = true;
+          _this7.showModal = true;
         }
       })["catch"](function (error) {
         console.log("error", error);
@@ -22329,7 +22366,7 @@ __webpack_require__.r(__webpack_exports__);
      * Modal open for edit event
      */
     editEvent: function editEvent(info) {
-      var _this7 = this;
+      var _this8 = this;
 
       // Evaluamos si es una reserva o un horario no disponible
       if (info.event.title != "NO DISPONIBLE") {
@@ -22338,24 +22375,24 @@ __webpack_require__.r(__webpack_exports__);
         var idreserva = info.event._def.extendedProps.idreserva;
         this.axios.get("/api/traerreserva/".concat(idreserva)).then(function (response) {
           console.log(response);
-          _this7.form.id_reserva = response.data.id_reserva;
-          _this7.form.nombres = response.data.paciente.nombres;
-          _this7.form.apellidos = response.data.paciente.apellidos;
-          _this7.form.id_paciente = response.data.paciente.id_paciente;
-          _this7.form.email = response.data.paciente.email;
-          _this7.form.celular = response.data.paciente.celular;
-          _this7.form.direccion = response.data.paciente.direccion;
-          _this7.form.rut = response.data.paciente.rut;
-          _this7.form.prevension_id = response.data.paciente.prevision;
-          _this7.form.codigo = response.data.codigo;
-          _this7.form.dia = response.data.dia;
-          _this7.form.hora_inicio = response.data.hora_inicio;
-          _this7.form.hora_fin = response.data.hora_fin; // para no modificar los select
+          _this8.form.id_reserva = response.data.id_reserva;
+          _this8.form.nombres = response.data.paciente.nombres;
+          _this8.form.apellidos = response.data.paciente.apellidos;
+          _this8.form.id_paciente = response.data.paciente.id_paciente;
+          _this8.form.email = response.data.paciente.email;
+          _this8.form.celular = response.data.paciente.celular;
+          _this8.form.direccion = response.data.paciente.direccion;
+          _this8.form.rut = response.data.paciente.rut;
+          _this8.form.prevension_id = response.data.paciente.prevision;
+          _this8.form.codigo = response.data.codigo;
+          _this8.form.dia = response.data.dia;
+          _this8.form.hora_inicio = response.data.hora_inicio;
+          _this8.form.hora_fin = response.data.hora_fin; // para no modificar los select
 
-          _this7.form.editservicio = response.data.servicio;
-          _this7.form.editespecialidad = response.data.servicio.especialidad;
+          _this8.form.editservicio = response.data.servicio;
+          _this8.form.editespecialidad = response.data.servicio.especialidad;
 
-          _this7.dateClicked(info);
+          _this8.dateClicked(info);
         });
       } else {
         sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
@@ -22372,7 +22409,7 @@ __webpack_require__.r(__webpack_exports__);
       this.vaciarform();
     },
     confirm: function confirm() {
-      var _this8 = this;
+      var _this9 = this;
 
       sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
         title: "Eliminar Reserva",
@@ -22384,33 +22421,23 @@ __webpack_require__.r(__webpack_exports__);
         confirmButtonText: "Si eliminar"
       }).then(function (result) {
         if (result.value) {
-          _this8.deleteEvent();
+          _this9.deleteEvent();
         }
       });
     },
-
-    /**
-     * Show list of events
-     */
     handleEvents: function handleEvents(events) {
       this.currentEvents = events;
     },
-
-    /**
-     * Show successfull Save Dialog
-     */
-    successmsg: function successmsg() {},
-    // traer especialidad
     traerEspecialidad: function traerEspecialidad() {
-      var _this9 = this;
+      var _this10 = this;
 
       this.axios.get("/api/obtenerespecialidad/").then(function (response) {
-        _this9.options = response.data;
+        _this10.options = response.data;
       });
     },
     // traer servicios
     traerServicio: function traerServicio() {
-      var _this10 = this;
+      var _this11 = this;
 
       if (!this.sucursal) {
         sweetalert2__WEBPACK_IMPORTED_MODULE_9___default().fire({
@@ -22428,31 +22455,121 @@ __webpack_require__.r(__webpack_exports__);
       var id_especialidad = this.form.especialidad_id.id_especialidad;
       var id_sucursal = this.sucursal.id_sucursal;
       this.axios.get("/api/obtenerservicios/".concat(id_especialidad, "/").concat(id_sucursal)).then(function (response) {
-        _this10.optionsServicio = response.data;
-        _this10.duracion = _this10.form.especialidad_id.intervalo;
+        _this11.optionsServicio = response.data;
+        _this11.duracion = _this11.form.especialidad_id.intervalo;
       });
     },
     traerProfesional: function traerProfesional() {
-      var _this11 = this;
+      var _this12 = this;
 
       this.form.id_profesional = "";
       this.calendarOptions.events = [{}];
       var id_servicio = this.form.servicio_id_servicio.id_servicio;
       var id_sucursal = this.sucursal.id_sucursal;
       this.axios.get("/api/obtenerprofesional/".concat(id_servicio, "/").concat(id_sucursal)).then(function (response) {
-        _this11.optionsProfesional = response.data;
+        _this12.optionsProfesional = response.data;
       });
     },
     traerHoras: function traerHoras() {
-      var _this12 = this;
+      var _this13 = this;
 
-      this.calendarOptions.events = [{}]; // this.calendarOptions.events.forEach((element, i) => {
-      //     this.calendarOptions.events.splice(element, 1); 
-      // });
-
+      var calendarApi = this.$refs.fullCalendar.getApi();
+      var res = calendarApi.currentDataManager.data.currentDate;
+      console.log(calendarApi);
+      res.setDate(res.getDate());
+      var dia = res.getDay();
+      console.log(dia);
+      this.calendarOptions.events = [{}];
       var date = new Date(); // obtemos el dia de la semana
 
       var diasemana = date.getDay();
+      var form = {
+        diasemana: diasemana,
+        id_profesional: this.form.id_profesional.profesional.id_profesional,
+        id_sucursal: this.sucursal.id_sucursal
+      };
+      this.axios.post("/api/traerhorario", form).then(function (res) {
+        // console.log(res);
+        // return false;
+        var diashabiles = [];
+        var diassemana = [0, 1, 2, 3, 4, 5, 6];
+        res.data.diasDisponibles.forEach(function (element, i) {
+          if (element["dia"]["dia"] == 7) {
+            element["dia"]["dia"] = 0;
+          }
+
+          diashabiles.push(element["dia"]["dia"]);
+        });
+
+        for (var i = 0; i < diassemana.length; i++) {
+          for (var j = 0; j < diassemana.length; j++) {
+            if (diashabiles[i] == diassemana[j]) {
+              diassemana.splice(j, 1);
+            }
+          }
+        } //this.calendarOptions.hiddenDays = diassemana;
+        //calendarApi.gotoDate(new Date());
+
+
+        if (res.data.horario) {
+          _this13.calendarOptions.slotMinTime = res.data.horario.hora_inicio;
+          _this13.calendarOptions.slotMaxTime = res.data.horario.hora_fin;
+          _this13.calendarOptions.slotDuration = _this13.duracion;
+          _this13.calendarOptions.dateClick = _this13.dateClicked;
+        } else {
+          _this13.calendarOptions.slotMinTime = "00:00:00";
+          _this13.calendarOptions.slotMaxTime = "00:00:00";
+          _this13.calendarOptions.dateClick = false;
+        }
+
+        if (res.data.bloqueo) {
+          for (var _i = 0; _i < res.data.bloqueo.length; _i++) {
+            var _dia = res.data.bloqueo[_i]["dia"];
+            var fecha_inicio = res.data.bloqueo[_i]["hora_inicio"];
+            var fecha_fin = res.data.bloqueo[_i]["hora_fin"];
+            var fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia + " " + fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
+            var fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia + " " + fecha_fin).format("YYYY-MM-DD HH:mm:ss");
+
+            _this13.calendarOptions.events.push({
+              id: "",
+              title: "NO DISPONIBLE",
+              start: fecha_comple_inicio,
+              end: fecha_comple_fin,
+              classNames: "bg-danger text-white",
+              editable: false
+            });
+          }
+        }
+
+        if (res.data.reserva) {
+          for (var _i2 = 0; _i2 < res.data.reserva.length; _i2++) {
+            var _dia2 = res.data.reserva[_i2]["dia"];
+            var _fecha_inicio = res.data.reserva[_i2]["hora_inicio"];
+            var _fecha_fin = res.data.reserva[_i2]["hora_fin"];
+
+            var _fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia2 + " " + _fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
+
+            var _fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia2 + " " + _fecha_fin).format("YYYY-MM-DD HH:mm:ss");
+
+            _this13.calendarOptions.events.push({
+              idreserva: res.data.reserva[_i2]["id_reserva"],
+              idpaciente: res.data.reserva[_i2]["paciente_id"],
+              title: res.data.reserva[_i2]["paciente"]['rut'] + ' - ' + res.data.reserva[_i2]["paciente"]['nombres'] + ' ' + res.data.reserva[_i2]["paciente"]['apellidos'],
+              start: _fecha_comple_inicio,
+              end: _fecha_comple_fin,
+              classNames: "bg-info text-white"
+            });
+          }
+        }
+      })["catch"](function (error) {
+        console.log("error", error);
+      });
+    },
+    traerHorasCalendario: function traerHorasCalendario(day) {
+      var _this14 = this;
+
+      this.calendarOptions.events = [{}];
+      var diasemana = day;
       var form = {
         diasemana: diasemana,
         id_profesional: this.form.id_profesional.profesional.id_profesional,
@@ -22475,30 +22592,29 @@ __webpack_require__.r(__webpack_exports__);
               diassemana.splice(j, 1);
             }
           }
-        }
+        } //this.calendarOptions.hiddenDays = diassemana;
 
-        _this12.calendarOptions.hiddenDays = diassemana;
 
         if (res.data.horario) {
-          _this12.calendarOptions.slotMinTime = res.data.horario.hora_inicio;
-          _this12.calendarOptions.slotMaxTime = res.data.horario.hora_fin;
-          _this12.calendarOptions.slotDuration = _this12.duracion;
-          _this12.calendarOptions.dateClick = _this12.dateClicked;
+          _this14.calendarOptions.slotMinTime = res.data.horario.hora_inicio;
+          _this14.calendarOptions.slotMaxTime = res.data.horario.hora_fin;
+          _this14.calendarOptions.slotDuration = _this14.duracion;
+          _this14.calendarOptions.dateClick = _this14.dateClicked;
         } else {
-          _this12.calendarOptions.slotMinTime = "00:00:00";
-          _this12.calendarOptions.slotMaxTime = "00:00:00";
-          _this12.calendarOptions.dateClick = false;
+          _this14.calendarOptions.slotMinTime = "00:00:00";
+          _this14.calendarOptions.slotMaxTime = "00:00:00";
+          _this14.calendarOptions.dateClick = false;
         }
 
         if (res.data.bloqueo) {
-          for (var _i = 0; _i < res.data.bloqueo.length; _i++) {
-            var dia = res.data.bloqueo[_i]["dia"];
-            var fecha_inicio = res.data.bloqueo[_i]["hora_inicio"];
-            var fecha_fin = res.data.bloqueo[_i]["hora_fin"];
+          for (var _i3 = 0; _i3 < res.data.bloqueo.length; _i3++) {
+            var dia = res.data.bloqueo[_i3]["dia"];
+            var fecha_inicio = res.data.bloqueo[_i3]["hora_inicio"];
+            var fecha_fin = res.data.bloqueo[_i3]["hora_fin"];
             var fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(dia + " " + fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
             var fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(dia + " " + fecha_fin).format("YYYY-MM-DD HH:mm:ss");
 
-            _this12.calendarOptions.events.push({
+            _this14.calendarOptions.events.push({
               id: "",
               title: "NO DISPONIBLE",
               start: fecha_comple_inicio,
@@ -22510,23 +22626,21 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         if (res.data.reserva) {
-          for (var _i2 = 0; _i2 < res.data.reserva.length; _i2++) {
-            var _dia = res.data.reserva[_i2]["dia"];
-            var _fecha_inicio = res.data.reserva[_i2]["hora_inicio"];
-            var _fecha_fin = res.data.reserva[_i2]["hora_fin"];
+          for (var _i4 = 0; _i4 < res.data.reserva.length; _i4++) {
+            var _dia3 = res.data.reserva[_i4]["dia"];
+            var _fecha_inicio2 = res.data.reserva[_i4]["hora_inicio"];
+            var _fecha_fin2 = res.data.reserva[_i4]["hora_fin"];
 
-            var _fecha_comple_inicio = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia + " " + _fecha_inicio).format("YYYY-MM-DD HH:mm:ss");
+            var _fecha_comple_inicio2 = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia3 + " " + _fecha_inicio2).format("YYYY-MM-DD HH:mm:ss");
 
-            var _fecha_comple_fin = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia + " " + _fecha_fin).format("YYYY-MM-DD HH:mm:ss");
+            var _fecha_comple_fin2 = moment__WEBPACK_IMPORTED_MODULE_8___default()(_dia3 + " " + _fecha_fin2).format("YYYY-MM-DD HH:mm:ss");
 
-            console.log(res.data.reserva[_i2]["paciente"]['nombres']);
-
-            _this12.calendarOptions.events.push({
-              idreserva: res.data.reserva[_i2]["id_reserva"],
-              idpaciente: res.data.reserva[_i2]["paciente_id"],
-              title: res.data.reserva[_i2]["paciente"]['rut'] + ' - ' + res.data.reserva[_i2]["paciente"]['nombres'] + ' ' + res.data.reserva[_i2]["paciente"]['apellidos'],
-              start: _fecha_comple_inicio,
-              end: _fecha_comple_fin,
+            _this14.calendarOptions.events.push({
+              idreserva: res.data.reserva[_i4]["id_reserva"],
+              idpaciente: res.data.reserva[_i4]["paciente_id"],
+              title: res.data.reserva[_i4]["paciente"]['rut'] + ' - ' + res.data.reserva[_i4]["paciente"]['nombres'] + ' ' + res.data.reserva[_i4]["paciente"]['apellidos'],
+              start: _fecha_comple_inicio2,
+              end: _fecha_comple_fin2,
               classNames: "bg-info text-white"
             });
           }
@@ -80075,7 +80189,10 @@ var render = function () {
                 [
                   _c("FullCalendar", {
                     ref: "fullCalendar",
-                    attrs: { options: _vm.calendarOptions },
+                    attrs: {
+                      options: _vm.calendarOptions,
+                      "custom-buttons": _vm.customButtons,
+                    },
                   }),
                 ],
                 1
