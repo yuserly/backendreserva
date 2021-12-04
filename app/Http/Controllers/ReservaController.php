@@ -59,7 +59,8 @@ class ReservaController extends Controller
             'estado_id' => 2,
             'codigo' => $codigo,
             'sucursal_id' => $request->id_sucursal,
-            'servicio_id' => $servicio
+            'servicio_id' => $servicio,
+            'telemedicina' => ($request->telemedicina) ? 1 : 0,
         ]);
 
         $estado = 1;
@@ -289,11 +290,19 @@ class ReservaController extends Controller
 
     public function buscarreserva(Request $request)
     {
-        $paciente = Paciente::where('rut',$request->rut)->first();
-
-        $reserva = Reserva::where([['paciente_id',$paciente->id_paciente],['sucursal_id',$request->id_sucursal],['estado_id', 2],['dia', $request->fecha]])
-        ->with('paciente.prevision','profesional','servicio')->get();
-
+        if($request->rut == null)
+        {
+            $reserva = Reserva::where([['sucursal_id',$request->id_sucursal],['dia', $request->fecha]])->whereIn('estado_id', [2,3])
+            ->with('paciente.prevision','profesional','servicio')->get();
+        }else{
+            $paciente = Paciente::where('rut',$request->rut)->first();
+            if(empty($paciente)){
+                return [];
+            }
+            $reserva = Reserva::where([['paciente_id',$paciente->id_paciente],['sucursal_id',$request->id_sucursal],['estado_id', 2],['dia', $request->fecha]])
+            ->with('paciente.prevision','profesional','servicio')->get();
+        }
+        
         return $reserva; 
 
     }

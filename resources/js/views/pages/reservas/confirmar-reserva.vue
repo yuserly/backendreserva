@@ -30,23 +30,7 @@
                                         id="rut"
                                         placeholder="111111111-1"
                                         v-model="formbuscar.rut"
-                                        :class="{
-                                            'is-invalid':
-                                                submitted &&
-                                                $v.formbuscar.rut.$error,
-                                        }"
                                     />
-                                    <div
-                                        v-if="
-                                            submitted &&
-                                            $v.formbuscar.rut.$error
-                                        "
-                                        class="invalid-feedback"
-                                    >
-                                        <span v-if="!$v.formbuscar.rut.required"
-                                            >El RUT es requerido.</span
-                                        >
-                                    </div>
                                 </div>
                                 <div class="col-12">
                                     <label class="visually-hidden" for="fecha"

@@ -31,6 +31,15 @@
                   ></multiselect>
                 </div>
               </div>
+              <div class="col-12" v-if="selectTelemedicina">
+                <div class="mb-3">
+                  <label for="servicios">Telemedicina</label>
+                  <div dir="ltr" class="form-check form-switch form-switch-lg mb-3">
+                    <input type="checkbox" id="customSwitchsizelg" class="form-check-input" v-model="form.telemedicina" value="1"> 
+                    <label for="customSwitchsizelg" class="form-check-label">Asistencia telemedicina</label>
+                  </div>
+                </div>
+              </div>
               <div class="col-12" v-if="form.servicio_id_servicio" >
                 <div class="mb-3">
                   <label for="profesional">Profesional</label>
@@ -99,7 +108,7 @@
                 >
                   <span v-if="!$v.form.rut.required"
                     >El rut es requerido.</span
-                  >
+                  > 
                 </div>
 
                 <span class="text-danger" v-if="rutexist"
@@ -144,7 +153,6 @@
                     'is-invalid': submitted && $v.form.nombres.$error,
                   }"
                 />
-
                 <div
                   v-if="submitted && $v.form.nombres.$error"
                   class="invalid-feedback"
@@ -167,7 +175,6 @@
                     'is-invalid': submitted && $v.form.apellidos.$error,
                   }"
                 />
-
                 <div
                   v-if="submitted && $v.form.apellidos.$error"
                   class="invalid-feedback"

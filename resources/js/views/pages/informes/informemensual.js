@@ -43,6 +43,7 @@ export default {
                 n_honorario: "",
                 estado: "",
                 estado_id: "",
+                telemedicina: "",
             },
             formaccion: {
                 id_reserva: "",
@@ -152,14 +153,6 @@ export default {
             });
         },
 
-        // traerVentas() {
-        //     this.axios
-        //         .get(`/api/obtenerventas/${this.sucursal.id_sucursal}`)
-        //         .then((response) => {
-        //             console.log(response);
-        //             this.tableData = response.data;
-        //         });
-        // },
         formBuscar() {
             if (!this.sucursal) {
                 Swal.fire({
@@ -240,6 +233,14 @@ export default {
                         data.recio_particular
                     );
                 }
+            }
+
+            if(data.telemedicina == 1)
+            {
+                this.detalle.telemedicina = "Telemedicina";
+            }else if(data.telemedicina == 0)
+            {
+                this.detalle.telemedicina = "Presencial";
             }
 
             this.detalle.servicioprevision = data.prevension_nombre;

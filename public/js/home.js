@@ -18926,7 +18926,8 @@ __webpack_require__.r(__webpack_exports__);
         boleta_honorario: "",
         n_honorario: "",
         estado: "",
-        estado_id: ""
+        estado_id: "",
+        telemedicina: ""
       },
       formaccion: {
         id_reserva: "",
@@ -19021,14 +19022,6 @@ __webpack_require__.r(__webpack_exports__);
         _this.options = response.data;
       });
     },
-    // traerVentas() {
-    //     this.axios
-    //         .get(`/api/obtenerventas/${this.sucursal.id_sucursal}`)
-    //         .then((response) => {
-    //             console.log(response);
-    //             this.tableData = response.data;
-    //         });
-    // },
     formBuscar: function formBuscar() {
       var _this2 = this;
 
@@ -19090,6 +19083,12 @@ __webpack_require__.r(__webpack_exports__);
         } else {
           this.detalle.precioservicio = parseInt(data.recio_particular);
         }
+      }
+
+      if (data.telemedicina == 1) {
+        this.detalle.telemedicina = "Telemedicina";
+      } else if (data.telemedicina == 0) {
+        this.detalle.telemedicina = "Presencial";
       }
 
       this.detalle.servicioprevision = data.prevension_nombre;
@@ -19193,7 +19192,8 @@ __webpack_require__.r(__webpack_exports__);
         boleta_honorario: "",
         n_honorario: "",
         estado: "",
-        estado_id: ""
+        estado_id: "",
+        telemedicina: ""
       },
       formaccion: {
         id_reserva: "",
@@ -19288,14 +19288,6 @@ __webpack_require__.r(__webpack_exports__);
         _this.options = response.data;
       });
     },
-    // traerVentas() {
-    //     this.axios
-    //         .get(`/api/obtenerventas/${this.sucursal.id_sucursal}`)
-    //         .then((response) => {
-    //             console.log(response);
-    //             this.tableData = response.data;
-    //         });
-    // },
     formBuscar: function formBuscar() {
       var _this2 = this;
 
@@ -19362,6 +19354,12 @@ __webpack_require__.r(__webpack_exports__);
         } else {
           this.detalle.precioservicio = parseInt(data.recio_particular);
         }
+      }
+
+      if (data.telemedicina == 1) {
+        this.detalle.telemedicina = "Telemedicina";
+      } else if (data.telemedicina == 0) {
+        this.detalle.telemedicina = "Presencial";
       }
 
       this.detalle.servicioprevision = data.prevension_nombre;
@@ -20803,7 +20801,7 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         key: "paciente.rut",
         sortable: true,
-        label: "RUT Paciente"
+        label: "RUT"
       }, {
         key: "paciente.email",
         sortable: true,
@@ -20820,6 +20818,10 @@ __webpack_require__.r(__webpack_exports__);
         sortable: true,
         label: "Servicio"
       }, {
+        key: "tipo_consulta",
+        sortable: true,
+        label: "Consulta"
+      }, {
         key: "hora_inicio",
         sortable: true,
         label: "Hora"
@@ -20828,9 +20830,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   validations: {
     formbuscar: {
-      rut: {
-        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_4__.required
-      },
       fecha: {
         required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_4__.required
       }
@@ -20872,6 +20871,16 @@ __webpack_require__.r(__webpack_exports__);
       this.formbuscar.id_sucursal = this.sucursal.id_sucursal;
       this.axios.post("/api/traerreservadia", this.formbuscar).then(function (res) {
         _this3.tableData = res.data;
+        res.data.map(function (p) {
+          if (p.telemedicina == 1) {
+            p["tipo_consulta"] = "Telemedicina";
+          } else {
+            p["tipo_consulta"] = "Presencial";
+          }
+
+          ;
+          return p;
+        });
       })["catch"](function (error) {
         console.log("error", error);
       });
@@ -20885,8 +20894,28 @@ __webpack_require__.r(__webpack_exports__);
       if (!this.$v.formbuscar.$invalid) {
         this.formbuscar.id_sucursal = this.sucursal.id_sucursal;
         this.axios.post("/api/buscarreserva", this.formbuscar).then(function (res) {
-          console.log(res);
-          _this4.tableData = res.data;
+          if (res.data.length == 0) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
+              icon: 'warning',
+              title: 'Reservas ',
+              text: "No se han encontrado reservas.",
+              timer: 1500,
+              showConfirmButton: false
+            });
+            _this4.tableData = [];
+          } else {
+            _this4.tableData = res.data;
+            res.data.map(function (p) {
+              if (p.telemedicina == 1) {
+                p["tipo_consulta"] = "Telemedicina";
+              } else {
+                p["tipo_consulta"] = "Presencial";
+              }
+
+              ;
+              return p;
+            });
+          }
         })["catch"](function (error) {
           console.log("error", error);
         });
@@ -22192,7 +22221,8 @@ __webpack_require__.r(__webpack_exports__);
         codigo: "",
         editservicio: "",
         editespecialidad: "",
-        id_sucursal: ""
+        id_sucursal: "",
+        telemedicina: ""
       },
       rutexist: false,
       options: [],
@@ -22200,6 +22230,7 @@ __webpack_require__.r(__webpack_exports__);
       optionsProfesional: [],
       optionsPrevension: [],
       currentEvents: [],
+      selectTelemedicina: false,
       duracion: "",
       showModal: false,
       eventModal: false,
@@ -22653,7 +22684,15 @@ __webpack_require__.r(__webpack_exports__);
       var id_servicio = this.form.servicio_id_servicio.id_servicio;
       var id_sucursal = this.sucursal.id_sucursal;
       this.axios.get("/api/obtenerprofesional/".concat(id_servicio, "/").concat(id_sucursal)).then(function (response) {
-        _this12.optionsProfesional = response.data;
+        _this12.optionsProfesional = response.data.profesional;
+
+        if (response.data.telemedicina.telemedicina == 1) {
+          _this12.selectTelemedicina = true;
+          _this12.form.telemedicina = "";
+        } else {
+          _this12.selectTelemedicina = false;
+          _this12.form.telemedicina = "";
+        }
       });
     },
     traerHoras: function traerHoras() {
@@ -23210,7 +23249,8 @@ __webpack_require__.r(__webpack_exports__);
         precio_particular: "",
         precio_fonasa: "",
         precio_isapre: "",
-        especialidad_id: ""
+        especialidad_id: "",
+        telemedicina: ""
       },
       submitted: false,
       typeform: "create",
@@ -23384,6 +23424,7 @@ __webpack_require__.r(__webpack_exports__);
       this.form.precio_isapre = data.precio_isapre;
       this.form.precio_particular = data.precio_particular;
       this.form.especialidad_id = data.especialidad;
+      this.form.telemedicina = data.telemedicina;
       this.modal = true;
       this.btnCreate = false;
     },
@@ -23816,7 +23857,8 @@ __webpack_require__.r(__webpack_exports__);
         boleta_honorario: "",
         n_honorario: "",
         estado: "",
-        estado_id: ""
+        estado_id: "",
+        telemedicina: ""
       },
       formaccion: {
         id_reserva: "",
@@ -23914,7 +23956,6 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       this.axios.get("/api/obtenerventas/".concat(this.sucursal.id_sucursal)).then(function (response) {
-        console.log(response);
         _this.tableData = response.data;
       });
     },
@@ -23958,6 +23999,12 @@ __webpack_require__.r(__webpack_exports__);
         } else {
           this.detalle.precioservicio = parseInt(data.reserva.servicio.precio_particular);
         }
+      }
+
+      if (data.reserva.telemedicina == 1) {
+        this.detalle.telemedicina = "Telemedicina";
+      } else if (data.reserva.telemedicina == 0) {
+        this.detalle.telemedicina = "Presencial";
       }
 
       this.detalle.servicioprevision = data.reserva.paciente.prevision.nombre;
@@ -74806,7 +74853,9 @@ var render = function () {
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_c("b", [_c("u", [_vm._v(" PREVISIÓN ")])])]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" TIPO CONSULTA ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
@@ -74839,7 +74888,7 @@ var render = function () {
                         _c("h6", [
                           _c("small", [
                             _vm._v(
-                              " " + _vm._s(_vm.detalle.servicioprevision) + " "
+                              " " + _vm._s(_vm.detalle.telemedicina) + " "
                             ),
                           ]),
                         ]),
@@ -75629,7 +75678,9 @@ var render = function () {
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_c("b", [_c("u", [_vm._v(" PREVISIÓN ")])])]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" TIPO CONSULTA ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
@@ -75662,7 +75713,7 @@ var render = function () {
                         _c("h6", [
                           _c("small", [
                             _vm._v(
-                              " " + _vm._s(_vm.detalle.servicioprevision) + " "
+                              " " + _vm._s(_vm.detalle.telemedicina) + " "
                             ),
                           ]),
                         ]),
@@ -78640,10 +78691,6 @@ var render = function () {
                           },
                         ],
                         staticClass: "form-control",
-                        class: {
-                          "is-invalid":
-                            _vm.submitted && _vm.$v.formbuscar.rut.$error,
-                        },
                         attrs: {
                           type: "text",
                           id: "rut",
@@ -78659,14 +78706,6 @@ var render = function () {
                           },
                         },
                       }),
-                      _vm._v(" "),
-                      _vm.submitted && _vm.$v.formbuscar.rut.$error
-                        ? _c("div", { staticClass: "invalid-feedback" }, [
-                            !_vm.$v.formbuscar.rut.required
-                              ? _c("span", [_vm._v("El RUT es requerido.")])
-                              : _vm._e(),
-                          ])
-                        : _vm._e(),
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "col-12" }, [
@@ -80488,6 +80527,87 @@ var render = function () {
                         ],
                         1
                       ),
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.selectTelemedicina
+                  ? _c("div", { staticClass: "col-12" }, [
+                      _c("div", { staticClass: "mb-3" }, [
+                        _c("label", { attrs: { for: "servicios" } }, [
+                          _vm._v("Telemedicina"),
+                        ]),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          {
+                            staticClass:
+                              "form-check form-switch form-switch-lg mb-3",
+                            attrs: { dir: "ltr" },
+                          },
+                          [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.form.telemedicina,
+                                  expression: "form.telemedicina",
+                                },
+                              ],
+                              staticClass: "form-check-input",
+                              attrs: {
+                                type: "checkbox",
+                                id: "customSwitchsizelg",
+                                value: "1",
+                              },
+                              domProps: {
+                                checked: Array.isArray(_vm.form.telemedicina)
+                                  ? _vm._i(_vm.form.telemedicina, "1") > -1
+                                  : _vm.form.telemedicina,
+                              },
+                              on: {
+                                change: function ($event) {
+                                  var $$a = _vm.form.telemedicina,
+                                    $$el = $event.target,
+                                    $$c = $$el.checked ? true : false
+                                  if (Array.isArray($$a)) {
+                                    var $$v = "1",
+                                      $$i = _vm._i($$a, $$v)
+                                    if ($$el.checked) {
+                                      $$i < 0 &&
+                                        _vm.$set(
+                                          _vm.form,
+                                          "telemedicina",
+                                          $$a.concat([$$v])
+                                        )
+                                    } else {
+                                      $$i > -1 &&
+                                        _vm.$set(
+                                          _vm.form,
+                                          "telemedicina",
+                                          $$a
+                                            .slice(0, $$i)
+                                            .concat($$a.slice($$i + 1))
+                                        )
+                                    }
+                                  } else {
+                                    _vm.$set(_vm.form, "telemedicina", $$c)
+                                  }
+                                },
+                              },
+                            }),
+                            _vm._v(" "),
+                            _c(
+                              "label",
+                              {
+                                staticClass: "form-check-label",
+                                attrs: { for: "customSwitchsizelg" },
+                              },
+                              [_vm._v("Asistencia telemedicina")]
+                            ),
+                          ]
+                        ),
+                      ]),
                     ])
                   : _vm._e(),
                 _vm._v(" "),
@@ -82349,6 +82469,83 @@ var render = function () {
                           1
                         ),
                       ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-12 col-lg-6" }, [
+                        _c("label", { attrs: { for: "" } }, [
+                          _vm._v("Telemedicina"),
+                        ]),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          {
+                            staticClass:
+                              "form-check form-switch form-switch-lg mb-3",
+                            attrs: { dir: "ltr" },
+                          },
+                          [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.form.telemedicina,
+                                  expression: "form.telemedicina",
+                                },
+                              ],
+                              staticClass: "form-check-input",
+                              attrs: {
+                                type: "checkbox",
+                                id: "customSwitchsizelg",
+                                value: "1",
+                              },
+                              domProps: {
+                                checked: Array.isArray(_vm.form.telemedicina)
+                                  ? _vm._i(_vm.form.telemedicina, "1") > -1
+                                  : _vm.form.telemedicina,
+                              },
+                              on: {
+                                change: function ($event) {
+                                  var $$a = _vm.form.telemedicina,
+                                    $$el = $event.target,
+                                    $$c = $$el.checked ? true : false
+                                  if (Array.isArray($$a)) {
+                                    var $$v = "1",
+                                      $$i = _vm._i($$a, $$v)
+                                    if ($$el.checked) {
+                                      $$i < 0 &&
+                                        _vm.$set(
+                                          _vm.form,
+                                          "telemedicina",
+                                          $$a.concat([$$v])
+                                        )
+                                    } else {
+                                      $$i > -1 &&
+                                        _vm.$set(
+                                          _vm.form,
+                                          "telemedicina",
+                                          $$a
+                                            .slice(0, $$i)
+                                            .concat($$a.slice($$i + 1))
+                                        )
+                                    }
+                                  } else {
+                                    _vm.$set(_vm.form, "telemedicina", $$c)
+                                  }
+                                },
+                              },
+                            }),
+                            _vm._v(" "),
+                            _c(
+                              "label",
+                              {
+                                staticClass: "form-check-label",
+                                attrs: { for: "customSwitchsizelg" },
+                              },
+                              [_vm._v("Habilitar consultas")]
+                            ),
+                          ]
+                        ),
+                      ]),
                     ]),
                     _vm._v(" "),
                     _vm.btnCreate === true
@@ -83329,7 +83526,9 @@ var render = function () {
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
-                        _c("h6", [_c("b", [_c("u", [_vm._v(" PREVISIÓN ")])])]),
+                        _c("h6", [
+                          _c("b", [_c("u", [_vm._v(" TIPO CONSULTA ")])]),
+                        ]),
                       ]),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-12 col-md-3" }, [
@@ -83362,7 +83561,7 @@ var render = function () {
                         _c("h6", [
                           _c("small", [
                             _vm._v(
-                              " " + _vm._s(_vm.detalle.servicioprevision) + " "
+                              " " + _vm._s(_vm.detalle.telemedicina) + " "
                             ),
                           ]),
                         ]),

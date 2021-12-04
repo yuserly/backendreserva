@@ -11,7 +11,7 @@ class Reserva extends Model
 
     protected $primaryKey = "id_reserva";
 
-    protected $fillable = ['dia', 'hora_inicio', 'hora_fin', 'paciente_id', 'profesional_id', 'estado_id', 'codigo', 'sucursal_id', 'servicio_id'];
+    protected $fillable = ['dia', 'hora_inicio', 'hora_fin', 'paciente_id', 'profesional_id', 'estado_id', 'codigo', 'sucursal_id', 'servicio_id', 'telemedicina'];
 
     public function paciente()
     {

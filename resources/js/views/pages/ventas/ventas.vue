@@ -270,7 +270,7 @@
                                 <h6><b><u> SERVICIO </u></b></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6><b><u> PREVISIÓN </u></b></h6>
+                                <h6><b><u> TIPO CONSULTA </u></b></h6>
                             </div>
                             <div class="col-12 col-md-3">
                                 <h6><b><u> PRECIO </u></b></h6>
@@ -284,7 +284,7 @@
                                 <h6><small> {{ detalle.nombreservicio }} </small></h6>
                             </div>
                             <div class="col-12 col-md-3">
-                                <h6><small> {{ detalle.servicioprevision }} </small></h6>
+                                <h6><small> {{ detalle.telemedicina }} </small></h6>
                             </div>
                             <div class="col-12 col-md-3">
                                 <h6><small> {{ detalle.precioservicio | toCurrency }} </small></h6>
@@ -387,7 +387,7 @@
                     
                 </div>
                 
-            </b-modal>
+            </b-modal> 
 
             <!-- modal -->
         </div> 

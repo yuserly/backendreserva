@@ -13,7 +13,7 @@ class Servicio extends Model
 
     protected $primaryKey = "id_servicio";
 
-    protected $fillable = ['nombre', 'precio_particular', 'precio_fonasa', 'precio_isapre', 'especialidad_id'];
+    protected $fillable = ['nombre', 'precio_particular', 'precio_fonasa', 'precio_isapre', 'especialidad_id', 'telemedicina'];
 
     public function especialidad()
     {

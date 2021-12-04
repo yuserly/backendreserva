@@ -87,7 +87,7 @@ export default {
                 {
                     key: "paciente.rut",
                     sortable: true,
-                    label: "RUT Paciente",
+                    label: "RUT",
                 },
                 {
                     key: "paciente.email",
@@ -108,6 +108,11 @@ export default {
                     label: "Servicio",
                 },
                 {
+                    key: "tipo_consulta",
+                    sortable: true,
+                    label: "Consulta",
+                },
+                {
                     key: "hora_inicio",
                     sortable: true,
                     label: "Hora",
@@ -118,9 +123,6 @@ export default {
     },
     validations: {
         formbuscar: {
-            rut: {
-                required,
-            },
             fecha: {
                 required,
             },
@@ -165,7 +167,11 @@ export default {
                 .post(`/api/traerreservadia`, this.formbuscar)
                 .then((res) => {
                     this.tableData = res.data;
-                })
+                    res.data.map((p) => {
+                        if(p.telemedicina == 1){ p["tipo_consulta"] = "Telemedicina" }else{ p["tipo_consulta"] = "Presencial"};
+                       return p;
+                   });
+                }) 
                 .catch((error) => {
                     console.log("error", error);
                 });
@@ -180,8 +186,22 @@ export default {
                 this.axios
                     .post(`/api/buscarreserva`, this.formbuscar)
                     .then((res) => {
-                        console.log(res);
-                        this.tableData = res.data;
+                        if(res.data.length == 0){
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Reservas ',
+                                text: "No se han encontrado reservas.",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                            this.tableData = [];
+                        }else{
+                            this.tableData = res.data;
+                            res.data.map((p) => {
+                                 if(p.telemedicina == 1){ p["tipo_consulta"] = "Telemedicina" }else{ p["tipo_consulta"] = "Presencial"};
+                                return p;
+                            });
+                        }
                     })
                     .catch((error) => {
                         console.log("error", error);
@@ -440,7 +460,7 @@ export default {
                     text: "Debes ingresar numero de bono fonasa.",
                     timer: 1500,
                     showConfirmButton: false
-                  });
+                  }); 
                   return false;
             }
 

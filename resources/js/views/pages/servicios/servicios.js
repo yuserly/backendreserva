@@ -16,6 +16,7 @@ export default {
         precio_fonasa: "",
         precio_isapre: "",
         especialidad_id: "",
+        telemedicina: "",
       },
       submitted: false,
       typeform: "create",
@@ -206,6 +207,7 @@ export default {
       this.form.precio_isapre = data.precio_isapre;
       this.form.precio_particular = data.precio_particular;
       this.form.especialidad_id = data.especialidad;
+      this.form.telemedicina = data.telemedicina;
       this.modal = true;
       this.btnCreate = false;
     },
@@ -218,7 +220,6 @@ export default {
         this.axios
           .post(`/api/crearservicio`, this.form)
           .then((res) => {
-
             if (res.data) {
               if (this.form.id_servicio == "") {
                 Swal.fire({

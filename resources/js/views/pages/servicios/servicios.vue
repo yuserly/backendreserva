@@ -228,6 +228,13 @@
                 ></multiselect>
               </div>
             </div>
+            <div class="col-12 col-lg-6">
+              <label for="">Telemedicina</label>
+              <div dir="ltr" class="form-check form-switch form-switch-lg mb-3">
+                <input type="checkbox" id="customSwitchsizelg" class="form-check-input" v-model="form.telemedicina" value="1"> 
+                <label for="customSwitchsizelg" class="form-check-label">Habilitar consultas</label>
+              </div>
+            </div>
           </div>
 
           <button

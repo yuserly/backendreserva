@@ -31,14 +31,16 @@ class ServicioController extends Controller
     }
 
     public function store(Request $request)
-    {
+    {   
+    
         $servicio = Servicio::updateOrCreate(['id_servicio'=>$request->id_servicio],
         [
             'nombre' => $request->nombre,
             'precio_particular' => $request->precio_particular,
             'precio_fonasa' => $request->precio_fonasa,
             'precio_isapre' => $request->precio_isapre,
-            'especialidad_id' => $request->especialidad_id["id_especialidad"]
+            'especialidad_id' => $request->especialidad_id["id_especialidad"],
+            'telemedicina'    => ($request->telemedicina) ? 1 : 0
         ]);
 
         return $servicio;
@@ -48,7 +50,5 @@ class ServicioController extends Controller
     {
        return $servicio->delete();
     }
-
-
 
 }

@@ -102,7 +102,7 @@ export default {
                         var dia = res.getDay()+1;
                         this.traerHorasCalendario(dia);
 
-                      }
+                      } 
                     }
                 }
 
@@ -128,7 +128,8 @@ export default {
                 codigo: "",
                 editservicio: "",
                 editespecialidad: "",
-                id_sucursal: ""
+                id_sucursal: "",
+                telemedicina: "",
             },
 
             rutexist: false,
@@ -137,6 +138,7 @@ export default {
             optionsProfesional: [],
             optionsPrevension: [],
             currentEvents: [],
+            selectTelemedicina: false,
             duracion: "",
             showModal: false,
             eventModal: false,
@@ -178,7 +180,7 @@ export default {
             },
             prevension_id: {
                 required
-            }
+            },
         }
     },
     mounted() {
@@ -633,7 +635,14 @@ export default {
             this.axios
                 .get(`/api/obtenerprofesional/${id_servicio}/${id_sucursal}`)
                 .then(response => {
-                    this.optionsProfesional = response.data;
+                    this.optionsProfesional = response.data.profesional;
+                    if(response.data.telemedicina.telemedicina == 1){
+                        this.selectTelemedicina = true;
+                        this.form.telemedicina = "";
+                    }else{
+                        this.selectTelemedicina = false;
+                        this.form.telemedicina = "";
+                    }
                 });
         },
 

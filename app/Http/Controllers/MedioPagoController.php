@@ -46,7 +46,7 @@ class MedioPagoController extends Controller
      */
     public function show(MedioPago $medioPago)
     {
-        return MedioPago::all();
+        return MedioPago::whereIn('id_mediopago', [1,2,3,4])->get();
     }
 
     /**

@@ -37,6 +37,7 @@ export default {
                 n_honorario: "",
                 estado: "",
                 estado_id: "",
+                telemedicina: "",
             },
             formaccion: {
                 id_reserva: "",
@@ -150,8 +151,7 @@ export default {
             this.axios
                 .get(`/api/obtenerventas/${this.sucursal.id_sucursal}`)
                 .then((response) => {
-                    console.log(response);
-                    this.tableData = response.data;
+                    this.tableData = response.data; 
                 });
         },
         formBuscar() {
@@ -207,6 +207,14 @@ export default {
                 }
             }
 
+            if(data.reserva.telemedicina == 1)
+            {
+                this.detalle.telemedicina = "Telemedicina";
+            }else if(data.reserva.telemedicina == 0)
+            {
+                this.detalle.telemedicina = "Presencial";
+            }
+
             this.detalle.servicioprevision =
                 data.reserva.paciente.prevision.nombre;
             this.detalle.mediopago = data.medio.nombre;
@@ -239,7 +247,7 @@ export default {
                 cancelButtonColor: "#f46a6a",
                 confirmButtonText: "Si",
             }).then((result) => {
-                if (result.value) {
+                if (result.value) { 
                     this.axios
                         .post(`/api/cambiarestadoventa`, this.formaccion)
                         .then((res) => {

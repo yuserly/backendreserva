@@ -10,6 +10,7 @@ use App\Models\Profesional;
 use App\Models\profesional_servicio;
 use App\Models\Reserva;
 use App\Models\User;
+use App\Models\Servicio;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
@@ -162,9 +163,10 @@ class ProfesionalController extends Controller
 
     public function showserviciosucursal($id_servicio, $id_sucursal){
 
+        $telemedicina = Servicio::select('telemedicina')->where('id_servicio', $id_servicio)->first();
         $profesional = profesional_servicio::where([['servicio_id_servicio', $id_servicio],['sucursal_id_sucursal', $id_sucursal]])->with('profesional')->get();
 
-        return $profesional;
+        return ['profesional' => $profesional, 'telemedicina' => $telemedicina];
 
     }
 
